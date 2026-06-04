@@ -1,0 +1,13 @@
+{
+  "itemGroup.wenyan_addon": "Example Mod Tab",
+  "block.wenyan_addon.example_block": "Example Block",
+  "item.wenyan_addon.example_item": "Example Item",
+
+  "wenyan_addon.configuration.title": "Wenyan Addon Configs",
+  "wenyan_addon.configuration.section.wenyan_addon.common.toml": "Wenyan Addon Configs",
+  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "Wenyan Addon Configs",
+  "wenyan_addon.configuration.items": "Item List",
+  "wenyan_addon.configuration.logDirtBlock": "Log Dirt Block",
+  "wenyan_addon.configuration.magicNumberIntroduction": "Magic Number Text",
+  "wenyan_addon.configuration.magicNumber": "Magic Number"
+}
