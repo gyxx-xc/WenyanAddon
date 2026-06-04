@@ -1,0 +1,11 @@
+{
+  "itemGroup.pong_tab": "Pong",
+  "item.pong.champagne_bottle": "香槟",
+  "item.pong.champagne_sabre": "香槟刀",
+  "item.pong.goblet": "高脚杯",
+  "item.pong.plug": "软木塞",
+  "item.pong.debug_rod": "调试棒",
+  "block.pong.champagne_rack": "香槟架",
+  "block.pong.champagne_bottle": "香槟",
+  "effect.pong.drunk": "醉酒"
+}

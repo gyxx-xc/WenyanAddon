@@ -1,0 +1,12 @@
+{
+  "champagne_open": {
+    "sounds": [
+      "pong:champagne_open"
+    ]
+  },
+  "pong_1": {
+    "sounds": [
+      "pong:pong_1"
+    ]
+  }
+}

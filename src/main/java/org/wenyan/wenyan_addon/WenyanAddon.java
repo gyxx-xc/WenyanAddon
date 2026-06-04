@@ -30,6 +30,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.pongdev.pong.Pong;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(WenyanAddon.MODID)
@@ -77,5 +78,7 @@ public class WenyanAddon {
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        Pong.register(modEventBus);
     }
 }
