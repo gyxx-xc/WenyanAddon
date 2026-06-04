@@ -12,7 +12,7 @@
 
 - `libs/judou-1.0.0.jar` — 句读（Judou）API，文言解释器的底层框架
 - `libs/wenyan_programming-1.0.0.jar` — 文言编程模组本体
-- `run/mods/wenyan_programming-1.0.0.jar` — 运行时也需要放置一份，供开发环境加载
+- `run/mods/wenyan_programming-1.0.0.jar` — 模组Jar，跟上面的**不是一个文件**，供开发环境加载
 
 ### 1.2 修改 `build.gradle`
 
