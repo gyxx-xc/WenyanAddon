@@ -3,5 +3,10 @@
 
   "wenyan_addon.configuration.title": "吾有一术：附属设置",
   "wenyan_addon.configuration.section.wenyan_addon.common.toml": "附属设置",
-  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "附属设置"
+  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "附属设置",
+
+  "block.wenyan_addon.note_block_function_block": "音符符咒石",
+  "block.wenyan_addon.read_write_block": "读写符咒石",
+  "block.wenyan_addon.naming_block": "命名符咒石",
+  "block.wenyan_addon.particle_block": "粒子符咒石"
 }

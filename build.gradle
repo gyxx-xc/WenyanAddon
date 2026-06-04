@@ -28,6 +28,9 @@ sourceSets.main.resources {
 
 repositories {
     // Add here additional repositories if required by some of the dependencies below.
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 base {
@@ -135,8 +138,10 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation files("libs/judou-1.0.0.jar")
-    implementation files("libs/wenyan_programming-1.0.0.jar")
+    implementation "indi.wenyan:judou:1.0.0"
+    implementation "indi.wenyan:wenyan_programming:1.0.0"
+
+    implementation "org.antlr:antlr4-runtime:4.13.1"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

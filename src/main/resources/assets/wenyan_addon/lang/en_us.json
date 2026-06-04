@@ -3,5 +3,10 @@
 
   "wenyan_addon.configuration.title": "Wenyan Addon Configs",
   "wenyan_addon.configuration.section.wenyan_addon.common.toml": "Wenyan Addon Configs",
-  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "Wenyan Addon Configs"
+  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "Wenyan Addon Configs",
+
+  "block.wenyan_addon.note_block_function_block": "Note Block Rune",
+  "block.wenyan_addon.read_write_block": "Read-Write Rune",
+  "block.wenyan_addon.naming_block": "Naming Rune",
+  "block.wenyan_addon.particle_block": "Particle Rune"
 }

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["AGENTS.md"],
+  "agent": {
+    "explore": { "disable": true }
+  },
+  "permission": {
+    "task": "deny",
+    "bash": "deny"
+  }
+}
