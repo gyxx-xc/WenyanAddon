@@ -22,12 +22,9 @@ import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WrittenBookContent;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
@@ -51,12 +48,38 @@ public enum Capabilities {
     public static void registerCapabilities(@NonNull RegisterCapabilitiesEvent event) {
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                simpleDevice("crush game", HandlerPackageBuilder.create()
-                        .handler(ChineseUtils.bracketOf("crush"),
-                                _ -> {
-                                    throw new NullPointerException();
-                                })
-                        .build()),
+                (_, p, s, _, _) -> new IWenyanBlockDevice() {
+                    @Override
+                    public BlockState blockState() {
+                        return s;
+                    }
+
+                    @Override
+                    public BlockPos blockPos() {
+                        return p;
+                    }
+
+                    @Override
+                    public boolean isRemoved() {
+                        return false;
+                    }
+
+                    @Override
+                    public RawHandlerPackage getExecPackage() {
+                        return HandlerPackageBuilder.create()
+                                .handler("「crush」",
+                                        _ -> {
+                                            throw new NullPointerException();
+                                        })
+                                // .handler... other
+                                .build();
+                    }
+
+                    @Override
+                    public String getPackageName() {
+                        return "「crush game」";
+                    }
+                },
                 WenyanAddon.EXAMPLE_BLOCK.get(),
                 Blocks.BEDROCK
         );
