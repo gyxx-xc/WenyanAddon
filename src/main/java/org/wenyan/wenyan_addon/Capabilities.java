@@ -34,12 +34,9 @@ import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
 import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.WrittenBookContent;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.LecternBlockEntity;
@@ -85,12 +82,38 @@ public enum Capabilities {
     public static void registerCapabilities(@NonNull RegisterCapabilitiesEvent event) {
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                simpleDevice("crush game", HandlerPackageBuilder.create()
-                        .handler(ChineseUtils.bracketOf("crush"),
-                                _ -> {
-                                    throw new NullPointerException();
-                                })
-                        .build()),
+                (_, p, s, _, _) -> new IWenyanBlockDevice() {
+                    @Override
+                    public BlockState blockState() {
+                        return s;
+                    }
+
+                    @Override
+                    public BlockPos blockPos() {
+                        return p;
+                    }
+
+                    @Override
+                    public boolean isRemoved() {
+                        return false;
+                    }
+
+                    @Override
+                    public RawHandlerPackage getExecPackage() {
+                        return HandlerPackageBuilder.create()
+                                .handler("「crush」",
+                                        _ -> {
+                                            throw new NullPointerException();
+                                        })
+                                // .handler... other
+                                .build();
+                    }
+
+                    @Override
+                    public String getPackageName() {
+                        return "「crush game」";
+                    }
+                },
                 WenyanAddon.EXAMPLE_BLOCK.get(),
                 Blocks.BEDROCK
         );
@@ -100,45 +123,45 @@ public enum Capabilities {
                 simpleDevice("projectile spawner", HandlerPackageBuilder.create()
                         .handler(ChineseUtils.bracketOf("箭"), (iHandleContext, iArgsRequest) -> {
                             if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                Arrow arrow = new Arrow(context.level(), x, y, z, ItemStack.EMPTY, null);
-                                arrow.shoot(0, 1, 0, 0.6f, 10.0f);
+                                double dx = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value();
+                                double dy = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value();
+                                double dz = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value();
+                                Arrow arrow = new Arrow(context.level(), context.pos().getX() + 0.5, context.pos().getY(), context.pos().getZ() + 0.5, ItemStack.EMPTY, null);
+                                arrow.shoot(dx, dy, dz, 0.6f, 10.0f);
                                 context.level().addFreshEntity(arrow);
                             }
                             return WenyanNull.NULL;
                         })
                         .handler(ChineseUtils.bracketOf("焰火"), (iHandleContext, iArgsRequest) -> {
                             if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                FireworkRocketEntity firework = new FireworkRocketEntity(context.level(), x, y, z,
+                                double dx = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value();
+                                double dy = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value();
+                                double dz = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value();
+                                FireworkRocketEntity firework = new FireworkRocketEntity(context.level(), context.pos().getX() + 0.5, context.pos().getY(), context.pos().getZ() + 0.5,
                                         new ItemStack(Items.FIREWORK_ROCKET));
-                                firework.shoot(0, 1, 0, 0.6f, 10.0f);
+                                firework.shoot(dx, dy, dz, 0.6f, 10.0f);
                                 context.level().addFreshEntity(firework);
                             }
                             return WenyanNull.NULL;
                         })
                         .handler(ChineseUtils.bracketOf("雪球"), (iHandleContext, iArgsRequest) -> {
                             if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                Snowball snowball = new Snowball(context.level(), x, y, z, ItemStack.EMPTY);
-                                snowball.shoot(0, 1, 0, 0.6f, 10.0f);
+                                double dx = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value();
+                                double dy = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value();
+                                double dz = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value();
+                                Snowball snowball = new Snowball(context.level(), context.pos().getX() + 0.5, context.pos().getY(), context.pos().getZ() + 0.5, ItemStack.EMPTY);
+                                snowball.shoot(dx, dy, dz, 0.6f, 10.0f);
                                 context.level().addFreshEntity(snowball);
                             }
                             return WenyanNull.NULL;
                         })
                         .handler(ChineseUtils.bracketOf("小火球"), (iHandleContext, iArgsRequest) -> {
                             if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                SmallFireball fireball = new SmallFireball(context.level(), x, y, z,
-                                        new Vec3(0, 1, 0));
+                                double dx = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value();
+                                double dy = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value();
+                                double dz = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value();
+                                SmallFireball fireball = new SmallFireball(context.level(), context.pos().getX() + 0.5, context.pos().getY(), context.pos().getZ() + 0.5,
+                                        new Vec3(dx, dy, dz));
                                 context.level().addFreshEntity(fireball);
                             }
                             return WenyanNull.NULL;
@@ -250,80 +273,6 @@ public enum Capabilities {
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                simpleDevice("entity manipulation", HandlerPackageBuilder.create()
-                        .handler(ChineseUtils.bracketOf("传送"), (iHandleContext, iArgsRequest) -> {
-                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double sx = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double sy = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double sz = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                double dx = iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double dy = iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double dz = iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                AABB area = new AABB(sx - 0.5, sy - 0.5, sz - 0.5, sx + 0.5, sy + 0.5, sz + 0.5);
-                                for (Entity entity : context.level().getEntities(null, area)) {
-                                    entity.teleportTo(dx, dy, dz);
-                                }
-                            }
-                            return WenyanNull.NULL;
-                        })
-                        .handler(ChineseUtils.bracketOf("闪现"), (iHandleContext, iArgsRequest) -> {
-                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                double dx = iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value();
-                                double dy = iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value();
-                                double dz = iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value();
-                                AABB area = new AABB(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5);
-                                for (Entity entity : context.level().getEntities(null, area)) {
-                                    entity.teleportTo(x + dx, y + dy, z + dz);
-                                }
-                            }
-                            return WenyanNull.NULL;
-                        })
-                        .handler(ChineseUtils.bracketOf("施力"), (iHandleContext, iArgsRequest) -> {
-                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                double fx = iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value();
-                                double fy = iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value();
-                                double fz = iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value();
-                                AABB area = new AABB(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5);
-                                for (Entity entity : context.level().getEntities(null, area)) {
-                                    entity.addDeltaMovement(new Vec3(fx, fy, fz));
-                                }
-                            }
-                            return WenyanNull.NULL;
-                        })
-                        .build()),
-                 WenyanAddon.ENTITY_MANIPULATION_BLOCK.get(),
-                Blocks.BEACON
-        );
-
-        event.registerBlock(
-                WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                simpleDevice("note block", HandlerPackageBuilder.create()
-                        .handler(ChineseUtils.bracketOf("奏乐"), (iHandleContext, iArgsRequest) -> {
-                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
-                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
-                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
-                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                int note = (int) iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value();
-                                note = Math.clamp(note, 0, 24);
-                                float pitch = (float) Math.pow(2.0, (note - 12) / 12.0);
-                                BlockPos pos = new BlockPos((int) x, (int) y, (int) z);
-                                context.level().playSound(null, pos, SoundEvents.NOTE_BLOCK_HARP.value(), SoundSource.BLOCKS, 3.0F, pitch);
-                            }
-                            return WenyanNull.NULL;
-                        })
-                        .build()),
-                WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK.get(),
-                Blocks.NOTE_BLOCK
-        );
-
-        event.registerBlock(
-                WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
                 simpleDevice("read write", HandlerPackageBuilder.create()
                         .handler(ChineseUtils.bracketOf("读告示牌"), (iHandleContext, iArgsRequest) -> {
                             if (iHandleContext instanceof BlockRequest.BlockContext context) {
@@ -417,24 +366,94 @@ public enum Capabilities {
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                simpleDevice("particle", HandlerPackageBuilder.create()
-                        .handler(ChineseUtils.bracketOf("施放粒子"), (iHandleContext, iArgsRequest) -> {
+                simpleDevice("entity manipulation", HandlerPackageBuilder.create()
+                        .handler(ChineseUtils.bracketOf("传送"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
+                                double sx = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
+                                double sy = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
+                                double sz = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
+                                double dx = iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value() + context.pos().getX();
+                                double dy = iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value() + context.pos().getY();
+                                double dz = iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value() + context.pos().getZ();
+                                AABB area = new AABB(sx - 0.5, sy - 0.5, sz - 0.5, sx + 0.5, sy + 0.5, sz + 0.5);
+                                for (Entity entity : context.level().getEntities(null, area)) {
+                                    entity.teleportTo(dx, dy, dz);
+                                }
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .handler(ChineseUtils.bracketOf("闪现"), (iHandleContext, iArgsRequest) -> {
                             if (iHandleContext instanceof BlockRequest.BlockContext context) {
                                 double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
                                 double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
                                 double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
-                                int r = (int) Math.clamp(iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value(), 0, 255);
-                                int g = (int) Math.clamp(iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value(), 0, 255);
-                                int b = (int) Math.clamp(iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value(), 0, 255);
-                                int count = (int) Math.clamp(iArgsRequest.args().get(6).as(WenyanDouble.TYPE).value(), 1, 100);
+                                double dx = iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value();
+                                double dy = iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value();
+                                double dz = iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value();
+                                AABB area = new AABB(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5);
+                                for (Entity entity : context.level().getEntities(null, area)) {
+                                    entity.teleportTo(x + dx, y + dy, z + dz);
+                                }
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .handler(ChineseUtils.bracketOf("施力"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
+                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
+                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
+                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
+                                double fx = iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value();
+                                double fy = iArgsRequest.args().get(4).as(WenyanDouble.TYPE).value();
+                                double fz = iArgsRequest.args().get(5).as(WenyanDouble.TYPE).value();
+                                AABB area = new AABB(x - 0.5, y - 0.5, z - 0.5, x + 0.5, y + 0.5, z + 0.5);
+                                for (Entity entity : context.level().getEntities(null, area)) {
+                                    entity.addDeltaMovement(new Vec3(fx, fy, fz));
+                                }
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .build()),
+                 WenyanAddon.ENTITY_MANIPULATION_BLOCK.get(),
+                Blocks.BEACON
+        );
+
+        event.registerBlock(
+                WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
+                simpleDevice("note block", HandlerPackageBuilder.create()
+                        .handler(ChineseUtils.bracketOf("奏乐"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
+                                int note = (int) iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value();
+                                note = Math.clamp(note, 0, 24);
+                                float pitch = (float) Math.pow(2.0, (note - 12) / 12.0);
+                                context.level().playSound(null, context.pos(), SoundEvents.NOTE_BLOCK_HARP.value(), SoundSource.BLOCKS, 3.0F, pitch);
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .build()),
+                WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK.get(),
+                Blocks.NOTE_BLOCK
+        );
+
+        event.registerBlock(
+                WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
+                simpleDevice("particle", HandlerPackageBuilder.create()
+                        .handler(ChineseUtils.bracketOf("施放粒子"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context) {
+                                double px = context.pos().getX();
+                                double py = context.pos().getY();
+                                double pz = context.pos().getZ();
+                                int r = (int) Math.clamp(iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value(), 0, 255);
+                                int g = (int) Math.clamp(iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value(), 0, 255);
+                                int b = (int) Math.clamp(iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value(), 0, 255);
+                                int count = (int) Math.clamp(iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value(), 1, 100);
                                 int color = 0xFF000000 | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
                                 DustParticleOptions dust = new DustParticleOptions(color, 1.0f);
                                 if (context.level() instanceof ServerLevel server) {
                                     for (int i = 0; i < count; i++) {
-                                        double px = x + (server.getRandom().nextGaussian() * 0.5);
-                                        double py = y + (server.getRandom().nextGaussian() * 0.5);
-                                        double pz = z + (server.getRandom().nextGaussian() * 0.5);
-                                        server.sendParticles(dust, px, py, pz, 1, 0.0, 0.0, 0.0, 0.0);
+                                        double sx = px + (server.getRandom().nextGaussian() * 0.5);
+                                        double sy = py + (server.getRandom().nextGaussian() * 0.5);
+                                        double sz = pz + (server.getRandom().nextGaussian() * 0.5);
+                                        server.sendParticles(dust, sx, sy, sz, 1, 0.0, 0.0, 0.0, 0.0);
                                     }
                                 }
                             }

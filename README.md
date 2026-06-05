@@ -10,17 +10,25 @@
 
 将以下依赖 jar 放入 `libs/` 目录：
 
-- `libs/judou-1.0.0.jar` — 句读（Judou）API，文言解释器的底层框架
 - `libs/wenyan_programming-1.0.0.jar` — 文言编程模组本体
-- `run/mods/wenyan_programming-1.0.0.jar` — 模组Jar，跟上面的**不是一个文件**，供开发环境加载
 
 ### 1.2 修改 `build.gradle`
+
+在 `repositories` 块中添加：
+```groovy
+    flatDir {
+    dirs 'libs'
+}
+```
 
 在 `dependencies` 块中添加：
 
 ```groovy
-implementation files("libs/judou-1.0.0.jar")
-implementation files("libs/wenyan_programming-1.0.0.jar")
+implementation "indi.wenyan:judou:1.0.0"
+implementation "indi.wenyan:wenyan_programming:1.0.0"
+
+runtimeOnly "org.antlr:antlr4-runtime:4.13.1"
+runtimeOnly "com.github.houbb:opencc4j:1.14.0"
 ```
 
 ---
