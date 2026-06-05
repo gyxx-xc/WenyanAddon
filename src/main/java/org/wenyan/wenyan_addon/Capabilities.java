@@ -3,8 +3,16 @@ package org.wenyan.wenyan_addon;
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
 import indi.wenyan.interpreter_impl.IWenyanBlockDevice;
+import indi.wenyan.judou.api.WenyanException;
+import indi.wenyan.judou.api.exec.IRequestCallHandler;
+import indi.wenyan.judou.api.exec.request.IArgsRequest;
+import indi.wenyan.judou.api.exec.request.IBaseHandleableRequest;
+import indi.wenyan.judou.api.exec.structure.IHandleContext;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
+import indi.wenyan.judou.api.runtime.IWenyanRunner;
 import indi.wenyan.judou.api.utils.ChineseUtils;
+import indi.wenyan.judou.api.values.IWenyanValue;
+import indi.wenyan.judou.api.values.WenyanPackage;
 import indi.wenyan.judou.api.values.WenyanNull;
 import indi.wenyan.judou.api.values.primitive.WenyanDouble;
 import indi.wenyan.judou.api.values.primitive.WenyanString;
@@ -12,11 +20,15 @@ import indi.wenyan.setup.definitions.WyRegistration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.animal.sheep.Sheep;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.arrow.Arrow;
 import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
@@ -35,19 +47,41 @@ import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.jspecify.annotations.NonNull;
 
-import static org.wenyan.wenyan_addon.WenyanAddon.MODID;
+import java.util.HashMap;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-@EventBusSubscriber(modid = MODID)
 public enum Capabilities {
     ;
 
-    @SubscribeEvent
+    private static final RawHandlerPackage DYE_PACKAGE = dyePackage();
+    private static boolean dyeGlobalsLogged;
+
+    public static void injectDyeGlobals(WenyanPackage environment) {
+        DYE_PACKAGE.functions().forEach((name, request) -> {
+            IRequestCallHandler handler = contextualHandler(request);
+            environment.put(name, handler);
+            environment.put(ChineseUtils.toSimplifiedVar(name), handler);
+        });
+        if (!dyeGlobalsLogged) {
+            dyeGlobalsLogged = true;
+            WenyanAddon.LOGGER.info(
+                    "Injected {} dye globals into Wenyan runner environment; has 染前浅蓝 = {}",
+                    DYE_PACKAGE.functions().size(),
+                    environment.variables().containsKey(ChineseUtils.bracketOf("染前浅蓝"))
+            );
+        }
+    }
+
+    private static IRequestCallHandler contextualHandler(Supplier<RawHandlerPackage.IRawRequest> request) {
+        return (thread, self, args, onReturn) -> new ContextualRequest(thread, self, args, request.get(), onReturn);
+    }
+
     public static void registerCapabilities(@NonNull RegisterCapabilitiesEvent event) {
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
@@ -410,9 +444,212 @@ public enum Capabilities {
                 WenyanAddon.PARTICLE_BLOCK.get(),
                 Blocks.END_ROD
         );
+
+        event.registerBlock(
+                WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
+                dyeDevice(),
+                WenyanAddon.DYE_BLOCK.get()
+        );
+
+        event.registerBlock(
+                WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
+                simpleDevice("storage rune", HandlerPackageBuilder.create()
+                        .handler(ChineseUtils.bracketOf("收纳"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context
+                                    && context.level().getBlockEntity(context.pos()) instanceof StorageRuneBlockEntity storage) {
+                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
+                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
+                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
+                                double radius = Math.clamp(iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value(), 0.0, 16.0);
+                                int absorbed = absorbItems(context.level(), storage, x, y, z, radius);
+                                return new WenyanDouble(absorbed);
+                            }
+                            return new WenyanDouble(0);
+                        })
+                        .handler(ChineseUtils.bracketOf("吐出"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context
+                                    && context.level().getBlockEntity(context.pos()) instanceof StorageRuneBlockEntity storage) {
+                                double x = iArgsRequest.args().get(0).as(WenyanDouble.TYPE).value() + context.pos().getX();
+                                double y = iArgsRequest.args().get(1).as(WenyanDouble.TYPE).value() + context.pos().getY();
+                                double z = iArgsRequest.args().get(2).as(WenyanDouble.TYPE).value() + context.pos().getZ();
+                                int count = (int) Math.clamp(iArgsRequest.args().get(3).as(WenyanDouble.TYPE).value(), 0.0, 2304.0);
+                                ItemStack extracted = storage.extractAny(count);
+                                if (!extracted.isEmpty()) {
+                                    context.level().addFreshEntity(new ItemEntity(context.level(), x + 0.5, y + 0.5, z + 0.5, extracted));
+                                }
+                                return new WenyanDouble(extracted.getCount());
+                            }
+                            return new WenyanDouble(0);
+                        })
+                        .handler(ChineseUtils.bracketOf("藏量"), (iHandleContext, iArgsRequest) -> {
+                            if (iHandleContext instanceof BlockRequest.BlockContext context
+                                    && context.level().getBlockEntity(context.pos()) instanceof StorageRuneBlockEntity storage) {
+                                return new WenyanDouble(storage.getStoredCount());
+                            }
+                            return new WenyanDouble(0);
+                        })
+                        .build()),
+                WenyanAddon.STORAGE_RUNE_BLOCK.get()
+        );
+    }
+
+    private static IBlockCapabilityProvider<IWenyanBlockDevice, Void> dyeDevice() {
+        return (_, p, s, _, _) -> {
+            return new IWenyanBlockDevice() {
+                @Override
+                public BlockState blockState() {
+                    return s;
+                }
+
+                @Override
+                public BlockPos blockPos() {
+                    return p;
+                }
+
+                @Override
+                public boolean isRemoved() {
+                    return false;
+                }
+
+                @Override
+                public RawHandlerPackage getExecPackage() {
+                    return DYE_PACKAGE;
+                }
+
+                @Override
+                public String getPackageName() {
+                    return ChineseUtils.bracketOf("dye");
+                }
+            };
+        };
+    }
+
+    private static RawHandlerPackage dyePackage() {
+        HandlerPackageBuilder builder = HandlerPackageBuilder.create();
+        addDyeShortcuts(builder, DyeColor.WHITE, "白", "白色");
+        addDyeShortcuts(builder, DyeColor.ORANGE, "橙", "橙色");
+        addDyeShortcuts(builder, DyeColor.MAGENTA, "品红", "品红色", "洋红", "洋红色");
+        addDyeShortcuts(builder, DyeColor.LIGHT_BLUE, "浅蓝", "浅蓝色", "淺藍", "淺藍色", "淡蓝", "淡蓝色", "淡藍", "淡藍色");
+        addDyeShortcuts(builder, DyeColor.YELLOW, "黄", "黄色", "黃", "黃色");
+        addDyeShortcuts(builder, DyeColor.LIME, "黄绿", "黄绿色", "黃綠", "黃綠色", "青柠", "青柠色", "青檸", "青檸色");
+        addDyeShortcuts(builder, DyeColor.PINK, "粉", "粉色");
+        addDyeShortcuts(builder, DyeColor.GRAY, "灰", "灰色");
+        addDyeShortcuts(builder, DyeColor.LIGHT_GRAY, "浅灰", "浅灰色", "淺灰", "淺灰色", "淡灰", "淡灰色");
+        addDyeShortcuts(builder, DyeColor.CYAN, "青", "青色");
+        addDyeShortcuts(builder, DyeColor.PURPLE, "紫", "紫色");
+        addDyeShortcuts(builder, DyeColor.BLUE, "蓝", "蓝色", "藍", "藍色");
+        addDyeShortcuts(builder, DyeColor.BROWN, "棕", "棕色", "褐", "褐色");
+        addDyeShortcuts(builder, DyeColor.GREEN, "绿", "绿色", "綠", "綠色");
+        addDyeShortcuts(builder, DyeColor.RED, "红", "红色", "紅", "紅色");
+        addDyeShortcuts(builder, DyeColor.BLACK, "黑", "黑色");
+        return builder.build();
+    }
+
+    private static void addDyeShortcuts(HandlerPackageBuilder builder, DyeColor color, String... colorNames) {
+        for (String colorName : colorNames) {
+            addDyeShortcut(builder, "右", 1, 0, 0, colorName, color);
+            addDyeShortcut(builder, "左", -1, 0, 0, colorName, color);
+            addDyeShortcut(builder, "上", 0, 1, 0, colorName, color);
+            addDyeShortcut(builder, "下", 0, -1, 0, colorName, color);
+            addDyeShortcut(builder, "前", 0, 0, 1, colorName, color);
+            addDyeShortcut(builder, "后", 0, 0, -1, colorName, color);
+            addDyeShortcut(builder, "後", 0, 0, -1, colorName, color);
+        }
+    }
+
+    private static void addDyeShortcut(HandlerPackageBuilder builder, String directionName, int dx, int dy, int dz, String colorName, DyeColor color) {
+        builder.handler(ChineseUtils.bracketOf("染" + directionName + colorName), 0, (iHandleContext, _) -> dyeFixedDirection(iHandleContext, dx, dy, dz, color));
+    }
+
+    private static WenyanDouble dyeFixedDirection(Object iHandleContext, int dx, int dy, int dz, DyeColor color) {
+        if (iHandleContext instanceof BlockRequest.BlockContext context
+                && dyeAt(context.level(), context.pos().offset(dx, dy, dz), color)) {
+            return new WenyanDouble(1);
+        }
+        return new WenyanDouble(0);
+    }
+
+    private static int absorbItems(Level level, StorageRuneBlockEntity storage, double x, double y, double z, double radius) {
+        AABB area = new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius);
+        int absorbed = 0;
+        for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area, entity -> !entity.getItem().isEmpty())) {
+            ItemStack stack = itemEntity.getItem();
+            int accepted = storage.insert(stack);
+            if (accepted <= 0) {
+                continue;
+            }
+            absorbed += accepted;
+            stack.shrink(accepted);
+            if (stack.isEmpty()) {
+                itemEntity.discard();
+            } else {
+                itemEntity.setItem(stack);
+            }
+        }
+        return absorbed;
+    }
+
+    private static boolean dyeAt(Level level, BlockPos pos, DyeColor color) {
+        boolean changed = false;
+        AABB area = new AABB(pos).inflate(0.5);
+        for (Sheep sheep : level.getEntitiesOfClass(Sheep.class, area)) {
+            sheep.setColor(color);
+            changed = true;
+        }
+
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof SignBlockEntity sign) {
+            sign.setText(sign.getFrontText().setColor(color), true);
+            sign.setChanged();
+            level.sendBlockUpdated(pos, level.getBlockState(pos), level.getBlockState(pos), 3);
+            changed = true;
+        }
+
+        BlockState state = level.getBlockState(pos);
+        Block dyedBlock = dyedVariant(state.getBlock(), color);
+        if (dyedBlock != null && dyedBlock != state.getBlock()) {
+            level.setBlock(pos, dyedBlock.withPropertiesOf(state), 3);
+            changed = true;
+        }
+        return changed;
+    }
+
+    private static Block dyedVariant(Block block, DyeColor color) {
+        Identifier id = BuiltInRegistries.BLOCK.getKey(block);
+        if (!"minecraft".equals(id.getNamespace())) {
+            return null;
+        }
+        String path = stripColorPrefix(id.getPath());
+        String targetPath = targetDyePath(path, color.getName());
+        if (targetPath == null) {
+            return null;
+        }
+        Block target = BuiltInRegistries.BLOCK.getValue(Identifier.fromNamespaceAndPath("minecraft", targetPath));
+        return target == Blocks.AIR ? null : target;
+    }
+
+    private static String stripColorPrefix(String path) {
+        for (DyeColor color : DyeColor.values()) {
+            String prefix = color.getName() + "_";
+            if (path.startsWith(prefix)) {
+                return path.substring(prefix.length());
+            }
+        }
+        return path;
+    }
+
+    private static String targetDyePath(String path, String colorName) {
+        return switch (path) {
+            case "wool", "carpet", "terracotta", "concrete", "concrete_powder", "glazed_terracotta",
+                 "bed", "candle", "banner", "shulker_box" -> colorName + "_" + path;
+            case "stained_glass", "glass" -> colorName + "_stained_glass";
+            case "stained_glass_pane", "glass_pane" -> colorName + "_stained_glass_pane";
+            default -> null;
+        };
     }
 
     public static IBlockCapabilityProvider<IWenyanBlockDevice, Void> simpleDevice(String name, RawHandlerPackage handlerPackage) {
+        RawHandlerPackage packageWithDye = withDyeShortcuts(handlerPackage);
         return (_, p, s, _, _) -> new IWenyanBlockDevice() {
             @Override
             public BlockState blockState() {
@@ -431,7 +668,7 @@ public enum Capabilities {
 
             @Override
             public RawHandlerPackage getExecPackage() {
-                return handlerPackage;
+                return packageWithDye;
             }
 
             @Override
@@ -439,5 +676,28 @@ public enum Capabilities {
                 return ChineseUtils.bracketOf(name);
             }
         };
+    }
+
+    private static RawHandlerPackage withDyeShortcuts(RawHandlerPackage handlerPackage) {
+        if (handlerPackage == DYE_PACKAGE) {
+            return handlerPackage;
+        }
+        HashMap<String, indi.wenyan.judou.api.values.IWenyanValue> variables = new HashMap<>(handlerPackage.variables());
+        HashMap<String, Supplier<RawHandlerPackage.IRawRequest>> functions = new HashMap<>(handlerPackage.functions());
+        functions.putAll(DYE_PACKAGE.functions());
+        return new RawHandlerPackage(variables, functions);
+    }
+
+    private record ContextualRequest(
+            IWenyanRunner thread,
+            IWenyanValue self,
+            List<IWenyanValue> args,
+            RawHandlerPackage.IRawRequest request,
+            Consumer<IWenyanValue> onReturn
+    ) implements IBaseHandleableRequest, IArgsRequest {
+        @Override
+        public boolean handle(IHandleContext context) throws WenyanException {
+            return request.handle(context, this, onReturn);
+        }
     }
 }

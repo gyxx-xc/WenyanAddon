@@ -8,6 +8,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -25,6 +26,7 @@ public class WenyanAddon {
 
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", p -> p.mapColor(MapColor.STONE));
@@ -54,6 +56,16 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> PARTICLE_BLOCK = BLOCKS.registerSimpleBlock("particle_block", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2.0f).sound(SoundType.GLASS));
     public static final DeferredItem<BlockItem> PARTICLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("particle_block", PARTICLE_BLOCK);
 
+    public static final DeferredBlock<Block> DYE_BLOCK = BLOCKS.registerSimpleBlock("dye_block", p -> p.mapColor(MapColor.COLOR_RED).strength(2.0f).sound(SoundType.STONE));
+    public static final DeferredItem<BlockItem> DYE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("dye_block", DYE_BLOCK);
+
+    public static final DeferredBlock<StorageRuneBlock> STORAGE_RUNE_BLOCK = BLOCKS.registerBlock("storage_rune_block", StorageRuneBlock::new);
+    public static final DeferredItem<BlockItem> STORAGE_RUNE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("storage_rune_block", STORAGE_RUNE_BLOCK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StorageRuneBlockEntity>> STORAGE_RUNE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "storage_rune_block",
+            () -> new BlockEntityType<>(StorageRuneBlockEntity::new, STORAGE_RUNE_BLOCK.get())
+    );
+
     @SuppressWarnings("unused") public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.wenyan_addon"))
             .withTabsBefore(CreativeModeTabs.COMBAT)
@@ -68,12 +80,16 @@ public class WenyanAddon {
                 output.accept(READ_WRITE_BLOCK_ITEM.get());
                 output.accept(NAMING_BLOCK_ITEM.get());
                 output.accept(PARTICLE_BLOCK_ITEM.get());
+                output.accept(DYE_BLOCK_ITEM.get());
+                output.accept(STORAGE_RUNE_BLOCK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")
     public WenyanAddon(IEventBus modEventBus, ModContainer modContainer) {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
+        BLOCK_ENTITY_TYPES.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        modEventBus.addListener(Capabilities::registerCapabilities);
     }
 }

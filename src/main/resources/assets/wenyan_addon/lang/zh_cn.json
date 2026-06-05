@@ -5,8 +5,15 @@
   "wenyan_addon.configuration.section.wenyan_addon.common.toml": "附属设置",
   "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "附属设置",
 
+  "block.wenyan_addon.example_block": "示例符咒石",
+  "block.wenyan_addon.projectile_spawner_block": "投射符咒石",
+  "block.wenyan_addon.elemental_block": "元素符咒石",
+  "block.wenyan_addon.world_interaction_block": "交互符咒石",
+  "block.wenyan_addon.entity_manipulation_block": "移形符咒石",
   "block.wenyan_addon.note_block_function_block": "音符符咒石",
   "block.wenyan_addon.read_write_block": "读写符咒石",
   "block.wenyan_addon.naming_block": "命名符咒石",
-  "block.wenyan_addon.particle_block": "粒子符咒石"
+  "block.wenyan_addon.particle_block": "粒子符咒石",
+  "block.wenyan_addon.dye_block": "染色符咒石",
+  "block.wenyan_addon.storage_rune_block": "收纳符咒石"
 }
