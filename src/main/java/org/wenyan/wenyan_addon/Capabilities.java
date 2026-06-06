@@ -40,7 +40,7 @@ public final class Capabilities {
                     @Override
                     public RawHandlerPackage getExecPackage() {
                         return HandlerPackageBuilder.create()
-                                .handler("「crush」",
+                                .handler("「碎」",
                                         _ -> {
                                             throw new NullPointerException();
                                         })
@@ -50,7 +50,7 @@ public final class Capabilities {
 
                     @Override
                     public String getPackageName() {
-                        return "「crush game」";
+                        return "「碎」";
                     }
                 },
                 WenyanAddon.EXAMPLE_BLOCK.get(),
@@ -60,56 +60,56 @@ public final class Capabilities {
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("projectile spawner", BlockHandlers.PROJECTILE_SPAWNER_PACKAGE),
+                BlockDeviceProvider.create("投射", BlockHandlers.PROJECTILE_SPAWNER_PACKAGE),
                 WenyanAddon.PROJECTILE_SPAWNER_BLOCK.get(),
                 Blocks.DISPENSER
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("elemental", BlockHandlers.ELEMENTAL_PACKAGE),
+                BlockDeviceProvider.create("元素", BlockHandlers.ELEMENTAL_PACKAGE),
                 WenyanAddon.ELEMENTAL_BLOCK.get(),
                 Blocks.CAULDRON
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("world interaction", BlockHandlers.WORLD_INTERACTION_PACKAGE),
+                BlockDeviceProvider.create("交感", BlockHandlers.WORLD_INTERACTION_PACKAGE),
                 WenyanAddon.WORLD_INTERACTION_BLOCK.get(),
                 Blocks.COMPOSTER
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("read write", BlockHandlers.READ_WRITE_PACKAGE),
+                BlockDeviceProvider.create("讀寫", BlockHandlers.READ_WRITE_PACKAGE),
                 WenyanAddon.READ_WRITE_BLOCK.get(),
                 Blocks.OAK_SIGN
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("naming", BlockHandlers.NAMING_PACKAGE),
+                BlockDeviceProvider.create("命名", BlockHandlers.NAMING_PACKAGE),
                 WenyanAddon.NAMING_BLOCK.get(),
                 Blocks.ANVIL
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("entity manipulation", BlockHandlers.ENTITY_MANIPULATION_PACKAGE),
+                BlockDeviceProvider.create("移形", BlockHandlers.ENTITY_MANIPULATION_PACKAGE),
                 WenyanAddon.ENTITY_MANIPULATION_BLOCK.get(),
                 Blocks.BEACON
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("note block", BlockHandlers.NOTE_BLOCK_PACKAGE),
+                BlockDeviceProvider.create("奏", BlockHandlers.NOTE_BLOCK_PACKAGE),
                 WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK.get(),
                 Blocks.NOTE_BLOCK
         );
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("particle", BlockHandlers.PARTICLE_PACKAGE),
+                BlockDeviceProvider.create("塵", BlockHandlers.PARTICLE_PACKAGE),
                 WenyanAddon.PARTICLE_BLOCK.get(),
                 Blocks.END_ROD
         );
@@ -122,7 +122,7 @@ public final class Capabilities {
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-                BlockDeviceProvider.create("storage rune", BlockHandlers.STORAGE_RUNE_PACKAGE),
+                BlockDeviceProvider.create("納", BlockHandlers.STORAGE_RUNE_PACKAGE),
                 WenyanAddon.STORAGE_RUNE_BLOCK.get()
         );
     }

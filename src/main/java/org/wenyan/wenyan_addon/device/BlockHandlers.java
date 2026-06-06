@@ -42,20 +42,20 @@ public enum BlockHandlers {
                     arrow.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                     ctx.level().addFreshEntity(arrow);
                 }))
-                .handler(ChineseUtils.bracketOf("焰火"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("煙火"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     Vec3 dir = BlockHandlerHelper.directionVec(args, 0);
                     FireworkRocketEntity firework = new FireworkRocketEntity(ctx.level(), ctx.pos().getX() + 0.5, ctx.pos().getY(), ctx.pos().getZ() + 0.5,
                             new ItemStack(Items.FIREWORK_ROCKET));
                     firework.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                     ctx.level().addFreshEntity(firework);
                 }))
-                .handler(ChineseUtils.bracketOf("雪球"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("雪丸"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     Vec3 dir = BlockHandlerHelper.directionVec(args, 0);
                     Snowball snowball = new Snowball(ctx.level(), ctx.pos().getX() + 0.5, ctx.pos().getY(), ctx.pos().getZ() + 0.5, ItemStack.EMPTY);
                     snowball.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                     ctx.level().addFreshEntity(snowball);
                 }))
-                .handler(ChineseUtils.bracketOf("小火球"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("火丸"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     Vec3 dir = BlockHandlerHelper.directionVec(args, 0);
                     SmallFireball fireball = new SmallFireball(ctx.level(), ctx.pos().getX() + 0.5, ctx.pos().getY(), ctx.pos().getZ() + 0.5, dir);
                     ctx.level().addFreshEntity(fireball);
@@ -66,10 +66,10 @@ public enum BlockHandlers {
                 .handler(ChineseUtils.bracketOf("水源"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     ctx.level().setBlock(BlockHandlerHelper.blockPos(args, 0, ctx.pos()), Blocks.WATER.defaultBlockState(), 3);
                 }))
-                .handler(ChineseUtils.bracketOf("岩浆"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("熔岩"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     ctx.level().setBlock(BlockHandlerHelper.blockPos(args, 0, ctx.pos()), Blocks.LAVA.defaultBlockState(), 3);
                 }))
-                .handler(ChineseUtils.bracketOf("清除流体"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("除流"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     BlockPos pos = BlockHandlerHelper.blockPos(args, 0, ctx.pos());
                     if (!ctx.level().getBlockState(pos).getFluidState().isEmpty()) {
                         ctx.level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
@@ -84,16 +84,16 @@ public enum BlockHandlers {
                 .build();
 
     public static final RawHandlerPackage WORLD_INTERACTION_PACKAGE = HandlerPackageBuilder.create()
-                .handler(ChineseUtils.bracketOf("催生"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("化生"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     BoneMealItem.applyBonemeal(ItemStack.EMPTY, ctx.level(), BlockHandlerHelper.blockPos(args, 0, ctx.pos()), null);
                 }))
-                .handler(ChineseUtils.bracketOf("点燃"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("燃"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     BlockPos above = BlockHandlerHelper.blockPos(args, 0, ctx.pos()).above();
                     if (ctx.level().getBlockState(above).isAir()) {
                         ctx.level().setBlock(above, Blocks.FIRE.defaultBlockState(), 3);
                     }
                 }))
-                .handler(ChineseUtils.bracketOf("熄灭"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("滅"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     BlockPos pos = BlockHandlerHelper.blockPos(args, 0, ctx.pos());
                     if (ctx.level().getBlockState(pos).is(Blocks.FIRE)) {
                         ctx.level().setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
@@ -105,7 +105,7 @@ public enum BlockHandlers {
                 .build();
 
     public static final RawHandlerPackage READ_WRITE_PACKAGE = HandlerPackageBuilder.create()
-                .handler(ChineseUtils.bracketOf("读告示牌"), BlockHandlerHelper.wrap((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("讀示"), BlockHandlerHelper.wrap((ctx, args) -> {
                     BlockEntity be = ctx.level().getBlockEntity(BlockHandlerHelper.blockPos(args, 0, ctx.pos()));
                     if (be instanceof SignBlockEntity sign) {
                         StringBuilder sb = new StringBuilder();
@@ -116,7 +116,7 @@ public enum BlockHandlers {
                     }
                     return WenyanNull.NULL;
                 }))
-                .handler(ChineseUtils.bracketOf("书告示牌"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("書示"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     BlockPos pos = BlockHandlerHelper.blockPos(args, 0, ctx.pos());
                     String line1 = BlockHandlerHelper.argString(args, 3);
                     String line2 = BlockHandlerHelper.argString(args, 4);
@@ -132,7 +132,7 @@ public enum BlockHandlers {
                         sign.setText(text, true);
                     }
                 }))
-                .handler(ChineseUtils.bracketOf("读讲台之书"), BlockHandlerHelper.wrap((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("讀講臺"), BlockHandlerHelper.wrap((ctx, args) -> {
                     BlockEntity be = ctx.level().getBlockEntity(BlockHandlerHelper.blockPos(args, 0, ctx.pos()));
                     if (be instanceof LecternBlockEntity lectern) {
                         ItemStack book = lectern.getBook();
@@ -168,7 +168,7 @@ public enum BlockHandlers {
                         entity.teleportTo(dest.x, dest.y, dest.z);
                     }
                 }))
-                .handler(ChineseUtils.bracketOf("闪现"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("閃"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     Vec3 origin = BlockHandlerHelper.targetPos(args, 0, ctx.pos());
                     Vec3 delta = BlockHandlerHelper.directionVec(args, 3);
                     for (Entity entity : ctx.level().getEntities(null, BlockHandlerHelper.searchAABB(args, 0, ctx.pos()))) {
@@ -192,7 +192,7 @@ public enum BlockHandlers {
                 .build();
 
     public static final RawHandlerPackage PARTICLE_PACKAGE = HandlerPackageBuilder.create()
-                .handler(ChineseUtils.bracketOf("施放粒子"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
+                .handler(ChineseUtils.bracketOf("放塵"), BlockHandlerHelper.wrapVoid((ctx, args) -> {
                     double px = ctx.pos().getX();
                     double py = ctx.pos().getY();
                     double pz = ctx.pos().getZ();

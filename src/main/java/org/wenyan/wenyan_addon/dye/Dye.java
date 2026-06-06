@@ -47,7 +47,7 @@ public class Dye {
 
             @Override
             public String getPackageName() {
-                return ChineseUtils.bracketOf("dye");
+                return ChineseUtils.bracketOf("染");
             }
         };
     }
@@ -80,7 +80,6 @@ public class Dye {
             addDyeShortcut(builder, "上", 0, 1, 0, colorName, color);
             addDyeShortcut(builder, "下", 0, -1, 0, colorName, color);
             addDyeShortcut(builder, "前", 0, 0, 1, colorName, color);
-            addDyeShortcut(builder, "后", 0, 0, -1, colorName, color);
             addDyeShortcut(builder, "後", 0, 0, -1, colorName, color);
         }
     }
