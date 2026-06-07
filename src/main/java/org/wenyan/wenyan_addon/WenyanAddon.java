@@ -59,6 +59,9 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> DYE_BLOCK = BLOCKS.registerSimpleBlock("dye_block", p -> p.mapColor(MapColor.COLOR_RED).strength(2.0f).sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> DYE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("dye_block", DYE_BLOCK);
 
+    public static final DeferredBlock<Block> MARKER_BLOCK = BLOCKS.registerSimpleBlock("marker_block", p -> p.mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.0f).sound(SoundType.STONE));
+    public static final DeferredItem<BlockItem> MARKER_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("marker_block", MARKER_BLOCK);
+
     public static final DeferredBlock<StorageRuneBlock> STORAGE_RUNE_BLOCK = BLOCKS.registerBlock("storage_rune_block", StorageRuneBlock::new);
     public static final DeferredItem<BlockItem> STORAGE_RUNE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("storage_rune_block", STORAGE_RUNE_BLOCK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StorageRuneBlockEntity>> STORAGE_RUNE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
@@ -81,6 +84,7 @@ public class WenyanAddon {
                 output.accept(NAMING_BLOCK_ITEM.get());
                 output.accept(PARTICLE_BLOCK_ITEM.get());
                 output.accept(DYE_BLOCK_ITEM.get());
+                output.accept(MARKER_BLOCK_ITEM.get());
                 output.accept(STORAGE_RUNE_BLOCK_ITEM.get());
             }).build());
 

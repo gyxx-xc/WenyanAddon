@@ -1,3 +1,8 @@
+---
+name: add_block
+description: Use when adding or registering custom Minecraft blocks, creating Block subclasses, registering block items, or setting up creative mode inventory. Triggers: add block, register block, custom block, Block, DeferredBlock, registerBlock, registerSimpleBlockItem, Properties, mapColor, strength, sound, tick, BlockItem, creative tab.
+---
+
 # 添加方块 — COT
 
 ## Chain of Thought

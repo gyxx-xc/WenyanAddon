@@ -1,3 +1,8 @@
+---
+name: wenyan_function
+description: Use when binding Wenyan (文言) functions to Minecraft blocks as Wenyan block devices, creating handler packages, or registering capabilities. Triggers: wenyan, 文言, function, crush, HandlerPackageBuilder, simpleDevice, RawHandlerPackage, RegisterCapabilitiesEvent, WENYAN_BLOCK_DEVICE_CAPABILITY, WyRegistration, ChineseUtils.bracketOf, IWenyanBlockDevice, block device, capability.
+---
+
 # 将函数附加到方块上 — COT
 
 ## 目标

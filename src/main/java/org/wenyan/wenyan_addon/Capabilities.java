@@ -1,14 +1,24 @@
 package org.wenyan.wenyan_addon;
 
+import dev.anvilcraft.ping.network.payload.PositionPingPayload;
+import dev.anvilcraft.ping.util.PingType;
+import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
 import indi.wenyan.interpreter_impl.IWenyanBlockDevice;
+import indi.wenyan.interpreter_impl.args.WenyanArgsResolver;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
+import indi.wenyan.judou.api.values.WenyanNull;
+import indi.wenyan.setup.capabilities.DeviceCapabilityRegisterer;
 import indi.wenyan.setup.definitions.WyRegistration;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jspecify.annotations.NonNull;
 import org.wenyan.wenyan_addon.device.BlockDeviceProvider;
 import org.wenyan.wenyan_addon.device.BlockHandlers;
@@ -57,6 +67,64 @@ public final class Capabilities {
                 Blocks.BEDROCK
         );
         // EXAMPLE_BLOCK end
+
+        DeviceCapabilityRegisterer registerer = new DeviceCapabilityRegisterer(event);
+
+        registerer.registerToBlock((pos, state) -> HandlerPackageBuilder.create()
+                        .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
+                            if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
+                                var args = WenyanArgsResolver.build()
+                                        .string_()
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .resolve(request);
+                                PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
+                                        new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .handler(ChineseUtils.bracketOf("警"), (ctx, request) -> {
+                            if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
+                                var args = WenyanArgsResolver.build()
+                                        .string_().nonEmpty()
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .resolve(request);
+                                PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
+                                        new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .handler(ChineseUtils.bracketOf("往"), (ctx, request) -> {
+                            if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
+                                var args = WenyanArgsResolver.build()
+                                        .string_()
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .resolve(request);
+                                PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
+                                        new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .handler(ChineseUtils.bracketOf("敌"), (ctx, request) -> {
+                            if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
+                                var args = WenyanArgsResolver.build()
+                                        .string_()
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .double_().range(-1000, 1000)
+                                        .resolve(request);
+                                PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
+                                        new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
+                            }
+                            return WenyanNull.NULL;
+                        })
+                        .build(),
+                ChineseUtils.bracketOf("标"), WenyanAddon.MARKER_BLOCK.get());
 
         event.registerBlock(
                 WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
