@@ -2,7 +2,6 @@ package org.wenyan.wenyan_addon.dye;
 
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
-import indi.wenyan.interpreter_impl.IWenyanBlockDevice;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
 import indi.wenyan.judou.api.values.primitive.WenyanDouble;
@@ -18,39 +17,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.neoforged.neoforge.capabilities.IBlockCapabilityProvider;
+
+import java.util.function.BiFunction;
 
 public class Dye {
-    private static final RawHandlerPackage DYE_PACKAGE = dyePackage();
-
-    public static IBlockCapabilityProvider<IWenyanBlockDevice, Void> dyeDevice() {
-        return (_, p, s, _, _) -> new IWenyanBlockDevice() {
-            @Override
-            public BlockState blockState() {
-                return s;
-            }
-
-            @Override
-            public BlockPos blockPos() {
-                return p;
-            }
-
-            @Override
-            public boolean isRemoved() {
-                return false;
-            }
-
-            @Override
-            public RawHandlerPackage getExecPackage() {
-                return DYE_PACKAGE;
-            }
-
-            @Override
-            public String getPackageName() {
-                return ChineseUtils.bracketOf("染");
-            }
-        };
-    }
+    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> DYE_PACKAGE = (pos, state) -> dyePackage();
 
     private static RawHandlerPackage dyePackage() {
         HandlerPackageBuilder builder = HandlerPackageBuilder.create();
