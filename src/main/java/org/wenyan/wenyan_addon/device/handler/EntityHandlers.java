@@ -35,9 +35,10 @@ import java.util.function.BiFunction;
 
 @SuppressWarnings("resource")
 public final class EntityHandlers {
-    private EntityHandlers() {}
+    private EntityHandlers() {
+    }
 
-    public static final ArgsSpecBuilder.Step<?> markerArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().string_();
+    public static final ArgsSpecBuilder.Step<?> markerArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().string_().dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> MARKER_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
             .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
@@ -76,19 +77,20 @@ public final class EntityHandlers {
     public static final ArgsSpecBuilder.Step<?> projectileSpawnerArgsSpec = WenyanArgsResolver.build()
             .double_().range(-1, 1)
             .double_().range(-1, 1)
-            .double_().range(-1, 1);
+            .double_().range(-1, 1)
+            .dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> PROJECTILE_SPAWNER_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .handler(ChineseUtils.bracketOf("箭"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = projectileSpawnerArgsSpec.resolve(request);
                 Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                Arrow arrow = new Arrow(ctx.level(), bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5, ItemStack.EMPTY, null);
+                Arrow arrow = new Arrow(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, ItemStack.EMPTY, null);
                 arrow.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                 ctx.level().addFreshEntity(arrow);
             }))
             .handler(ChineseUtils.bracketOf("煙火"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = projectileSpawnerArgsSpec.resolve(request);
                 Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                FireworkRocketEntity firework = new FireworkRocketEntity(ctx.level(), bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5,
+                FireworkRocketEntity firework = new FireworkRocketEntity(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5,
                         new ItemStack(Items.FIREWORK_ROCKET));
                 firework.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                 ctx.level().addFreshEntity(firework);
@@ -96,14 +98,14 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("雪丸"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = projectileSpawnerArgsSpec.resolve(request);
                 Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                Snowball snowball = new Snowball(ctx.level(), bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5, ItemStack.EMPTY);
+                Snowball snowball = new Snowball(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, ItemStack.EMPTY);
                 snowball.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                 ctx.level().addFreshEntity(snowball);
             }))
             .handler(ChineseUtils.bracketOf("火丸"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = projectileSpawnerArgsSpec.resolve(request);
                 Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                SmallFireball fireball = new SmallFireball(ctx.level(), bp.getX() + 0.5, bp.getY(), bp.getZ() + 0.5, dir);
+                SmallFireball fireball = new SmallFireball(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, dir);
                 ctx.level().addFreshEntity(fireball);
             }))
             .build();
@@ -120,7 +122,7 @@ public final class EntityHandlers {
             .build();
 
     public static final ArgsSpecBuilder.Step<?> entityManipulationArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy()
-            .double_().double_().double_();
+            .double_().double_().double_().dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = entityManipulationArgsSpec.resolve(request);
@@ -151,7 +153,7 @@ public final class EntityHandlers {
         return level.getEntities(null, new AABB(center.subtract(0.5, 0.5, 0.5), center.add(0.5, 0.5, 0.5)));
     }
 
-    public static final ArgsSpecBuilder.Step<?> storageRuneArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().double_().range(0, 16);
+    public static final ArgsSpecBuilder.Step<?> storageRuneArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().double_().range(0, 16).dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> STORAGE_RUNE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .handler(ChineseUtils.bracketOf("收纳"), BlockHandlerHelper.wrap((ctx, request) -> {
                 if (ctx.level().getBlockEntity(bp) instanceof StorageRuneBlockEntity storage) {

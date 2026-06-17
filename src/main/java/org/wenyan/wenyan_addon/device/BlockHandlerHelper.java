@@ -18,7 +18,7 @@ public enum BlockHandlerHelper {
     ;
 
     public static final ArgsSpecBuilder.Step<?> singleVec3ArgsSpec = WenyanArgsResolver.build()
-            .double_().double_().double_();
+            .double_().double_().double_().dummy();
 
     @FunctionalInterface
     public interface BlockHandler {
