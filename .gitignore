@@ -39,4 +39,3 @@ run/
 repo/
 !**/src/**/repo/
 .profileconfig.json
-/libs/
