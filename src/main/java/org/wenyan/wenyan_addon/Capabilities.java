@@ -12,12 +12,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.jspecify.annotations.NonNull;
 import org.wenyan.wenyan_addon.device.handler.EntityHandlers;
+import org.wenyan.wenyan_addon.device.handler.ManipulationHandlers;
 import org.wenyan.wenyan_addon.device.handler.WorldHandlers;
-import org.wenyan.wenyan_addon.device.handler.BlockEditHandlers;
-import org.wenyan.wenyan_addon.device.handler.EnchantHandlers;
-import org.wenyan.wenyan_addon.device.handler.EntityStatusHandlers;
-import org.wenyan.wenyan_addon.device.handler.PotionHandlers;
-import org.wenyan.wenyan_addon.device.handler.SpawnHandlers;
 import org.wenyan.wenyan_addon.dye.Dye;
 
 public final class Capabilities {
@@ -72,17 +68,17 @@ public final class Capabilities {
         registerer.registerToBlock(WorldHandlers.WORLD_INTERACTION_PACKAGE, ChineseUtils.bracketOf("交感"), WenyanAddon.WORLD_INTERACTION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.READ_WRITE_PACKAGE, ChineseUtils.bracketOf("讀寫"), WenyanAddon.READ_WRITE_BLOCK.get());
         registerer.registerToBlock(EntityHandlers.NAMING_PACKAGE, ChineseUtils.bracketOf("命名"), WenyanAddon.NAMING_BLOCK.get());
-        registerer.registerToBlock(EntityHandlers.ENTITY_MANIPULATION_PACKAGE, ChineseUtils.bracketOf("移形"), WenyanAddon.ENTITY_MANIPULATION_BLOCK.get());
+        registerer.registerToBlock(ManipulationHandlers.ENTITY_MANIPULATION_PACKAGE, ChineseUtils.bracketOf("移形"), WenyanAddon.ENTITY_MANIPULATION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.NOTE_BLOCK_PACKAGE, ChineseUtils.bracketOf("奏"), WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK.get());
         registerer.registerToBlock(EntityHandlers.STORAGE_RUNE_PACKAGE, ChineseUtils.bracketOf("納"), WenyanAddon.STORAGE_RUNE_BLOCK.get());
 
         registerer.registerToBlock(Dye.DYE_PACKAGE, ChineseUtils.bracketOf("染"), WenyanAddon.DYE_BLOCK.get());
 
-        registerer.registerToBlock(EntityStatusHandlers.ENTITY_STATUS_PACKAGE, ChineseUtils.bracketOf("愈"), WenyanAddon.ENTITY_STATUS_BLOCK.get());
-        registerer.registerToBlock(SpawnHandlers.SPAWN_PACKAGE, ChineseUtils.bracketOf("召"), WenyanAddon.ENTITY_SPAWN_BLOCK.get());
-        registerer.registerToBlock(PotionHandlers.POTION_PACKAGE, ChineseUtils.bracketOf("藥"), WenyanAddon.POTION_BLOCK.get());
-        registerer.registerToBlock(BlockEditHandlers.BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("地"), WenyanAddon.BLOCK_EDIT_BLOCK.get());
-        registerer.registerToBlock(EnchantHandlers.ENCHANT_PACKAGE, ChineseUtils.bracketOf("靈"), WenyanAddon.ENCHANT_BLOCK.get());
+        registerer.registerToBlock(EntityHandlers.ENTITY_STATUS_PACKAGE, ChineseUtils.bracketOf("愈"), WenyanAddon.ENTITY_STATUS_BLOCK.get());
+        registerer.registerToBlock(EntityHandlers.SPAWN_PACKAGE, ChineseUtils.bracketOf("召"), WenyanAddon.ENTITY_SPAWN_BLOCK.get());
+        registerer.registerToBlock(EntityHandlers.POTION_PACKAGE, ChineseUtils.bracketOf("藥"), WenyanAddon.POTION_BLOCK.get());
+        registerer.registerToBlock(WorldHandlers.BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("地"), WenyanAddon.BLOCK_EDIT_BLOCK.get());
+        registerer.registerToBlock(WorldHandlers.ENCHANT_PACKAGE, ChineseUtils.bracketOf("靈"), WenyanAddon.ENCHANT_BLOCK.get());
     }
 }
