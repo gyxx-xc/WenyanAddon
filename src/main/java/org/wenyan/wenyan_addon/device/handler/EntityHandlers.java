@@ -38,21 +38,22 @@ public final class EntityHandlers {
     private EntityHandlers() {
     }
 
-    public static final ArgsSpecBuilder.Step<?> markerArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().string_().dummy();
+    public static final ArgsSpecBuilder.Step<?> markerArgsSpec = WenyanArgsResolver.build()
+            .string_().double_().double_().double_().dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> MARKER_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
             .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(3)),
-                            new Vec3(args.get(0), args.get(1), args.get(2)), PingType.GENERIC));
+                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
+                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
                 }
                 return WenyanNull.NULL;
             })
             .handler(ChineseUtils.bracketOf("警"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(3)),
-                            new Vec3(args.get(0), args.get(1), args.get(2)), PingType.WARNING));
+                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
+                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
                 }
                 return WenyanNull.NULL;
             })
@@ -60,7 +61,7 @@ public final class EntityHandlers {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
                     PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(0), args.get(1), args.get(2)), PingType.GOTO));
+                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
                 }
                 return WenyanNull.NULL;
             })
@@ -68,7 +69,7 @@ public final class EntityHandlers {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
                     PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(0), args.get(1), args.get(2)), PingType.ENEMY));
+                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
                 }
                 return WenyanNull.NULL;
             })

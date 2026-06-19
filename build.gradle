@@ -139,7 +139,8 @@ dependencies {
     implementation "indi.wenyan:judou:1.0.0"
     implementation "indi.wenyan:wenyan_programming:1.0.0"
 
-    compileOnly ":MiddleKeyPing"
+    implementation "dev.anvilcraft.lib:anvillib-neoforge-26.1:2.0.0+snapshot.441"
+    compileOnly "dev.anvilcraft.ping:MiddleKeyPing:2.0.0"
 
     runtimeOnly "org.antlr:antlr4-runtime:4.13.1"
     runtimeOnly "com.github.houbb:opencc4j:1.14.0"
