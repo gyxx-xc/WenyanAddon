@@ -9,4 +9,7 @@ plugins {
 }
 
 includeBuild 'libs/MiddleKeyPing'
+
 includeBuild 'libs/WenyanNature'
+// git update-index --assume-unchanged settings.gradle
+// includeBuild(file('libs/WenyanNature').toPath().toRealPath().toAbsolutePath().toString())
