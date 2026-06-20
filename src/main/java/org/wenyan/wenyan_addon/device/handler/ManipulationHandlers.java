@@ -19,7 +19,7 @@ import java.util.function.BiFunction;
 
 public class ManipulationHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("将指定实体传送至目标位置")
+            .description("将指定实体传送至相对位置")
             .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = request.args();
                 Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
