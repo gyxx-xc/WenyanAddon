@@ -2,9 +2,11 @@ package org.wenyan.wenyan_addon.dye;
 
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
+import indi.wenyan.interpreter_impl.value.WenyanVec3;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
 import indi.wenyan.judou.api.values.primitive.WenyanDouble;
+import indi.wenyan.judou.api.values.primitive.WenyanInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -17,6 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SignBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiFunction;
 
@@ -25,6 +28,8 @@ public class Dye {
 
     private static RawHandlerPackage dyePackage() {
         HandlerPackageBuilder builder = HandlerPackageBuilder.create();
+
+        // 为每种颜色添加染色指令，支持坐标参数
         addDyeShortcuts(builder, DyeColor.WHITE, "白", "白色");
         addDyeShortcuts(builder, DyeColor.ORANGE, "橙", "橙色");
         addDyeShortcuts(builder, DyeColor.MAGENTA, "品红", "品红色", "洋红", "洋红色");
@@ -41,30 +46,38 @@ public class Dye {
         addDyeShortcuts(builder, DyeColor.GREEN, "绿", "绿色", "綠", "綠色");
         addDyeShortcuts(builder, DyeColor.RED, "红", "红色", "紅", "紅色");
         addDyeShortcuts(builder, DyeColor.BLACK, "黑", "黑色");
+
         return builder.build();
     }
 
     private static void addDyeShortcuts(HandlerPackageBuilder builder, DyeColor color, String... colorNames) {
         for (String colorName : colorNames) {
-            addDyeShortcut(builder, "右", 1, 0, 0, colorName, color);
-            addDyeShortcut(builder, "左", -1, 0, 0, colorName, color);
-            addDyeShortcut(builder, "上", 0, 1, 0, colorName, color);
-            addDyeShortcut(builder, "下", 0, -1, 0, colorName, color);
-            addDyeShortcut(builder, "前", 0, 0, 1, colorName, color);
-            addDyeShortcut(builder, "後", 0, 0, -1, colorName, color);
+            // 支持两种格式：
+            // 1. 染白 (使用当前方块执行器的位置)
+            // 2. 染白 1 2 3 (使用指定的坐标)
+            addDyeShortcut(builder, colorName, color);
         }
     }
 
-    private static void addDyeShortcut(HandlerPackageBuilder builder, String directionName, int dx, int dy, int dz, String colorName, DyeColor color) {
-        builder.handler(ChineseUtils.bracketOf("染" + directionName + colorName), (iHandleContext, _) -> dyeFixedDirection(iHandleContext, dx, dy, dz, color));
-    }
+    private static void addDyeShortcut(HandlerPackageBuilder builder, String colorName, DyeColor color) {
+        builder.handler(ChineseUtils.bracketOf("染" + colorName), (iHandleContext, request) -> {
+            if (iHandleContext instanceof BlockRequest.BlockContext context) {
+                Level level = context.level();
+                BlockPos basePos = context.pos();
+                var args=request.args();
+                Vec3 vec=args.get(0).as(WenyanVec3.TYPE).value();
+                BlockPos targetPos = new BlockPos(
+                        (int) Math.floor(vec.x),
+                        (int) Math.floor(vec.y),
+                        (int) Math.floor(vec.z)
+                );
 
-    private static WenyanDouble dyeFixedDirection(Object iHandleContext, int dx, int dy, int dz, DyeColor color) {
-        if (iHandleContext instanceof BlockRequest.BlockContext context
-                && dyeAt(context.level(), context.pos().offset(dx, dy, dz), color)) {
-            return new WenyanDouble(1);
-        }
-        return new WenyanDouble(0);
+                if (dyeAt(level, targetPos, color)) {
+                    return new WenyanDouble(1);
+                }
+            }
+            return new WenyanDouble(0);
+        });
     }
 
     private static boolean dyeAt(Level level, BlockPos pos, DyeColor color) {
