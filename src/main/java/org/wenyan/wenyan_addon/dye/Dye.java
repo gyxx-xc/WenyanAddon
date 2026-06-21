@@ -52,9 +52,6 @@ public class Dye {
 
     private static void addDyeShortcuts(HandlerPackageBuilder builder, DyeColor color, String... colorNames) {
         for (String colorName : colorNames) {
-            // 支持两种格式：
-            // 1. 染白 (使用当前方块执行器的位置)
-            // 2. 染白 1 2 3 (使用指定的坐标)
             addDyeShortcut(builder, colorName, color);
         }
     }
