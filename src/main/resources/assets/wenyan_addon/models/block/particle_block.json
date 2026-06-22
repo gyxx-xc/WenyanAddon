@@ -1,1 +1,1 @@
-{"parent":"minecraft:block/cube_all","textures":{"all":"minecraft:block/end_rod"}}
+{"parent":"minecraft:block/cube_all","textures":{"all":"wenyan_addon:block/particle_block"}}

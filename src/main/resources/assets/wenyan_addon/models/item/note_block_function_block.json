@@ -1,1 +1,1 @@
-{"parent":"wenyan_addon:block/note_block_function_block"}
+{"parent":"minecraft:item/generated","textures":{"layer0":"wenyan_addon:item/note_block_function_block"}}

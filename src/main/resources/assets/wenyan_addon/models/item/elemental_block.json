@@ -1,1 +1,1 @@
-{"parent":"wenyan_addon:block/elemental_block"}
+{"parent":"minecraft:item/generated","textures":{"layer0":"wenyan_addon:item/elemental_block"}}
