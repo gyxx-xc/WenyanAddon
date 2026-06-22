@@ -17,17 +17,18 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 
 import java.util.function.BiFunction;
 
+/// small context handler for llm to understand
 public class ManipulationHandlers {
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
+    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
             .description("将指定实体传送至相对位置")
-            .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((_, request) -> {
                 var args = request.args();
                 Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
                 Vec3 delta = args.get(1).as(WenyanVec3.TYPE).value();
                 objective.teleportTo(objective.getX() + delta.x, objective.getY() + delta.y, objective.getZ() + delta.z);
             }))
             .description("将指定实体沿视线方向瞬移")
-            .handler(ChineseUtils.bracketOf("閃"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("閃"), BlockHandlerHelper.wrapVoid((_, request) -> {
                 var args = request.args();
                 Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
                 double distance = args.get(1).as(WenyanDouble.TYPE).value();
@@ -38,7 +39,7 @@ public class ManipulationHandlers {
                 objective.teleportTo(objective.getX() + lookAngle.x, objective.getY() + lookAngle.y, objective.getZ() + lookAngle.z);
             }))
             .description("对指定实体施加动量")
-            .handler(ChineseUtils.bracketOf("施力"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("施力"), BlockHandlerHelper.wrapVoid((_, request) -> {
                 var args = request.args();
                 Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
                 Vec3 force = args.get(1).as(WenyanVec3.TYPE).value();

@@ -230,7 +230,7 @@ public final class EntityHandlers {
             .description("发射箭矢")
             .handler(ChineseUtils.bracketOf("箭"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = request.args();
-                Vec3 target = lampToRangeByBiFunction(bp, args.get(0).as(WenyanVec3.TYPE).value());
+                Vec3 target = lampToRangeByBiFunction(bp, args.getFirst().as(WenyanVec3.TYPE).value());
                 Arrow arrow = new Arrow(ctx.level(), target.x, target.y, target.z,
                         new ItemStack(Items.ARROW), null);
                 arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
@@ -242,7 +242,6 @@ public final class EntityHandlers {
                 int shapeId = (int) args.get(0).as(WenyanDouble.TYPE).value();
                 FireworkExplosion.Shape shape = switch (shapeId) {
                     case 1 -> FireworkExplosion.Shape.SMALL_BALL;
-                    case 2 -> FireworkExplosion.Shape.LARGE_BALL;
                     case 3 -> FireworkExplosion.Shape.STAR;
                     case 4 -> FireworkExplosion.Shape.CREEPER;
                     case 5 -> FireworkExplosion.Shape.BURST;
@@ -256,7 +255,7 @@ public final class EntityHandlers {
                     throw new WenyanException.WenyanTypeException("第二参数应当为一个数字列表且必须是3的倍数");
                 }
                 for (IWenyanValue v : arg_colors) {
-                    v.as(WenyanDouble.TYPE).value();
+                    v.as(WenyanDouble.TYPE);
                 }
                 List<IWenyanValue> arg_fadeColors = args.get(2).as(WenyanList.TYPE).value();
                 if (arg_fadeColors.isEmpty()) {
@@ -265,11 +264,11 @@ public final class EntityHandlers {
                     throw new WenyanException.WenyanTypeException("第三参数应当为一个数字列表且必须是3的倍数");
                 }
                 for (IWenyanValue v : arg_fadeColors) {
-                    v.as(WenyanDouble.TYPE).value();
+                    v.as(WenyanDouble.TYPE);
                 }
                 boolean hasTrail = args.get(3).as(WenyanBoolean.TYPE).value();
                 boolean hasTwinkle = args.get(4).as(WenyanBoolean.TYPE).value();
-                int flightDuration = Math.max(1, Math.min(3, (int) Math.round(args.get(5).as(WenyanDouble.TYPE).value())));
+                int flightDuration = Math.clamp((int) Math.round(args.get(5).as(WenyanDouble.TYPE).value()), 1, 3);
 
                 Vec3 target = lampToRangeByBiFunction(bp, args.get(6).as(WenyanVec3.TYPE).value());
                 ItemStack fireworkItem = new ItemStack(Items.FIREWORK_ROCKET);
@@ -294,7 +293,7 @@ public final class EntityHandlers {
             .description("发射雪球")
             .handler(ChineseUtils.bracketOf("雪丸"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = request.args();
-                Vec3 target = lampToRangeByBiFunction(bp, args.get(0).as(WenyanVec3.TYPE).value());
+                Vec3 target = lampToRangeByBiFunction(bp, args.getFirst().as(WenyanVec3.TYPE).value());
                 Snowball snowball = new Snowball(ctx.level(), target.x, target.y, target.z,
                         new ItemStack(Items.SNOWBALL));
                 ctx.level().addFreshEntity(snowball);
@@ -302,7 +301,7 @@ public final class EntityHandlers {
             .description("发射火球")
             .handler(ChineseUtils.bracketOf("火丸"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = request.args();
-                Vec3 target = lampToRangeByBiFunction(bp, args.get(0).as(WenyanVec3.TYPE).value());
+                Vec3 target = lampToRangeByBiFunction(bp, args.getFirst().as(WenyanVec3.TYPE).value());
                 SmallFireball fireball = new SmallFireball(ctx.level(), target.x, target.y, target.z,
                         new Vec3(0, 0, 0));
                 ctx.level().addFreshEntity(fireball);
