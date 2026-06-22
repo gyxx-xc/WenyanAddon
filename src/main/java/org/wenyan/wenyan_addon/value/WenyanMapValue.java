@@ -50,15 +50,15 @@ public final class WenyanMapValue implements IWenyanObject {
     @Override
     public IWenyanValue getAttribute(String attribute) throws WenyanException {
         return switch (attribute) {
-            case "取", "「取」" -> WenyanValues.of((self, args) -> get(keyArg(args, 0)));
-            case "置", "「置」" -> WenyanValues.of((self, args) -> {
+            case "「取」" -> WenyanValues.of((_, args) -> get(keyArg(args, 0)));
+            case "「置」" -> WenyanValues.of((_, args) -> {
                 put(keyArg(args, 0), args.size() > 1 ? args.get(1) : WenyanNull.NULL);
                 return this;
             });
-            case "有", "「有」" -> WenyanValues.of((self, args) -> WenyanValues.of(contains(keyArg(args, 0))));
-            case "删", "刪", "「删」", "「刪」" -> WenyanValues.of((self, args) -> remove(keyArg(args, 0)));
-            case "鍵", "键", "「鍵」", "「键」" -> keys();
-            case "長", "长", "「長」", "「长」" -> WenyanValues.of(values.size());
+            case "「有」" -> WenyanValues.of((_, args) -> WenyanValues.of(contains(keyArg(args, 0))));
+            case "「删」", "「刪」" -> WenyanValues.of((_, args) -> remove(keyArg(args, 0)));
+            case "「鍵」", "「键」" -> keys();
+            case "「長」", "「长」" -> WenyanValues.of(values.size());
             default -> throw new WenyanException("無屬性「" + attribute + "」");
         };
     }
