@@ -15,5 +15,6 @@
   "block.wenyan_addon.naming_block": "Naming Rune",
   "block.wenyan_addon.particle_block": "Particle Rune",
   "block.wenyan_addon.dye_block": "Dye Rune",
-  "block.wenyan_addon.storage_rune_block": "Storage Rune"
+  "block.wenyan_addon.storage_rune_block": "Storage Rune",
+  "item.wenyan_addon.example_item": "Example Item"
 }

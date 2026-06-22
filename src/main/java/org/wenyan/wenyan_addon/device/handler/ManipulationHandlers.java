@@ -18,7 +18,7 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import java.util.function.BiFunction;
 
 /// small context handler for llm to understand
-public class ManipulationHandlers {
+public final class ManipulationHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
             .description("将指定实体传送至相对位置")
             .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((_, request) -> {

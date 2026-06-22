@@ -6,6 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,6 +32,8 @@ public class WenyanAddon {
 
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", p -> p.mapColor(MapColor.STONE));
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+
+    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item");
 
     public static final DeferredBlock<Block> PROJECTILE_SPAWNER_BLOCK = BLOCKS.registerSimpleBlock("projectile_spawner_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> PROJECTILE_SPAWNER_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("projectile_spawner_block", PROJECTILE_SPAWNER_BLOCK);
@@ -90,6 +93,7 @@ public class WenyanAddon {
             .icon(() -> PROJECTILE_SPAWNER_BLOCK_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(EXAMPLE_BLOCK_ITEM.get());
+                output.accept(EXAMPLE_ITEM.get());
                 output.accept(PROJECTILE_SPAWNER_BLOCK_ITEM.get());
                 output.accept(ELEMENTAL_BLOCK_ITEM.get());
                 output.accept(WORLD_INTERACTION_BLOCK_ITEM.get());
