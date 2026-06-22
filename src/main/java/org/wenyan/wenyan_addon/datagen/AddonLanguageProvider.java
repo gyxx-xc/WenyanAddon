@@ -2,15 +2,15 @@ package org.wenyan.wenyan_addon.datagen;
 
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.common.data.LanguageProvider;
-import net.neoforged.neoforge.data.event.GatherDataEvent;
 import org.wenyan.wenyan_addon.WenyanAddon;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public final class WenyanAddonDataGenerators {
+public final class AddonLanguageProvider extends LanguageProvider {
     private static final Map<String, String> BLOCK_NAMES = new LinkedHashMap<>();
     private static final Map<String, String> ITEM_TOOLTIPS = new LinkedHashMap<>();
+    private static final Map<String, String> ITEM_NAMES = new LinkedHashMap<>();
 
     static {
         BLOCK_NAMES.put("example_block", "範例石");
@@ -30,6 +30,8 @@ public final class WenyanAddonDataGenerators {
         BLOCK_NAMES.put("block_edit_block", "天地土木石");
         BLOCK_NAMES.put("enchant_block", "附靈石");
         BLOCK_NAMES.put("storage_rune_block", "符咒收納櫃");
+
+        ITEM_NAMES.put("example_item", "範例石");
 
         ITEM_TOOLTIPS.put("example_block", "範例功能入口");
         ITEM_TOOLTIPS.put("projectile_spawner_block", "發射投射實體");
@@ -51,35 +53,27 @@ public final class WenyanAddonDataGenerators {
         ITEM_TOOLTIPS.put("data_disk", "用持久化儲存資料，包括方塊，物體的數據");
     }
 
-    private WenyanAddonDataGenerators() {
+    public AddonLanguageProvider(PackOutput output, String locale) {
+        super(output, WenyanAddon.MODID, locale);
     }
 
-    public static void gatherClientData(GatherDataEvent.Client event) {
-        PackOutput output = event.getGenerator().getPackOutput();
-        event.addProvider(new AddonLanguageProvider(output, "zh_cn"));
-        event.addProvider(new AddonLanguageProvider(output, "en_us"));
-    }
+    @Override
+    protected void addTranslations() {
+        add("itemGroup.wenyan_addon", "吾有一術：附屬");
+        add("wenyan_addon.configuration.title", "吾有一術：附屬之設");
+        add("wenyan_addon.configuration.section.wenyan_addon.common.toml", "附屬之設");
+        add("wenyan_addon.configuration.section.wenyan_addon.common.toml.title", "附屬之設");
 
-    private static final class AddonLanguageProvider extends LanguageProvider {
-        private AddonLanguageProvider(PackOutput output, String locale) {
-            super(output, WenyanAddon.MODID, locale);
+        for (Map.Entry<String, String> entry : BLOCK_NAMES.entrySet()) {
+            add("block." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
+            add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
         }
-
-        @Override
-        protected void addTranslations() {
-            add("itemGroup.wenyan_addon", "吾有一術：附屬");
-            add("wenyan_addon.configuration.title", "吾有一術：附屬之設");
-            add("wenyan_addon.configuration.section.wenyan_addon.common.toml", "附屬之設");
-            add("wenyan_addon.configuration.section.wenyan_addon.common.toml.title", "附屬之設");
-
-            for (Map.Entry<String, String> entry : BLOCK_NAMES.entrySet()) {
-                add("block." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
-                add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
-            }
-            add("item." + WenyanAddon.MODID + ".data_disk", "數據磁盤");
-            for (Map.Entry<String, String> entry : ITEM_TOOLTIPS.entrySet()) {
-                add("item." + WenyanAddon.MODID + "." + entry.getKey() + ".tooltip", entry.getValue());
-            }
+        for (Map.Entry<String, String> entry : ITEM_NAMES.entrySet()) {
+            add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
+        }
+        add("item." + WenyanAddon.MODID + ".data_disk", "數據磁盤");
+        for (Map.Entry<String, String> entry : ITEM_TOOLTIPS.entrySet()) {
+            add("item." + WenyanAddon.MODID + "." + entry.getKey() + ".tooltip", entry.getValue());
         }
     }
 }

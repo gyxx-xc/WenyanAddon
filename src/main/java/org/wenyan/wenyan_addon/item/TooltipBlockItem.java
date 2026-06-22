@@ -7,8 +7,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.block.Block;
 
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.function.Consumer;
 
+@ParametersAreNonnullByDefault
 public class TooltipBlockItem extends BlockItem {
     private final String tooltipKey;
 
@@ -17,6 +19,7 @@ public class TooltipBlockItem extends BlockItem {
         this.tooltipKey = tooltipKey;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void appendHoverText(ItemStack itemStack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip, TooltipFlag tooltipFlag) {
         tooltip.accept(Component.translatable(this.tooltipKey));

@@ -34,6 +34,7 @@
   "item.wenyan_addon.entity_status_block.tooltip": "修改實體狀態",
   "item.wenyan_addon.example_block": "範例石",
   "item.wenyan_addon.example_block.tooltip": "範例功能入口",
+  "item.wenyan_addon.example_item": "範例石",
   "item.wenyan_addon.marker_block": "標記石",
   "item.wenyan_addon.marker_block.tooltip": "標記位置資料",
   "item.wenyan_addon.naming_block": "命名石",

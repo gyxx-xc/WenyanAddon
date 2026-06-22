@@ -19,7 +19,6 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
-import org.wenyan.wenyan_addon.datagen.WenyanAddonDataGenerators;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
 import org.wenyan.wenyan_addon.item.TooltipItem;
 
@@ -124,7 +123,6 @@ public class WenyanAddon {
         BLOCK_ENTITY_TYPES.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
-        modEventBus.addListener(WenyanAddonDataGenerators::gatherClientData);
     }
 
     private static DeferredItem<BlockItem> registerTooltipBlockItem(String name, DeferredBlock<? extends Block> block) {

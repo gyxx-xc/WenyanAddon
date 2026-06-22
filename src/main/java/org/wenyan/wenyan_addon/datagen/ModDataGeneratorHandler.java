@@ -1,5 +1,6 @@
 package org.wenyan.wenyan_addon.datagen;
 
+import net.minecraft.data.PackOutput;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
@@ -18,12 +19,15 @@ public enum ModDataGeneratorHandler {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent.Client event) {
         var registries = event.getLookupProvider();
+        PackOutput output = event.getGenerator().getPackOutput();
         var generator = event.getGenerator().getVanillaPack(true);
         generator.addProvider(packOutput -> new ItemTagProvider(packOutput, registries));
+        event.addProvider(new AddonLanguageProvider(output, "zh_cn"));
+        event.addProvider(new AddonLanguageProvider(output, "en_us"));
+
     }
 
     @SubscribeEvent
     public static void gatherDataServer(GatherDataEvent.Server event) {
-        // seen still has bug, and useless btw
     }
 }
