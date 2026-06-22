@@ -19,6 +19,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
+import org.wenyan.wenyan_addon.datagen.WenyanAddonDataGenerators;
+import org.wenyan.wenyan_addon.item.TooltipBlockItem;
+import org.wenyan.wenyan_addon.item.TooltipItem;
 
 @Mod(WenyanAddon.MODID)
 public class WenyanAddon {
@@ -31,57 +34,58 @@ public class WenyanAddon {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", p -> p.mapColor(MapColor.STONE));
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = registerTooltipBlockItem("example_block", EXAMPLE_BLOCK);
 
     public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item");
 
     public static final DeferredBlock<Block> PROJECTILE_SPAWNER_BLOCK = BLOCKS.registerSimpleBlock("projectile_spawner_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> PROJECTILE_SPAWNER_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("projectile_spawner_block", PROJECTILE_SPAWNER_BLOCK);
+    public static final DeferredItem<BlockItem> PROJECTILE_SPAWNER_BLOCK_ITEM = registerTooltipBlockItem("projectile_spawner_block", PROJECTILE_SPAWNER_BLOCK);
 
     public static final DeferredBlock<Block> ELEMENTAL_BLOCK = BLOCKS.registerSimpleBlock("elemental_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> ELEMENTAL_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("elemental_block", ELEMENTAL_BLOCK);
+    public static final DeferredItem<BlockItem> ELEMENTAL_BLOCK_ITEM = registerTooltipBlockItem("elemental_block", ELEMENTAL_BLOCK);
 
     public static final DeferredBlock<Block> WORLD_INTERACTION_BLOCK = BLOCKS.registerSimpleBlock("world_interaction_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> WORLD_INTERACTION_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("world_interaction_block", WORLD_INTERACTION_BLOCK);
+    public static final DeferredItem<BlockItem> WORLD_INTERACTION_BLOCK_ITEM = registerTooltipBlockItem("world_interaction_block", WORLD_INTERACTION_BLOCK);
 
     public static final DeferredBlock<Block> ENTITY_MANIPULATION_BLOCK = BLOCKS.registerSimpleBlock("entity_manipulation_block", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> ENTITY_MANIPULATION_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("entity_manipulation_block", ENTITY_MANIPULATION_BLOCK);
+    public static final DeferredItem<BlockItem> ENTITY_MANIPULATION_BLOCK_ITEM = registerTooltipBlockItem("entity_manipulation_block", ENTITY_MANIPULATION_BLOCK);
 
     public static final DeferredBlock<Block> NOTE_BLOCK_FUNCTION_BLOCK = BLOCKS.registerSimpleBlock("note_block_function_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
-    public static final DeferredItem<BlockItem> NOTE_BLOCK_FUNCTION_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("note_block_function_block", NOTE_BLOCK_FUNCTION_BLOCK);
+    public static final DeferredItem<BlockItem> NOTE_BLOCK_FUNCTION_BLOCK_ITEM = registerTooltipBlockItem("note_block_function_block", NOTE_BLOCK_FUNCTION_BLOCK);
 
     public static final DeferredBlock<Block> READ_WRITE_BLOCK = BLOCKS.registerSimpleBlock("read_write_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
-    public static final DeferredItem<BlockItem> READ_WRITE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("read_write_block", READ_WRITE_BLOCK);
+    public static final DeferredItem<BlockItem> READ_WRITE_BLOCK_ITEM = registerTooltipBlockItem("read_write_block", READ_WRITE_BLOCK);
 
     public static final DeferredBlock<Block> NAMING_BLOCK = BLOCKS.registerSimpleBlock("naming_block", p -> p.mapColor(MapColor.METAL).strength(2.0f).sound(SoundType.ANVIL));
-    public static final DeferredItem<BlockItem> NAMING_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("naming_block", NAMING_BLOCK);
+    public static final DeferredItem<BlockItem> NAMING_BLOCK_ITEM = registerTooltipBlockItem("naming_block", NAMING_BLOCK);
 
     public static final DeferredBlock<Block> PARTICLE_BLOCK = BLOCKS.registerSimpleBlock("particle_block", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2.0f).sound(SoundType.GLASS));
-    public static final DeferredItem<BlockItem> PARTICLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("particle_block", PARTICLE_BLOCK);
+    public static final DeferredItem<BlockItem> PARTICLE_BLOCK_ITEM = registerTooltipBlockItem("particle_block", PARTICLE_BLOCK);
 
     public static final DeferredBlock<Block> DYE_BLOCK = BLOCKS.registerSimpleBlock("dye_block", p -> p.mapColor(MapColor.COLOR_RED).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> DYE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("dye_block", DYE_BLOCK);
+    public static final DeferredItem<BlockItem> DYE_BLOCK_ITEM = registerTooltipBlockItem("dye_block", DYE_BLOCK);
 
     public static final DeferredBlock<Block> MARKER_BLOCK = BLOCKS.registerSimpleBlock("marker_block", p -> p.mapColor(MapColor.COLOR_LIGHT_GRAY).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> MARKER_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("marker_block", MARKER_BLOCK);
+    public static final DeferredItem<BlockItem> MARKER_BLOCK_ITEM = registerTooltipBlockItem("marker_block", MARKER_BLOCK);
 
     public static final DeferredBlock<Block> ENTITY_STATUS_BLOCK = BLOCKS.registerSimpleBlock("entity_status_block", p -> p.mapColor(MapColor.COLOR_RED).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> ENTITY_STATUS_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("entity_status_block", ENTITY_STATUS_BLOCK);
+    public static final DeferredItem<BlockItem> ENTITY_STATUS_BLOCK_ITEM = registerTooltipBlockItem("entity_status_block", ENTITY_STATUS_BLOCK);
 
     public static final DeferredBlock<Block> ENTITY_SPAWN_BLOCK = BLOCKS.registerSimpleBlock("entity_spawn_block", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> ENTITY_SPAWN_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("entity_spawn_block", ENTITY_SPAWN_BLOCK);
+    public static final DeferredItem<BlockItem> ENTITY_SPAWN_BLOCK_ITEM = registerTooltipBlockItem("entity_spawn_block", ENTITY_SPAWN_BLOCK);
 
     public static final DeferredBlock<Block> POTION_BLOCK = BLOCKS.registerSimpleBlock("potion_block", p -> p.mapColor(MapColor.COLOR_CYAN).strength(2.0f).sound(SoundType.GLASS));
-    public static final DeferredItem<BlockItem> POTION_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("potion_block", POTION_BLOCK);
+    public static final DeferredItem<BlockItem> POTION_BLOCK_ITEM = registerTooltipBlockItem("potion_block", POTION_BLOCK);
 
     public static final DeferredBlock<Block> BLOCK_EDIT_BLOCK = BLOCKS.registerSimpleBlock("block_edit_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> BLOCK_EDIT_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("block_edit_block", BLOCK_EDIT_BLOCK);
+    public static final DeferredItem<BlockItem> BLOCK_EDIT_BLOCK_ITEM = registerTooltipBlockItem("block_edit_block", BLOCK_EDIT_BLOCK);
 
     public static final DeferredBlock<Block> ENCHANT_BLOCK = BLOCKS.registerSimpleBlock("enchant_block", p -> p.mapColor(MapColor.COLOR_YELLOW).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> ENCHANT_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("enchant_block", ENCHANT_BLOCK);
+    public static final DeferredItem<BlockItem> ENCHANT_BLOCK_ITEM = registerTooltipBlockItem("enchant_block", ENCHANT_BLOCK);
 
     public static final DeferredBlock<StorageRuneBlock> STORAGE_RUNE_BLOCK = BLOCKS.registerBlock("storage_rune_block", StorageRuneBlock::new);
-    public static final DeferredItem<BlockItem> STORAGE_RUNE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("storage_rune_block", STORAGE_RUNE_BLOCK);
+    public static final DeferredItem<BlockItem> STORAGE_RUNE_BLOCK_ITEM = registerTooltipBlockItem("storage_rune_block", STORAGE_RUNE_BLOCK);
+    public static final DeferredItem<Item> DATA_DISK_ITEM = ITEMS.registerItem("data_disk", properties -> new TooltipItem(properties, tooltipKey("data_disk")), properties -> properties.stacksTo(1));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StorageRuneBlockEntity>> STORAGE_RUNE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "storage_rune_block",
             () -> new BlockEntityType<>(StorageRuneBlockEntity::new, STORAGE_RUNE_BLOCK.get())
@@ -110,6 +114,7 @@ public class WenyanAddon {
                 output.accept(BLOCK_EDIT_BLOCK_ITEM.get());
                 output.accept(ENCHANT_BLOCK_ITEM.get());
                 output.accept(STORAGE_RUNE_BLOCK_ITEM.get());
+                output.accept(DATA_DISK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")
@@ -119,5 +124,14 @@ public class WenyanAddon {
         BLOCK_ENTITY_TYPES.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
+        modEventBus.addListener(WenyanAddonDataGenerators::gatherClientData);
+    }
+
+    private static DeferredItem<BlockItem> registerTooltipBlockItem(String name, DeferredBlock<? extends Block> block) {
+        return ITEMS.registerItem(name, properties -> new TooltipBlockItem(block.get(), properties, tooltipKey(name)), Item.Properties::useBlockDescriptionPrefix);
+    }
+
+    private static String tooltipKey(String name) {
+        return "item." + MODID + "." + name + ".tooltip";
     }
 }

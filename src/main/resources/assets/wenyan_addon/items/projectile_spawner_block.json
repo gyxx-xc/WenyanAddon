@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "wenyan_addon:item/projectile_spawner_block"
+  }
+}

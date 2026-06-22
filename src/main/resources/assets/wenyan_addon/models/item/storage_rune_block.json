@@ -1,1 +1,1 @@
-{"parent":"wenyan_addon:block/storage_rune_block"}
+{"parent":"minecraft:item/generated","textures":{"layer0":"wenyan_addon:item/storage_rune_block"}}

@@ -1,1 +1,1 @@
-{"parent":"wenyan_addon:block/entity_manipulation_block"}
+{"parent":"minecraft:item/generated","textures":{"layer0":"wenyan_addon:item/entity_manipulation_block"}}

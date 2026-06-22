@@ -1,1 +1,1 @@
-{"parent":"minecraft:block/cube_all","textures":{"all":"minecraft:block/note_block"}}
+{"parent":"minecraft:block/cube_all","textures":{"all":"wenyan_addon:block/note_block_function_block"}}
