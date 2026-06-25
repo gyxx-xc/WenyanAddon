@@ -21,8 +21,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.pongdev.pong.Pong;
-import org.pongdev.pong.setup.PongRegistration;
+import org.wenyan.pong.Pong;
+import org.wenyan.pong.setup.PongRegistration;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(WenyanAddon.MODID)
