@@ -1,7 +1,7 @@
 package org.pongdev.pong.item;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,15 +22,26 @@ public class OpenChampagne {
         Vec3 lookWay = Vec3.directionFromRotation(
                 entity.getXRot(),
                 entity.getYRot());
-        //playSound(position, power, pLevel);
-        entity.playSound(SoundEvents.GENERIC_EXPLODE.value(), (float) power/40, 1.0F);
+        playSound(position, power, pLevel);
         emmitParticle(position, lookWay, power, pLevel);
         shootPlug(position, lookWay, power, pLevel);
+    }
+
+    public static void playSound(Vec3 position, double power, Level level) {
+        float volume = Math.max(0.6F, (float) power / 40.0F);
+        if (level.isClientSide()) {
+            level.playLocalSound(position.x, position.y, position.z,
+                    PongRegistration.CHAMPAGNE_OPEN.get(), SoundSource.PLAYERS, volume, 1.0F, false);
+        } else {
+            level.playSound(null, position.x, position.y, position.z,
+                    PongRegistration.CHAMPAGNE_OPEN.get(), SoundSource.PLAYERS, volume, 1.0F);
+        }
     }
 
     // TODO: refer to how the bow do, create a plug entity
     // TODO: the power will decided the speed and the damage of a plug
     public static void shootPlug(Vec3 position, Vec3 lookWay, double power, Level pLevel) {
+        if (pLevel.isClientSide()) return;
         PlugEntity plug = new PlugEntity(PongRegistration.PLUG_ENTITY.get(), pLevel);
         plug.setPos(position.x, position.y, position.z);
         plug.setBaseDamage(1);
@@ -44,9 +55,11 @@ public class OpenChampagne {
         lookWay = lookWay.scale(power);
         int count = (int) (power / 10 + 1) * 5;
         if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(PongRegistration.SPLASH_PARTICLES.get(),
-                    position.x, position.y - 0.1, position.z,
-                    count, lookWay.x, lookWay.y, lookWay.z, 1.0);
+            for (int i = 0; i < count; i++) {
+                serverLevel.sendParticles(PongRegistration.SPLASH_PARTICLES.get(),
+                        position.x, position.y - 0.1, position.z,
+                        0, lookWay.x, lookWay.y, lookWay.z, 1.0);
+            }
         } else if (level.isClientSide()) {
             for (int i = 0; i < count; i++) {
                 level.addParticle(PongRegistration.SPLASH_PARTICLES.get(),

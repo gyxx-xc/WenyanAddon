@@ -3,19 +3,18 @@ package org.pongdev.pong.setup;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.bus.api.IEventBus;
@@ -41,23 +40,23 @@ public class PongRegistration {
         BLOCKS.register(modBus);
         ITEMS.register(modBus);
         BLOCK_ENTITIES.register(modBus);
-        CREATIVE_MODE_TABS.register(modBus);
         MOB_EFFECTS.register(modBus);
         FLUIDS.register(modBus);
         FLUID_TYPES.register(modBus);
         PARTICLE_TYPES.register(modBus);
         ENTITY_TYPES.register(modBus);
+        SOUND_EVENTS.register(modBus);
     }
 
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(Pong.MODID);
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(Pong.MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, Pong.MODID);
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Pong.MODID);
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, Pong.MODID);
     public static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, Pong.MODID);
     public static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, Pong.MODID);
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Registries.ENTITY_TYPE, Pong.MODID);
     public static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(Registries.PARTICLE_TYPE, Pong.MODID);
+    public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Registries.SOUND_EVENT, Pong.MODID);
 
 
     public static final DeferredItem<Item> CHAMPAGNE = ITEMS.registerItem(ChampagneBottle.ID, ChampagneBottle::new);
@@ -93,18 +92,6 @@ public class PongRegistration {
 
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> SPLASH_PARTICLES =
             PARTICLE_TYPES.register(SplashParticles.ID, () -> new SimpleParticleType(true));
-
-    public static final String MODTAB_ID ="pong_tab";
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MODTAB = CREATIVE_MODE_TABS.register(MODTAB_ID,
-            () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup." + MODTAB_ID))
-                    .withTabsBefore(CreativeModeTabs.COMBAT)
-                    .icon(() -> CHAMPAGNE.get().getDefaultInstance())
-                    .displayItems((parameters, output) -> {
-                        output.accept(CHAMPAGNE.get());
-                        output.accept(CHAMPAGNE_SABRE.get());
-                        output.accept(GOBLET.get());
-                        output.accept(CHAMPAGNE_RACK_ITEM.get());
-                        output.accept(PLUG.get());
-                    }).build() );
+    public static final DeferredHolder<SoundEvent, SoundEvent> CHAMPAGNE_OPEN = SOUND_EVENTS.register("champagne_open",
+            () -> SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(Pong.MODID, "champagne_open")));
 }

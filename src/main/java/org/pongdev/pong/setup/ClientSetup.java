@@ -12,6 +12,7 @@ import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import org.pongdev.pong.entity.PlugRender;
 import org.pongdev.pong.fluid.ChampagneFluidType;
 import org.pongdev.pong.particle.SplashParticles;
+import org.pongdev.pong.block.RackRender;
 import org.wenyan.wenyan_addon.WenyanAddon;
 
 @EventBusSubscriber(modid = WenyanAddon.MODID, value = Dist.CLIENT)
@@ -23,6 +24,7 @@ public class ClientSetup {
 
     @SubscribeEvent
     public static void registerRender(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerBlockEntityRenderer(PongRegistration.CHAMPAGNE_RACK_ENTITY.get(), RackRender::new);
         event.registerEntityRenderer(PongRegistration.PLUG_ENTITY.get(), PlugRender::new);
     }
 

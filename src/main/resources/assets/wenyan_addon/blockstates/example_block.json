@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "wenyan_addon:block/example_block"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "pong",
+  "key": {
+    "B": "minecraft:sweet_berries",
+    "C": "pong:plug",
+    "G": "minecraft:glass_pane",
+    "S": "minecraft:sugar"
+  },
+  "pattern": [
+    " C ",
+    "GSG",
+    "GBG"
+  ],
+  "result": {
+    "id": "pong:champagne_bottle"
+  }
+}

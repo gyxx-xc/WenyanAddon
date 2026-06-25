@@ -3,8 +3,6 @@ package org.pongdev.pong.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -12,8 +10,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -76,7 +72,7 @@ public class ChampagneRack extends HorizontalDirectionalBlock implements EntityB
     protected VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
         BlockEntity block = pLevel.getBlockEntity(pPos);
         if (block == null) return super.getShape(pState, pLevel, pPos, pContext);
-        if (block.getPersistentData().getInt(CONTAIN).orElse(0) != 0)
+        if (block instanceof RackEntity rack && rack.getChampagneCount() != 0)
             return SHAPE_BOTTLE;
         else
             switch (pState.getValue(FACING)) {
@@ -106,12 +102,18 @@ public class ChampagneRack extends HorizontalDirectionalBlock implements EntityB
 
     @Override
     protected InteractionResult useWithoutItem(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, BlockHitResult pHit) {
-        CompoundTag tag = pLevel.getBlockEntity(pPos).getPersistentData();
-        int contain = tag.getInt(CONTAIN).orElse(0);
+        if (!(pLevel.getBlockEntity(pPos) instanceof RackEntity rack)) {
+            return InteractionResult.FAIL;
+        }
+        int contain = rack.getChampagneCount();
         if (contain <= 0) return InteractionResult.FAIL;
-        ItemStack newItemStack = new ItemStack(PongRegistration.CHAMPAGNE.get());
-        pPlayer.getInventory().add(newItemStack);
-        tag.putInt(CONTAIN, contain - 1);
+        if (!pLevel.isClientSide()) {
+            ItemStack newItemStack = new ItemStack(PongRegistration.CHAMPAGNE.get());
+            if (!pPlayer.getInventory().add(newItemStack)) {
+                pPlayer.drop(newItemStack, false);
+            }
+            rack.setChampagneCount(contain - 1);
+        }
         return InteractionResult.SUCCESS;
     }
 
@@ -119,7 +121,7 @@ public class ChampagneRack extends HorizontalDirectionalBlock implements EntityB
     protected void onProjectileHit(Level pLevel, BlockState pState, BlockHitResult pHit, Projectile pProjectile) {
         BlockEntity block = pLevel.getBlockEntity(pHit.getBlockPos());
         if (block instanceof RackEntity rack) {
-            if (rack.getPersistentData().getInt(CONTAIN).orElse(0) > 0)
+            if (rack.getChampagneCount() > 0)
                 rack.explode();
         }
     }
@@ -129,7 +131,7 @@ public class ChampagneRack extends HorizontalDirectionalBlock implements EntityB
         if (pLevel.hasNeighborSignal(pPos)) {
             BlockEntity block = pLevel.getBlockEntity(pPos);
             if (block instanceof RackEntity rack) {
-                if (rack.getPersistentData().getInt(CONTAIN).orElse(0) > 0)
+                if (rack.getChampagneCount() > 0)
                     pLevel.blockEvent(pPos, pState.getBlock(), 0, 0);
             }
         }
@@ -140,7 +142,7 @@ public class ChampagneRack extends HorizontalDirectionalBlock implements EntityB
     protected boolean triggerEvent(BlockState pState, Level pLevel, BlockPos pPos, int pId, int pParam) {
         BlockEntity block = pLevel.getBlockEntity(pPos);
         if (block instanceof RackEntity rack) {
-            if (rack.getPersistentData().getInt(CONTAIN).orElse(0) > 0)
+            if (rack.getChampagneCount() > 0)
                 rack.explode();
         }
         return true;

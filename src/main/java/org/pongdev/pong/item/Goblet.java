@@ -1,31 +1,33 @@
 package org.pongdev.pong.item;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import org.pongdev.pong.setup.PongRegistration;
+
+import java.util.List;
 
 public class Goblet extends Item {
     public static final String ID = "goblet";
     public static final String CONTAIN_TAG = "contain";
 
     public Goblet(Properties properties) {
-        super(properties.food(
-                new FoodProperties.Builder()
-                        .alwaysEdible()
-                        .build()
-        ));
+        super(properties);
+    }
+
+    public static void syncModelData(ItemStack stack) {
+        float stage = PongStackData.getString(stack, CONTAIN_TAG).equals("") ? 0.0F : 1.0F;
+        stack.set(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(List.of(stage), List.of(), List.of(), List.of()));
     }
 
     @Override
@@ -67,6 +69,7 @@ public class Goblet extends Item {
     public ItemStack finishUsingItem(ItemStack pStack, Level pLevel, LivingEntity pLivingEntity) {
         if (!PongStackData.getString(pStack, CONTAIN_TAG).equals("")) {
             PongStackData.putString(pStack, CONTAIN_TAG, "");
+            syncModelData(pStack);
             // we may change this in the future
             // but for now, the containing can only be the champagne
             if (!pLevel.isClientSide()) {
@@ -95,9 +98,11 @@ public class Goblet extends Item {
         } else {
             ItemStack newItemStack = new ItemStack(pStack.getItem(), pStack.getCount()-1);
             PongStackData.copyTo(pStack, newItemStack);
+            syncModelData(newItemStack);
             PongStackData.putString(pStack, CONTAIN_TAG, "champagne");
+            syncModelData(pStack);
 
-            if (pStack.getCount() >= 1) {
+            if (!newItemStack.isEmpty()) {
                 Player player = (Player) pLivingEntity;
                 if (!player.getInventory().add(newItemStack))
                     player.drop(newItemStack, false);
@@ -110,6 +115,6 @@ public class Goblet extends Item {
             int remainChampagne = PongStackData.getInt(otherItem, ChampagneBottle.CAPABILITY_TAG);
             PongStackData.putInt(otherItem, ChampagneBottle.CAPABILITY_TAG, remainChampagne-100);
         }
-        return super.finishUsingItem(pStack, pLevel, pLivingEntity);
+        return pStack;
     }
 }
