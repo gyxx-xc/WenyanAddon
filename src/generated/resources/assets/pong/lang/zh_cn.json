@@ -2,8 +2,8 @@
   "block.pong.champagne_bottle": "香槟瓶",
   "block.pong.champagne_fluid_block": "香槟",
   "block.pong.champagne_rack": "香槟架",
-  "effect.pong.drunk": "醉酒",
-  "entity.pong.plug": "软木塞",
+  "effect.pong.drunk": "酒醉身姿似百合",
+  "entity.pong.plug": "香槟塞",
   "fluid_type.pong.champagne_fluid": "香槟",
   "item.pong.champagne_bottle": "香槟瓶",
   "item.pong.champagne_bottle.tooltip": "手持摇晃蓄压，也可用香槟刀开瓶。",
@@ -14,6 +14,6 @@
   "item.pong.debug_rod.tooltip": "用于测试香槟架的开发工具。",
   "item.pong.goblet": "香槟杯",
   "item.pong.goblet.tooltip": "从已开封的香槟瓶中倒酒后饮用。",
-  "item.pong.plug": "软木塞",
+  "item.pong.plug": "香槟塞",
   "item.pong.plug.tooltip": "香槟开瓶时飞出的软木塞。"
 }
