@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.jspecify.annotations.NonNull;
 import org.wenyan.wenyan_addon.device.handler.EntityHandlers;
-import org.wenyan.wenyan_addon.device.handler.ItemHandlers;
 import org.wenyan.wenyan_addon.device.handler.ManipulationHandlers;
 import org.wenyan.wenyan_addon.device.handler.WorldHandlers;
 import org.wenyan.wenyan_addon.dye.Dye;
@@ -64,8 +63,6 @@ public final class Capabilities {
         // EXAMPLE_BLOCK end
 
         DeviceCapabilityRegisterer registerer = new DeviceCapabilityRegisterer(event);
-
-        registerer.registerToItem(ItemHandlers.ITEM_NOTE_PACKAGE, ChineseUtils.bracketOf("奏"), WenyanAddon.EXAMPLE_ITEM);
 
         registerer.registerToBlock(EntityHandlers.MARKER_PACKAGE, ChineseUtils.bracketOf("标"), WenyanAddon.MARKER_BLOCK.get());
         registerer.registerToBlock(EntityHandlers.PROJECTILE_SPAWNER_PACKAGE, ChineseUtils.bracketOf("投射"), WenyanAddon.PROJECTILE_SPAWNER_BLOCK.get());

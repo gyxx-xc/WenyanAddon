@@ -1,105 +1,57 @@
-# 将 Neoforge MDK 修改为文言附属模组的方法
+[English](README.md) | [简体中文](README_zh.md)
 
-本仓库从 Neoforge MDK (Mod Development Kit) 模板出发，经过以下步骤修改为文言编程语言的附属模组模板。
+# Wenyan addon
 
----
+Wenyan Addon  is an experimental addon for the Wenyan ecosystem.
+It is built on top of [Wenyan Programming](https://github.com/gyxx-xc/WenyanNature) to test and deliver novel, distinctive features.
 
-## 1. 添加文言编程依赖
+This project follows a rapid iteration model. APIs, gameplay details, data formats, and compatibility behavior may change between versions.
 
-### 1.1 放置 jar 包
+Stable features may be promoted into [Wenyan Programming](https://github.com/gyxx-xc/WenyanNature) as part of the core mod.
 
-将以下依赖 jar 放入 `libs/` 目录：
+> [!NOTE]
+> **The role of Wenyan addon**
+>
+> This addon is a testing ground for new features and may contain unstable code. Features may later be incorporated into the core mod, or they may be removed or changed at any time.
 
-- `libs/wenyan_programming-1.0.0.jar` — 文言编程模组本体
+## Features
 
-### 1.2 修改 `build.gradle`
+- **Rapid iteration**: Experimental features and mechanics that are not yet suitable for the core mod are tested and developed here.
+- **Beyond core limitations**: Enables interactions and gameplay that would be inconvenient to implement directly in [Wenyan Programming](https://github.com/gyxx-xc/WenyanNature).
+- **Distinctive experiments**: Hosts more experimental, thematic, or independently modular content, including the built-in Pong module.
 
-在 `repositories` 块中添加：
-```groovy
-    flatDir {
-    dirs 'libs'
-}
+## Stability Notice
+
+Wenyan Addon does not guarantee code stability.
+
+This repository may contain experimental code, temporary APIs, feature migrations, and functionality that "works, technically."
+
+> [!WARNING]
+> Expect incompatibilities between versions. Saves, configuration, scripts, or code may require manual adjustments after an update.
+
+## Development
+
+Target environment:
+
+- Minecraft `26.1.2`
+- NeoForge `26.1.2.71`
+- Java `25`
+
+Common commands:
+
+```bash
+./gradlew compileJava
+./gradlew runData
+./gradlew build
 ```
+## Contributing
+We welcome your contributions! If you'd like to contribute, please follow these steps:
+1. Fork this repository.
+2. Create a new branch for your feature or bugfix: git checkout -b feature/your-feature-name.
+3. Commit your changes and push them to your fork.
+4. Open a Pull Request to the master branch of this repository.
 
-在 `dependencies` 块中添加：
 
-```groovy
-implementation "indi.wenyan:judou:1.0.0"
-implementation "indi.wenyan:wenyan_programming:1.0.0"
+## License
 
-runtimeOnly "org.antlr:antlr4-runtime:4.13.1"
-runtimeOnly "com.github.houbb:opencc4j:1.14.0"
-```
-
----
-
-## 2. 修改 `gradle.properties`
-
-`mod_id=wenyan_addon`、`mod_name=Wenyan Addon` 等按需调整。
-
----
-
-## 3. 修改 `neoforge.mods.toml`
-
-### 3.1 添加文言编程作为必需前置
-
-在依赖列表末尾新增：
-
-```toml
-[[dependencies.${mod_id}]]
-modId = "wenyan_programming"
-type = "required"
-versionRange = "[1.0.0,)"
-ordering = "NONE"
-side = "BOTH"
-```
-
----
-
-## 5. 创建 `Capabilities.java` — 注册文言方块设备的函数
-
-新建 `src/main/java/org/wenyan/wenyan_addon/Capabilities.java`，核心内容：
-
-### 5.1 事件订阅
-
-```java
-@EventBusSubscriber(modid = MODID)
-public enum Capabilities {
-    ;
-
-    @SubscribeEvent
-    public static void registerCapabilities(@NonNull RegisterCapabilitiesEvent event) {
-        event.registerBlock(
-            WyRegistration.WENYAN_BLOCK_DEVICE_CAPABILITY,
-            simpleDevice("包名", handlerPackage),
-            目标方块...  // 可注册到多个方块
-        );
-    }
-}
-```
-
-### 5.2 创建设备提供者
-
-使用 `simpleDevice(String name, RawHandlerPackage handlerPackage)` 工厂方法，返回 `IBlockCapabilityProvider<IWenyanBlockDevice, Void>` 实现，负责：
-
-- 提供方块的 `BlockState` 和 `BlockPos`
-- 通过 `getExecPackage()` 返回文言函数包（`RawHandlerPackage`）
-- 通过 `getPackageName()` 返回文言风格的包名（自动加书名号「」）
-
-### 5.3 构建文言函数包
-
-使用 `HandlerPackageBuilder` 定义可在文言脚本中调用的函数：
-
-```java
-HandlerPackageBuilder.create()
-    .handler(ChineseUtils.bracketOf("函数名"), ctx -> {
-        // 函数实现
-    })
-    .build()
-```
-
----
-
-## 7. 其他调整
-
-根据[neoforged 文档](https://docs.neoforged.net/)按需要调整
+This project is licensed under the [MIT License](LICENSE).

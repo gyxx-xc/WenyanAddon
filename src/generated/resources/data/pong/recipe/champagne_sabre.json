@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "pong",
+  "key": {
+    "I": "minecraft:iron_ingot",
+    "S": "minecraft:stick"
+  },
+  "pattern": [
+    "  I",
+    " I ",
+    "S  "
+  ],
+  "result": {
+    "id": "pong:champagne_sabre"
+  }
+}

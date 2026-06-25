@@ -31,8 +31,6 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("enchant_block", "附靈石");
         BLOCK_NAMES.put("storage_rune_block", "符咒收納櫃");
 
-        ITEM_NAMES.put("example_item", "範例石");
-
         ITEM_TOOLTIPS.put("example_block", "範例功能入口");
         ITEM_TOOLTIPS.put("projectile_spawner_block", "發射投射實體");
         ITEM_TOOLTIPS.put("elemental_block", "調用元素");
@@ -59,10 +57,10 @@ public final class AddonLanguageProvider extends LanguageProvider {
 
     @Override
     protected void addTranslations() {
-        add("itemGroup.wenyan_addon", "吾有一術：附屬");
-        add("wenyan_addon.configuration.title", "吾有一術：附屬之設");
-        add("wenyan_addon.configuration.section.wenyan_addon.common.toml", "附屬之設");
-        add("wenyan_addon.configuration.section.wenyan_addon.common.toml.title", "附屬之設");
+        add("itemGroup.wenyan_addon", "吾有一術：新秩序");
+        add("wenyan_addon.configuration.title", "吾有一術：新秩序之設");
+        add("wenyan_addon.configuration.section.wenyan_addon.common.toml", "新秩序之設");
+        add("wenyan_addon.configuration.section.wenyan_addon.common.toml.title", "新秩序之設");
 
         for (Map.Entry<String, String> entry : BLOCK_NAMES.entrySet()) {
             add("block." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());

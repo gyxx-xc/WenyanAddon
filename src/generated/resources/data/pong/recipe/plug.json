@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "pong",
+  "key": {
+    "P": "#minecraft:planks"
+  },
+  "pattern": [
+    " P ",
+    "PPP"
+  ],
+  "result": {
+    "id": "pong:plug"
+  }
+}

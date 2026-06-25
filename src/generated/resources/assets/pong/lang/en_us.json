@@ -1,0 +1,19 @@
+{
+  "block.pong.champagne_bottle": "Champagne Bottle",
+  "block.pong.champagne_fluid_block": "Champagne",
+  "block.pong.champagne_rack": "Champagne Rack",
+  "effect.pong.drunk": "Drunk",
+  "entity.pong.plug": "Cork",
+  "fluid_type.pong.champagne_fluid": "Champagne",
+  "item.pong.champagne_bottle": "Champagne Bottle",
+  "item.pong.champagne_bottle.tooltip": "Shake while held to build pressure, or open with a champagne sabre.",
+  "item.pong.champagne_rack.tooltip": "Stores and displays up to four unopened champagne bottles.",
+  "item.pong.champagne_sabre": "Champagne Sabre",
+  "item.pong.champagne_sabre.tooltip": "Hold with an unopened champagne bottle to pop its cork.",
+  "item.pong.debug_rod": "Debug Rod",
+  "item.pong.debug_rod.tooltip": "Development tool for testing champagne racks.",
+  "item.pong.goblet": "Champagne Glass",
+  "item.pong.goblet.tooltip": "Fill from an opened champagne bottle, then drink.",
+  "item.pong.plug": "Cork",
+  "item.pong.plug.tooltip": "The cork launched from an opened champagne bottle."
+}
