@@ -7,7 +7,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
 import net.minecraft.world.item.component.CustomModelData;
@@ -17,12 +16,12 @@ import org.wenyan.pong.setup.PongRegistration;
 
 import java.util.List;
 
-public class Goblet extends Item {
+public class Goblet extends PongTooltipItem {
     public static final String ID = "goblet";
     public static final String CONTAIN_TAG = "contain";
 
     public Goblet(Properties properties) {
-        super(properties);
+        super(properties, ID);
     }
 
     public static void syncModelData(ItemStack stack) {
@@ -73,23 +72,21 @@ public class Goblet extends Item {
             // we may change this in the future
             // but for now, the containing can only be the champagne
             if (!pLevel.isClientSide()) {
-                int level = 0;
                 MobEffectInstance drunk = pLivingEntity.getEffect(PongRegistration.DRUNK);
-                if (drunk != null)
-                    level = drunk.getAmplifier();
-                pLivingEntity.addEffect(new MobEffectInstance(PongRegistration.DRUNK, 3000, level+1));
-                if (level <= 3) {
-                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.SPEED, 500, level));
-                } else if (level <= 5) {
+                int level = drunk == null ? 1 : drunk.getAmplifier() + 1;
+                pLivingEntity.addEffect(new MobEffectInstance(PongRegistration.DRUNK, 3000, level));
+                if (level < 3) {
+                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.SPEED, 500, level - 1));
+                } else if (level < 5) {
                     pLivingEntity.addEffect(new MobEffectInstance(MobEffects.SPEED, 500, 4));
                     pLivingEntity.addEffect(new MobEffectInstance(MobEffects.HASTE, 500, 1));
-                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 500, (level - 3)));
-                } else if (level <= 10) {
+                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.JUMP_BOOST, 500, level - 3));
+                } else if (level < 7) {
                     pLivingEntity.addEffect(new MobEffectInstance(MobEffects.SPEED, 500, 4));
                     pLivingEntity.addEffect(new MobEffectInstance(MobEffects.NAUSEA, 500, level - 5));
-                } else if (level <= 20) {
-                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.NAUSEA, (level-10)*100+100, 100));
-                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 500, level - 10));
+                } else if (level < 9) {
+                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.NAUSEA, (level - 6) * 100, 100));
+                    pLivingEntity.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 500, level - 7));
                     pLivingEntity.addEffect(new MobEffectInstance(MobEffects.UNLUCK, 500, 10));
                 } else if (pLevel instanceof ServerLevel serverLevel) {
                     pLivingEntity.kill(serverLevel);

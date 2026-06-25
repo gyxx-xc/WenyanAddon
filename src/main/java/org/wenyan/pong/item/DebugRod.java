@@ -2,7 +2,6 @@ package org.wenyan.pong.item;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -11,10 +10,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.wenyan.pong.block.ChampagneRack;
 import org.wenyan.pong.block.RackEntity;
 
-public class DebugRod extends Item {
+public class DebugRod extends PongTooltipItem {
     public static final String ID = "debug_rod";
     public DebugRod(Properties properties) {
-        super(properties);
+        super(properties, ID);
     }
 
     @Override

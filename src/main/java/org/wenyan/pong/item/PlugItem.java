@@ -1,10 +1,8 @@
 package org.wenyan.pong.item;
 
-import net.minecraft.world.item.Item;
-
-public class PlugItem extends Item {
+public class PlugItem extends PongTooltipItem {
     public static final String ID = "plug";
     public PlugItem(Properties properties) {
-        super(properties);
+        super(properties, ID);
     }
 }

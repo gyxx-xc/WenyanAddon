@@ -34,7 +34,6 @@
   "item.wenyan_addon.entity_status_block.tooltip": "修改實體狀態",
   "item.wenyan_addon.example_block": "範例石",
   "item.wenyan_addon.example_block.tooltip": "範例功能入口",
-  "item.wenyan_addon.example_item": "範例石",
   "item.wenyan_addon.marker_block": "標記石",
   "item.wenyan_addon.marker_block.tooltip": "標記位置資料",
   "item.wenyan_addon.naming_block": "命名石",
@@ -53,8 +52,8 @@
   "item.wenyan_addon.storage_rune_block.tooltip": "用來存儲包含物品、方塊等數據的符咒的櫃子",
   "item.wenyan_addon.world_interaction_block": "交感石",
   "item.wenyan_addon.world_interaction_block.tooltip": "與世界進行交互",
-  "itemGroup.wenyan_addon": "吾有一術：附屬",
-  "wenyan_addon.configuration.section.wenyan_addon.common.toml": "附屬之設",
-  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "附屬之設",
-  "wenyan_addon.configuration.title": "吾有一術：附屬之設"
+  "itemGroup.wenyan_addon": "吾有一術：新秩序",
+  "wenyan_addon.configuration.section.wenyan_addon.common.toml": "新秩序之設",
+  "wenyan_addon.configuration.section.wenyan_addon.common.toml.title": "新秩序之設",
+  "wenyan_addon.configuration.title": "吾有一術：新秩序之設"
 }

@@ -5,16 +5,15 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.wenyan.pong.setup.PongRegistration;
 
-public class ChampagneSabre extends Item {
+public class ChampagneSabre extends PongTooltipItem {
     public static final String ID = "champagne_sabre";
 
     public ChampagneSabre(Properties properties) {
-        super(properties.durability(250));
+        super(properties.durability(250), ID);
     }
 
     @Override

@@ -35,15 +35,13 @@ public class WenyanAddon {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-    public static final ResourceKey<CreativeModeTab> WENYAN_NATURE_TAB = ResourceKey.create(
+    public static final ResourceKey<CreativeModeTab> WENYAN_PROGRAMMING_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
-            Identifier.fromNamespaceAndPath("wenyan_nature", "wenyan_nature")
+            Identifier.fromNamespaceAndPath("wenyan_programming", "wenyan_programming")
     );
 
     public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", p -> p.mapColor(MapColor.STONE));
     public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = registerTooltipBlockItem("example_block", EXAMPLE_BLOCK);
-
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item");
 
     public static final DeferredBlock<Block> PROJECTILE_SPAWNER_BLOCK = BLOCKS.registerSimpleBlock("projectile_spawner_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> PROJECTILE_SPAWNER_BLOCK_ITEM = registerTooltipBlockItem("projectile_spawner_block", PROJECTILE_SPAWNER_BLOCK);
@@ -99,14 +97,12 @@ public class WenyanAddon {
     );
 
     @SuppressWarnings("unused")
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WENYAN_ADDON_TAB = CREATIVE_MODE_TABS.register("wenyan_addon", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.wenyan_addon"))
-            .withTabsAfter(WENYAN_NATURE_TAB)
-            .withTabsBefore(CreativeModeTabs.COMBAT)
+            .withTabsBefore(CreativeModeTabs.COMBAT, WENYAN_PROGRAMMING_TAB_KEY)
             .icon(() -> PROJECTILE_SPAWNER_BLOCK_ITEM.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
                 output.accept(EXAMPLE_BLOCK_ITEM.get());
-                output.accept(EXAMPLE_ITEM.get());
                 output.accept(PROJECTILE_SPAWNER_BLOCK_ITEM.get());
                 output.accept(ELEMENTAL_BLOCK_ITEM.get());
                 output.accept(WORLD_INTERACTION_BLOCK_ITEM.get());

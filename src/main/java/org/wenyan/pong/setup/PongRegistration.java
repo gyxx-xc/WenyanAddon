@@ -72,7 +72,11 @@ public class PongRegistration {
 
     public static final DeferredBlock<Block> CHAMPAGNE_BOTTLE_BLOCK = BLOCKS.registerBlock(ChampagneBottle.ID, ChampagneBottleBlock::new);
     public static final DeferredBlock<Block> CHAMPAGNE_RACK_BLOCK = BLOCKS.registerBlock(ChampagneRack.ID, ChampagneRack::new);
-    public static final DeferredItem<BlockItem> CHAMPAGNE_RACK_ITEM = ITEMS.registerSimpleBlockItem(CHAMPAGNE_RACK_BLOCK);
+    public static final DeferredItem<BlockItem> CHAMPAGNE_RACK_ITEM = ITEMS.registerItem(
+            ChampagneRack.ID,
+            properties -> new PongTooltipBlockItem(CHAMPAGNE_RACK_BLOCK.get(), properties, ChampagneRack.ID),
+            Item.Properties::useBlockDescriptionPrefix
+    );
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RackEntity>> CHAMPAGNE_RACK_ENTITY = BLOCK_ENTITIES.register(
             ChampagneRack.ID,
             () -> new BlockEntityType<>(RackEntity::new, CHAMPAGNE_RACK_BLOCK.get())
