@@ -27,7 +27,11 @@ sourceSets.main.resources {
 }
 
 repositories {
-    // Add here additional repositories if required by some of the dependencies below.
+    // anvil lib (for middle_key_ping)
+    maven { url = "https://server.cjsah.net:1002/maven/" }
+    flatDir {
+        dir 'libs'
+    }
 }
 
 base {
@@ -135,8 +139,14 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
-    implementation files("libs/judou-1.0.0.jar")
-    implementation files("libs/wenyan_programming-1.0.0.jar")
+    implementation "indi.wenyan:judou:1.0.0"
+    implementation "indi.wenyan:wenyan_programming:1.0.0"
+
+    implementation "dev.anvilcraft.lib:anvillib-neoforge-26.1:2.0.0+snapshot.441"
+    compileOnly "dev.anvilcraft.ping:middle_key_ping:2.0.0"
+
+    runtimeOnly "org.antlr:antlr4-runtime:4.13.1"
+    runtimeOnly "com.github.houbb:opencc4j:1.14.0"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

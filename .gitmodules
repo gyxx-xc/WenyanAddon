@@ -1,0 +1,6 @@
+[submodule "libs/MiddleKeyPing"]
+	path = libs/MiddleKeyPing
+	url = https://github.com/Anvil-Dev/MiddleKeyPing.git
+[submodule "libs/WenyanNature"]
+	path = libs/WenyanNature
+	url = https://github.com/gyxx-xc/WenyanNature.git
