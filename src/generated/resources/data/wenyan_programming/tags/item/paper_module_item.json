@@ -1,5 +1,22 @@
 {
   "values": [
-    "wenyan_addon:example_item"
+    "wenyan_addon:example_block",
+    "wenyan_addon:projectile_spawner_block",
+    "wenyan_addon:elemental_block",
+    "wenyan_addon:world_interaction_block",
+    "wenyan_addon:entity_manipulation_block",
+    "wenyan_addon:note_block_function_block",
+    "wenyan_addon:read_write_block",
+    "wenyan_addon:naming_block",
+    "wenyan_addon:particle_block",
+    "wenyan_addon:dye_block",
+    "wenyan_addon:marker_block",
+    "wenyan_addon:entity_status_block",
+    "wenyan_addon:entity_spawn_block",
+    "wenyan_addon:potion_block",
+    "wenyan_addon:block_edit_block",
+    "wenyan_addon:enchant_block",
+    "wenyan_addon:storage_rune_block",
+    "wenyan_addon:data_disk"
   ]
 }

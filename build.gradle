@@ -140,7 +140,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     implementation "indi.wenyan:judou:1.0.0"
-    implementation "indi.wenyan:wenyan_programming:1.0.0"
+    implementation "indi.wenyan:wenyan_programming:1.0.1"
 
     implementation "dev.anvilcraft.lib:anvillib-neoforge-26.1:2.0.0+snapshot.441"
     compileOnly "dev.anvilcraft.ping:middle_key_ping:2.0.0"

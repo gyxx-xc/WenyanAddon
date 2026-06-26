@@ -3,6 +3,7 @@ package org.wenyan.wenyan_addon.device;
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
 import indi.wenyan.interpreter_impl.args.ArgsSpecBuilder;
+import indi.wenyan.interpreter_impl.args.ResolvedArgs;
 import indi.wenyan.interpreter_impl.args.WenyanArgsResolver;
 import indi.wenyan.judou.api.values.IWenyanValue;
 import indi.wenyan.judou.api.values.WenyanNull;
@@ -19,6 +20,14 @@ public enum BlockHandlerHelper {
 
     public static final ArgsSpecBuilder.Step<?> singleVec3ArgsSpec = WenyanArgsResolver.build()
             .double_().double_().double_().dummy();
+
+    public static BlockPos offsetPos(BlockPos bp, ResolvedArgs args) {
+        return new BlockPos(
+                (int) (bp.getX() + (double) args.get(0)),
+                (int) (bp.getY() + (double) args.get(1)),
+                (int) (bp.getZ() + (double) args.get(2))
+        );
+    }
 
     @FunctionalInterface
     public interface BlockHandler {
