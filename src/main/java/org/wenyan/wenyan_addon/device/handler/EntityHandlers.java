@@ -8,6 +8,7 @@ import indi.wenyan.content.entity.ThrowRunnerEntity;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
 import indi.wenyan.interpreter_impl.args.ArgsSpecBuilder;
 import indi.wenyan.interpreter_impl.args.WenyanArgsResolver;
+import indi.wenyan.interpreter_impl.value.WenyanEntity;
 import indi.wenyan.interpreter_impl.value.WenyanVec3;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
@@ -24,8 +25,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -176,8 +179,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
+                    BlockPos bp = blockContext.pos();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
                 }
                 return WenyanNull.NULL;
             })
@@ -185,8 +190,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("警"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
+                    BlockPos bp = blockContext.pos();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
                 }
                 return WenyanNull.NULL;
             })
@@ -194,8 +201,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("往"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
+                    BlockPos bp = blockContext.pos();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
                 }
                 return WenyanNull.NULL;
             })
@@ -203,8 +212,79 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("敌"), (ctx, request) -> {
                 if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
+                    BlockPos bp = blockContext.pos();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
+                }
+                return WenyanNull.NULL;
+            })
+            .build();
+    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
+            .description("将指定实体传送至相对位置")
+            .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((_, request) -> {
+                var args = request.args();
+                Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
+                Vec3 delta = args.get(1).as(WenyanVec3.TYPE).value();
+                objective.teleportTo(objective.getX() + delta.x, objective.getY() + delta.y, objective.getZ() + delta.z);
+            }))
+            .description("将指定实体沿视线方向瞬移")
+            .handler(ChineseUtils.bracketOf("閃"), BlockHandlerHelper.wrapVoid((_, request) -> {
+                var args = request.args();
+                Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
+                double distance = args.get(1).as(WenyanDouble.TYPE).value();
+                if (distance > 20) {
+                    throw new WenyanException.WenyanDataException("施法距离过远");
+                }
+                Vec3 lookAngle = objective.getLookAngle().scale(distance);
+                objective.teleportTo(objective.getX() + lookAngle.x, objective.getY() + lookAngle.y, objective.getZ() + lookAngle.z);
+            }))
+            .description("对指定实体施加动量")
+            .handler(ChineseUtils.bracketOf("施力"), BlockHandlerHelper.wrapVoid((_, request) -> {
+                var args = request.args();
+                Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
+                Vec3 force = args.get(1).as(WenyanVec3.TYPE).value();
+                objective.addDeltaMovement(force);
+                if (objective instanceof ServerPlayer serverPlayer) {
+                    serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(serverPlayer));
+                }
+            }))
+            .build();
+    public static final Function<ItemStack, RawHandlerPackage> ITEM_ENTITY_MANIPULATION_PACKAGE = _ -> HandlerPackageBuilder.create()
+            .description("将指定实体传送至相对位置")
+            .handler(ChineseUtils.bracketOf("传送"), (ctx, argsRequest) -> {
+                if (ctx instanceof ThrowEntityContext(_)) {
+                    var args = argsRequest.args();
+                    Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
+                    Vec3 delta = args.get(1).as(WenyanVec3.TYPE).value();
+                    objective.teleportTo(objective.getX() + delta.x, objective.getY() + delta.y, objective.getZ() + delta.z);
+                }
+                return WenyanNull.NULL;
+            })
+            .description("将指定实体沿视线方向瞬移")
+            .handler(ChineseUtils.bracketOf("閃"), (ctx, argsRequest) -> {
+                if (ctx instanceof ThrowEntityContext(_)) {
+                    var args = argsRequest.args();
+                    Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
+                    double distance = args.get(1).as(WenyanDouble.TYPE).value();
+                    if (distance > 20) {
+                        throw new WenyanException.WenyanDataException("施法距离过远");
+                    }
+                    Vec3 lookAngle = objective.getLookAngle().scale(distance);
+                    objective.teleportTo(objective.getX() + lookAngle.x, objective.getY() + lookAngle.y, objective.getZ() + lookAngle.z);
+                }
+                return WenyanNull.NULL;
+            })
+            .description("对指定实体施加动量")
+            .handler(ChineseUtils.bracketOf("施力"), (ctx, argsRequest) -> {
+                if (ctx instanceof ThrowEntityContext(_)) {
+                    var args = argsRequest.args();
+                    Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
+                    Vec3 force = args.get(1).as(WenyanVec3.TYPE).value();
+                    objective.addDeltaMovement(force);
+                    if (objective instanceof ServerPlayer serverPlayer) {
+                        serverPlayer.connection.send(new ClientboundSetEntityMotionPacket(serverPlayer));
+                    }
                 }
                 return WenyanNull.NULL;
             })
@@ -600,8 +680,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
+                    BlockPos bp = entity.blockPosition();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
                 }
                 return WenyanNull.NULL;
             })
@@ -609,8 +691,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("警"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
+                    BlockPos bp = entity.blockPosition();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
                 }
                 return WenyanNull.NULL;
             })
@@ -618,8 +702,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("往"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
+                    BlockPos bp = entity.blockPosition();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
                 }
                 return WenyanNull.NULL;
             })
@@ -627,8 +713,10 @@ public final class EntityHandlers {
             .handler(ChineseUtils.bracketOf("敌"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
                     var args = markerArgsSpec.resolve(request);
-                    PacketDistributor.sendToPlayersInDimension(sl, new PositionPingPayload(Component.literal(args.get(0)),
-                            new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
+                    BlockPos bp = entity.blockPosition();
+                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
+                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
+                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
                 }
                 return WenyanNull.NULL;
             })
@@ -766,7 +854,7 @@ public final class EntityHandlers {
         if (request.args().isEmpty()) {
             return Optional.empty();
         }
-        int slot = (int) request.args().get(0).as(WenyanDouble.TYPE).value() - 1;
+        int slot = (int) request.args().getFirst().as(WenyanDouble.TYPE).value() - 1;
         ItemStack disk = storage.getDisk(slot);
         if (disk.isEmpty()) {
             return Optional.empty();

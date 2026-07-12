@@ -19,8 +19,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BoneMealItem;
@@ -252,16 +250,6 @@ public final class WorldHandlers {
             }))
             .build();
 
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> NOTE_BLOCK_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("演奏指定音高的音符盒音效")
-            .handler(ChineseUtils.bracketOf("奏乐"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = WenyanArgsResolver.build().double_().range(0, 24).resolve(request);
-                int note = (int) Math.clamp((double) args.get(0), 0, 24);
-                float pitch = (float) Math.pow(2.0, (note - 12) / 12.0);
-                ctx.level().playSound(null, bp, SoundEvents.NOTE_BLOCK_HARP.value(), SoundSource.BLOCKS, 3.0F, pitch);
-            }))
-            .build();
-
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> PARTICLE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("在符文周围生成指定颜色的粒子效果")
             .handler(ChineseUtils.bracketOf("放塵"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
@@ -339,18 +327,6 @@ public final class WorldHandlers {
                         stack.set(DataComponents.ENCHANTMENTS, mutable.toImmutable());
                     }
                     return new WenyanDouble(1);
-                }
-                return WenyanNull.NULL;
-            })
-            .build();
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_NOTE_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("演奏指定音高的音符盒音效")
-            .handler(ChineseUtils.bracketOf("奏乐"), (ctx, argsRequest) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = WenyanArgsResolver.build().double_().range(0, 24).resolve(argsRequest);
-                    int note = (int) Math.clamp((double) args.get(0), 0, 24);
-                    float pitch = (float) Math.pow(2.0, (note - 12) / 12.0);
-                    entity.level().playSound(null, entity, SoundEvents.NOTE_BLOCK_HARP.value(), SoundSource.PLAYERS, 3.0F, pitch);
                 }
                 return WenyanNull.NULL;
             })

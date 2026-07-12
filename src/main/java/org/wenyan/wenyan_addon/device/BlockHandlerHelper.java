@@ -20,6 +20,7 @@ public enum BlockHandlerHelper {
 
     public static final ArgsSpecBuilder.Step<?> singleVec3ArgsSpec = WenyanArgsResolver.build()
             .double_().double_().double_().dummy();
+    public static final double SAY_RANGE = 5.0;
 
     public static BlockPos offsetPos(BlockPos bp, ResolvedArgs args) {
         return new BlockPos(
