@@ -55,8 +55,8 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> ENTITY_MANIPULATION_BLOCK = BLOCKS.registerSimpleBlock("entity_manipulation_block", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2.0f).sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> ENTITY_MANIPULATION_BLOCK_ITEM = registerTooltipBlockItem("entity_manipulation_block", ENTITY_MANIPULATION_BLOCK);
 
-    public static final DeferredBlock<Block> NOTE_BLOCK_FUNCTION_BLOCK = BLOCKS.registerSimpleBlock("note_block_function_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
-    public static final DeferredItem<BlockItem> NOTE_BLOCK_FUNCTION_BLOCK_ITEM = registerTooltipBlockItem("note_block_function_block", NOTE_BLOCK_FUNCTION_BLOCK);
+    public static final DeferredBlock<Block> MUSIC_BLOCK = BLOCKS.registerSimpleBlock("music_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
+    public static final DeferredItem<BlockItem> MUSIC_BLOCK_ITEM = registerTooltipBlockItem("music_block", MUSIC_BLOCK);
 
     public static final DeferredBlock<Block> READ_WRITE_BLOCK = BLOCKS.registerSimpleBlock("read_write_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
     public static final DeferredItem<BlockItem> READ_WRITE_BLOCK_ITEM = registerTooltipBlockItem("read_write_block", READ_WRITE_BLOCK);
@@ -110,7 +110,7 @@ public class WenyanAddon {
                 output.accept(FLUID_BLOCK_ITEM.get());
                 output.accept(WORLD_INTERACTION_BLOCK_ITEM.get());
                 output.accept(ENTITY_MANIPULATION_BLOCK_ITEM.get());
-                output.accept(NOTE_BLOCK_FUNCTION_BLOCK_ITEM.get());
+                output.accept(MUSIC_BLOCK_ITEM.get());
                 output.accept(READ_WRITE_BLOCK_ITEM.get());
                 output.accept(NAMING_BLOCK_ITEM.get());
                 output.accept(PARTICLE_BLOCK_ITEM.get());

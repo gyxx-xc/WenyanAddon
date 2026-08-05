@@ -18,7 +18,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("fluid_block", "流体石");
         BLOCK_NAMES.put("world_interaction_block", "交感石");
         BLOCK_NAMES.put("entity_manipulation_block", "移形石");
-        BLOCK_NAMES.put("note_block_function_block", "音符石");
+        BLOCK_NAMES.put("music_block", "音符石");
         BLOCK_NAMES.put("read_write_block", "文本读写石");
         BLOCK_NAMES.put("naming_block", "命名石");
         BLOCK_NAMES.put("particle_block", "粒子石");

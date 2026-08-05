@@ -23,7 +23,7 @@ public class ItemTagProvider extends ItemTagsProvider {
                 WenyanAddon.FLUID_BLOCK_ITEM.get(),
                 WenyanAddon.WORLD_INTERACTION_BLOCK_ITEM.get(),
                 WenyanAddon.ENTITY_MANIPULATION_BLOCK_ITEM.get(),
-                WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK_ITEM.get(),
+                WenyanAddon.MUSIC_BLOCK_ITEM.get(),
                 WenyanAddon.READ_WRITE_BLOCK_ITEM.get(),
                 WenyanAddon.NAMING_BLOCK_ITEM.get(),
                 WenyanAddon.PARTICLE_BLOCK_ITEM.get(),
