@@ -36,8 +36,8 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("projectile_spawner_block", "发射一些投射物");
         ITEM_TOOLTIPS.put("fluid_block", "操控流体");
         ITEM_TOOLTIPS.put("world_interaction_block", "与世界进行交互");
-        ITEM_TOOLTIPS.put("entity_manipulation_block", "移動附近實體");
-        ITEM_TOOLTIPS.put("note_block_function_block", "操控音符声音");
+        ITEM_TOOLTIPS.put("entity_manipulation_block", "操控实体");
+        ITEM_TOOLTIPS.put("note_block_function_block", "操控声音");
         ITEM_TOOLTIPS.put("read_write_block", "读写文本内容，告示牌，讲台");
         ITEM_TOOLTIPS.put("naming_block", "命名目标物件");
         ITEM_TOOLTIPS.put("particle_block", "生成粒子效果");

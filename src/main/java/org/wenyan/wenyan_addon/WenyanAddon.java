@@ -116,8 +116,8 @@ public class WenyanAddon {
                 output.accept(PARTICLE_BLOCK_ITEM.get());
                 output.accept(DYE_BLOCK_ITEM.get());
                 output.accept(MARKER_BLOCK_ITEM.get());
-                output.accept(ENTITY_STATUS_BLOCK_ITEM.get());
-                output.accept(ENTITY_SPAWN_BLOCK_ITEM.get());
+//                output.accept(ENTITY_STATUS_BLOCK_ITEM.get());
+//                output.accept(ENTITY_SPAWN_BLOCK_ITEM.get());
                 output.accept(POTION_BLOCK_ITEM.get());
                 output.accept(BLOCK_EDIT_BLOCK_ITEM.get());
                 output.accept(ENCHANT_BLOCK_ITEM.get());
