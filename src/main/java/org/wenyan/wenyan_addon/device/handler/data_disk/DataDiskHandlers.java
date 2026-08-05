@@ -2,7 +2,6 @@ package org.wenyan.wenyan_addon.device.handler;
 
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
-import indi.wenyan.interpreter_impl.args.ArgsSpecBuilder;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
 import indi.wenyan.judou.api.values.WenyanNull;
@@ -23,8 +22,6 @@ import java.util.UUID;
 import java.util.function.BiFunction;
 
 public class DataDiskHandlers {
-    // 参数规范：坐标偏移（3个double）+ 半径（1个double），范围0-16
-    public static final ArgsSpecBuilder.Step<?> storageRuneArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().double_().range(0, 16).dummy();
 
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> STORAGE_RUNE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
 
@@ -43,7 +40,6 @@ public class DataDiskHandlers {
                 }
                 return result;
             }))
-
             // ====== 2. 读取数据磁盘指定键 ======
             .description("读取数据磁盘指定键")
             .handler(ChineseUtils.bracketOf("读取磁盘键"), BlockHandlerHelper.wrap((ctx, request) -> {
@@ -58,7 +54,6 @@ public class DataDiskHandlers {
                 return DataDiskStorage.readKey(serverLevel, disk.get(), request.args().get(1).as(WenyanString.TYPE).value());
             }))
 
-            // ====== 3. 写入数据磁盘指定键 ======
             .description("写入数据磁盘指定键")
             .handler(ChineseUtils.bracketOf("写入磁盘键"), BlockHandlerHelper.wrap((ctx, request) -> {
                 if (!(ctx.level() instanceof ServerLevel serverLevel)
@@ -73,7 +68,6 @@ public class DataDiskHandlers {
                 return new WenyanDouble(DataDiskStorage.writeKey(serverLevel, disk.get(), key, request.args().get(2)) ? 1 : 0);
             }))
 
-            // ====== 4. 删除数据磁盘指定键 ======
             .description("删除数据磁盘指定键")
             .handler(ChineseUtils.bracketOf("删除磁盘键"), BlockHandlerHelper.wrap((ctx, request) -> {
                 if (!(ctx.level() instanceof ServerLevel serverLevel)
@@ -86,8 +80,6 @@ public class DataDiskHandlers {
                 }
                 return DataDiskStorage.deleteKey(serverLevel, disk.get(), request.args().get(1).as(WenyanString.TYPE).value());
             }))
-
-            // ====== 5. 列出数据磁盘中的所有键 ======
             .description("列出数据磁盘中的所有键")
             .handler(ChineseUtils.bracketOf("磁盘键"), BlockHandlerHelper.wrap((ctx, request) -> {
                 if (!(ctx.level() instanceof ServerLevel serverLevel)
@@ -100,8 +92,6 @@ public class DataDiskHandlers {
                 }
                 return DataDiskStorage.read(serverLevel, disk.get()).getAttribute("鍵");
             }))
-
-            // ====== 6. 获取磁盘数量（槽位使用情况） ======
             .description("获取已插入的磁盘数量")
             .handler(ChineseUtils.bracketOf("磁盘数"), BlockHandlerHelper.wrap((ctx, _) -> {
                 if (ctx.level().getBlockEntity(bp) instanceof StorageRuneBlockEntity storage) {
