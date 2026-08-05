@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.jspecify.annotations.NonNull;
 import org.wenyan.wenyan_addon.device.handler.*;
-import org.wenyan.wenyan_addon.dye.Dye;
+import org.wenyan.wenyan_addon.device.handler.DyeHandlers;
 
 public final class Capabilities {
     private Capabilities() {}
@@ -89,7 +89,7 @@ public final class Capabilities {
         registerer.registerToBlock(WorldHandlers.PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK.get());
         registerer.registerToBlock(DataDiskHandlers.STORAGE_RUNE_PACKAGE, ChineseUtils.bracketOf("納"), WenyanAddon.STORAGE_RUNE_BLOCK.get());
 
-        registerer.registerToBlock(Dye.DYE_PACKAGE, ChineseUtils.bracketOf("染"), WenyanAddon.DYE_BLOCK.get());
+        registerer.registerToBlock(DyeHandlers.DYE_PACKAGE, ChineseUtils.bracketOf("染"), WenyanAddon.DYE_BLOCK.get());
 
         registerer.registerToBlock(PotionHandlers.POTION_PACKAGE, ChineseUtils.bracketOf("藥"), WenyanAddon.POTION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("地"), WenyanAddon.BLOCK_EDIT_BLOCK.get());

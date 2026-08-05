@@ -1,4 +1,4 @@
-package org.wenyan.wenyan_addon.dye;
+package org.wenyan.wenyan_addon.device.handler;
 
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
@@ -6,7 +6,6 @@ import indi.wenyan.interpreter_impl.value.WenyanVec3;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
 import indi.wenyan.judou.api.values.primitive.WenyanDouble;
-import indi.wenyan.judou.api.values.primitive.WenyanInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -23,13 +22,12 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiFunction;
 
-public class Dye {
+public class DyeHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> DYE_PACKAGE = (pos, state) -> dyePackage();
 
     private static RawHandlerPackage dyePackage() {
         HandlerPackageBuilder builder = HandlerPackageBuilder.create();
 
-        // 为每种颜色添加染色指令，支持坐标参数
         addDyeShortcuts(builder, DyeColor.WHITE, "白");
         addDyeShortcuts(builder, DyeColor.ORANGE, "橙");
         addDyeShortcuts(builder, DyeColor.MAGENTA, "品红");
