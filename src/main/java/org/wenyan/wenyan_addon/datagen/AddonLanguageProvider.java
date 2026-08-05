@@ -64,6 +64,9 @@ public final class AddonLanguageProvider extends LanguageProvider {
         add("wenyan_addon.configuration.section.wenyan_addon.common.toml", "新秩序之設");
         add("wenyan_addon.configuration.section.wenyan_addon.common.toml.title", "新秩序之設");
 
+        add("wenyan_addon.error.no_loading", "未加载");
+        add("wenyan_addon.error.no_read", "无法读取");
+        add("wenyan_addon.error.no_write", "无法写入");
         for (Map.Entry<String, String> entry : BLOCK_NAMES.entrySet()) {
             add("block." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
             add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
