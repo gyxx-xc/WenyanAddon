@@ -18,7 +18,6 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.arrow.Arrow;
@@ -36,28 +35,12 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static org.wenyan.wenyan_addon.device.handler.HandlerUtils.lampToRangeByBiFunction;
+import static org.wenyan.wenyan_addon.device.handler.HandlerUtils.lampToRangeByFunction;
+
 
 public class ProjectileHandlers {
-    private static Vec3 lampToRangeByBiFunction(BlockPos bp, Vec3 target) throws WenyanException.WenyanDataException {
-        double dx = target.x - (bp.getX() + 0.5);
-        double dy = target.y - (bp.getY() + 0.5);
-        double dz = target.z - (bp.getZ() + 0.5);
-        double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (dist > 3) {
-            throw new WenyanException.WenyanDataException("施法距离过远");
-        }
-        return target;
-    }
-    private static Vec3 lampToRangeByFunction(Entity entity, Vec3 target) throws WenyanException.WenyanDataException {
-        double dx = target.x - (entity.getX() + 0.5);
-        double dy = target.y - (entity.getY() + 0.5);
-        double dz = target.z - (entity.getZ() + 0.5);
-        double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (dist > 3) {
-            throw new WenyanException.WenyanDataException("施法距离过远");
-        }
-        return target;
-    }
+
 
     private static IntList rgbListToColorsByBiFunction(List<IWenyanValue> rgbList) throws WenyanException.WenyanTypeException {
         IntList colors = new IntArrayList();

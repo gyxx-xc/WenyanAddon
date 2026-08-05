@@ -43,7 +43,7 @@ public class ReadWriteHandlers {
                 WenyanDouble z=request.args().get(2).as(WenyanDouble.TYPE);
                 BlockPos blockPos=new BlockPos((int) x.value(), (int) y.value(), (int) z.value());
                 if (!ctx.level().isLoaded(blockPos)) {
-                    throw new WenyanException.WenyanCheckerError(Component.translatable("error.wenyan_extra.no_loading").getString());
+                    throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                 }
                 BlockEntity blockEntity = ctx.level().getBlockEntity(blockPos);
                 if (blockEntity instanceof SignBlockEntity sign) {
@@ -83,7 +83,7 @@ public class ReadWriteHandlers {
                         return list;
                     }
                 }
-                throw new WenyanException.WenyanDataException(Component.translatable("error.wenyan_extra.no_read").getString());
+                throw new WenyanException.WenyanDataException(Component.translatable("wenyan_addon.error.no_read").getString());
             }))
             .description("写入文字，告示牌或讲台")
             .handler(ChineseUtils.bracketOf("写"), BlockHandlerHelper.wrap((ctx, request) -> {
@@ -94,7 +94,7 @@ public class ReadWriteHandlers {
 
                 BlockPos blockPos=new BlockPos((int) x.value(),(int) y.value(),(int) z.value());
                 if (!ctx.level().isLoaded(blockPos)) {
-                    throw new WenyanException.WenyanCheckerError(Component.translatable("error.wenyan_extra.no_loading").getString());
+                    throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                 }
                 BlockEntity blockEntity = ctx.level().getBlockEntity(blockPos);
                 if (blockEntity instanceof LecternBlockEntity lectern) {
@@ -132,7 +132,7 @@ public class ReadWriteHandlers {
                     sign.setChanged();
                     return WenyanValues.of(true);
                 }
-                throw new WenyanException.WenyanCheckerError(Component.translatable("error.wenyan_extra.cant_write").getString());
+                throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.cant_write").getString());
             }))
             .build();
     public static final Function<ItemStack, RawHandlerPackage> ITEM_READ_WRITE_PACKAGE = _ -> HandlerPackageBuilder.create()
@@ -145,7 +145,7 @@ public class ReadWriteHandlers {
                     WenyanDouble z = args.get(2).as(WenyanDouble.TYPE);
                     BlockPos blockPos = new BlockPos((int) x.value(), (int) y.value(), (int) z.value());
                     if (!entity.level().isLoaded(blockPos)) {
-                        throw new WenyanException.WenyanCheckerError(Component.translatable("error.wenyan_extra.no_loading").getString());
+                        throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                     }
                     BlockEntity blockEntity = entity.level().getBlockEntity(blockPos);
                     if (blockEntity instanceof SignBlockEntity sign) {
@@ -176,7 +176,7 @@ public class ReadWriteHandlers {
                             return list;
                         }
                     }
-                    throw new WenyanException.WenyanDataException(Component.translatable("error.wenyan_extra.no_read").getString());
+                    throw new WenyanException.WenyanDataException(Component.translatable("wenyan_addon.error.no_read").getString());
                 }
                 return WenyanNull.NULL;
             })
@@ -191,7 +191,7 @@ public class ReadWriteHandlers {
 
                     BlockPos blockPos = new BlockPos((int) x.value(), (int) y.value(), (int) z.value());
                     if (!entity.level().isLoaded(blockPos)) {
-                        throw new WenyanException.WenyanCheckerError(Component.translatable("error.wenyan_extra.no_loading").getString());
+                        throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                     }
                     BlockEntity blockEntity = entity.level().getBlockEntity(blockPos);
                     if (blockEntity instanceof LecternBlockEntity lectern) {
@@ -228,7 +228,7 @@ public class ReadWriteHandlers {
                         sign.setChanged();
                         return WenyanValues.of(true);
                     }
-                    throw new WenyanException.WenyanCheckerError(Component.translatable("error.wenyan_extra.cant_write").getString());
+                    throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_write").getString());
                 }
                 return WenyanNull.NULL;
             })

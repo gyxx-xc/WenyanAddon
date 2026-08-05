@@ -26,7 +26,7 @@ import java.util.function.Function;
 public class PotionHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> POTION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("为附近的生物或玩家添加指定药水效果")
-            .handler(ChineseUtils.bracketOf("賜效"), BlockHandlerHelper.wrap((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("给予效果"), BlockHandlerHelper.wrap((ctx, request) -> {
                 Level level = ctx.level();
                 var args = request.args();
                 String effectId = args.get(0).as(WenyanString.TYPE).value();
@@ -44,7 +44,7 @@ public class PotionHandlers {
                 return WenyanBoolean.TRUE;
             }))
             .description("驱除附近生物或玩家身上的指定药水效果")
-            .handler(ChineseUtils.bracketOf("驅效"), BlockHandlerHelper.wrap((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("祛除效果"), BlockHandlerHelper.wrap((ctx, request) -> {
                 Level level = ctx.level();
                 var args = request.args();
                 String effectId = args.get(0).as(WenyanString.TYPE).value();
@@ -63,7 +63,7 @@ public class PotionHandlers {
 
     public static final Function<ItemStack, RawHandlerPackage> ITEM_POTION_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("为附近的生物或玩家添加指定药水效果")
-            .handler(ChineseUtils.bracketOf("賜效"), (ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("给予效果"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     Level level = entity.level();
                     var args = request.args();
@@ -86,7 +86,7 @@ public class PotionHandlers {
                 return WenyanBoolean.FALSE;
             })
             .description("驱除附近生物或玩家身上的指定药水效果")
-            .handler(ChineseUtils.bracketOf("驅效"), (ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("祛除效果"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     Level level = entity.level();
                     var args = request.args();

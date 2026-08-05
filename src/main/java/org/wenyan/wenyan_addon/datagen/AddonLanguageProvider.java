@@ -67,6 +67,8 @@ public final class AddonLanguageProvider extends LanguageProvider {
         add("wenyan_addon.error.no_loading", "未加载");
         add("wenyan_addon.error.no_read", "无法读取");
         add("wenyan_addon.error.no_write", "无法写入");
+        add("wenyan_addon.error.address_to_loog", "距离太远");
+
         for (Map.Entry<String, String> entry : BLOCK_NAMES.entrySet()) {
             add("block." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
             add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());

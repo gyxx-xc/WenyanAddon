@@ -44,7 +44,7 @@ public class ParticleHandlers {
             .build();
     public static final Function<ItemStack, RawHandlerPackage> ITEM_PARTICLE_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("在符文周围生成指定颜色的粒子效果")
-            .handler(ChineseUtils.bracketOf("放塵"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("粒子放出"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = WenyanArgsResolver.build()
                             .int_().range(0, 255)
