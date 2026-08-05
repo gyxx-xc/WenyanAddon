@@ -1,10 +1,13 @@
 package org.wenyan.wenyan_addon;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.flag.FeatureFlags;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -25,8 +28,9 @@ import org.wenyan.pong.Pong;
 import org.wenyan.pong.setup.PongRegistration;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlock;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlockEntity;
+import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneMenu;
+import org.wenyan.wenyan_addon.item.DataDiskItem;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
-import org.wenyan.wenyan_addon.item.TooltipItem;
 
 @Mod(WenyanAddon.MODID)
 public class WenyanAddon {
@@ -36,6 +40,7 @@ public class WenyanAddon {
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final ResourceKey<CreativeModeTab> WENYAN_PROGRAMMING_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
@@ -92,10 +97,14 @@ public class WenyanAddon {
 
     public static final DeferredBlock<StorageRuneBlock> STORAGE_RUNE_BLOCK = BLOCKS.registerBlock("storage_rune_block", StorageRuneBlock::new);
     public static final DeferredItem<BlockItem> STORAGE_RUNE_BLOCK_ITEM = registerTooltipBlockItem("storage_rune_block", STORAGE_RUNE_BLOCK);
-    public static final DeferredItem<Item> DATA_DISK_ITEM = ITEMS.registerItem("data_disk", properties -> new TooltipItem(properties, tooltipKey("data_disk")), properties -> properties.stacksTo(1));
+    public static final DeferredItem<Item> DATA_DISK_ITEM = ITEMS.registerItem("data_disk", properties -> new DataDiskItem(properties, tooltipKey("data_disk")), properties -> properties.stacksTo(1));
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<StorageRuneBlockEntity>> STORAGE_RUNE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
             "storage_rune_block",
             () -> new BlockEntityType<>(StorageRuneBlockEntity::new, STORAGE_RUNE_BLOCK.get())
+    );
+    public static final DeferredHolder<MenuType<?>, MenuType<StorageRuneMenu>> STORAGE_RUNE_MENU = MENUS.register(
+            "storage_rune_menu",
+            () -> new MenuType<>(StorageRuneMenu::new, FeatureFlags.DEFAULT_FLAGS)
     );
 
     public static final DeferredBlock<Block> MESSAGE_BLOCK = BLOCKS.registerSimpleBlock("message_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
@@ -142,6 +151,7 @@ public class WenyanAddon {
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
+        MENUS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
         Pong.register(modEventBus);

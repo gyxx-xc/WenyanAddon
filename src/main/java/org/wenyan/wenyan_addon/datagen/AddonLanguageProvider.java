@@ -62,6 +62,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add("itemGroup.wenyan_addon", "吾有一術：新秩序");
+        add("container." + WenyanAddon.MODID + ".storage_rune", "符咒收纳柜");
         add("wenyan_addon.configuration.title", "吾有一術：新秩序之設");
         add("wenyan_addon.configuration.section.wenyan_addon.common.toml", "新秩序之設");
         add("wenyan_addon.configuration.section.wenyan_addon.common.toml.title", "新秩序之設");
