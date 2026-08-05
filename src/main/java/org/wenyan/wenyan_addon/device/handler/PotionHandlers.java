@@ -29,7 +29,7 @@ import java.util.function.Function;
  * @Description TODO
  * @date 2026/8/5 12:52
  */
-public final class PotionHandlers {
+public class PotionHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> POTION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("为附近的生物或玩家添加指定药水效果")
             .handler(ChineseUtils.bracketOf("賜效"), BlockHandlerHelper.wrap((ctx, request) -> {
