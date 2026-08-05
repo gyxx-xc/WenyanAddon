@@ -63,54 +63,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class EntityHandlers {
-    public static final ArgsSpecBuilder.Step<?> markerArgsSpec = WenyanArgsResolver.build()
-            .string_().double_().double_().double_().dummy();
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> MARKER_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
-            .description("在世界上标记一个普通坐标点")
-            .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
-                if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = blockContext.pos();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("在世界上标记一个警坐标点")
-            .handler(ChineseUtils.bracketOf("警"), (ctx, request) -> {
-                if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = blockContext.pos();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("在世界上标记一个前往坐标点")
-            .handler(ChineseUtils.bracketOf("往"), (ctx, request) -> {
-                if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = blockContext.pos();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("在世界上标记一个敌坐标点")
-            .handler(ChineseUtils.bracketOf("敌"), (ctx, request) -> {
-                if (ctx instanceof BlockRequest.BlockContext blockContext && blockContext.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = blockContext.pos();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
-                }
-                return WenyanNull.NULL;
-            })
-            .build();
+
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
             .description("将指定实体传送至相对位置")
             .handler(ChineseUtils.bracketOf("传送"), BlockHandlerHelper.wrapVoid((_, request) -> {
@@ -443,52 +396,7 @@ public final class EntityHandlers {
 
 
 
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_MARKER_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("在世界上标记一个普通坐标点")
-            .handler(ChineseUtils.bracketOf("标点"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = entity.blockPosition();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GENERIC));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("在世界上标记一个警坐标点")
-            .handler(ChineseUtils.bracketOf("警"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = entity.blockPosition();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.WARNING));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("在世界上标记一个前往坐标点")
-            .handler(ChineseUtils.bracketOf("往"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = entity.blockPosition();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.GOTO));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("在世界上标记一个敌坐标点")
-            .handler(ChineseUtils.bracketOf("敌"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel sl) {
-                    var args = markerArgsSpec.resolve(request);
-                    BlockPos bp = entity.blockPosition();
-                    PacketDistributor.sendToPlayersNear(sl, null, bp.getX() + 0.5, bp.getY() + 0.5, bp.getZ() + 0.5,
-                            BlockHandlerHelper.SAY_RANGE, new PositionPingPayload(Component.literal(args.get(0)),
-                                    new Vec3(args.get(1), args.get(2), args.get(3)), PingType.ENEMY));
-                }
-                return WenyanNull.NULL;
-            })
-            .build();
+
 
     public static final Function<ItemStack, RawHandlerPackage> ITEM_PROJECTILE_SPAWNER_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("发射箭矢")
