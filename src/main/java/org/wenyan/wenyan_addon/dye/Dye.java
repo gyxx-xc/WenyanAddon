@@ -30,22 +30,22 @@ public class Dye {
         HandlerPackageBuilder builder = HandlerPackageBuilder.create();
 
         // 为每种颜色添加染色指令，支持坐标参数
-        addDyeShortcuts(builder, DyeColor.WHITE, "白", "白色");
-        addDyeShortcuts(builder, DyeColor.ORANGE, "橙", "橙色");
-        addDyeShortcuts(builder, DyeColor.MAGENTA, "品红", "品红色", "洋红", "洋红色");
-        addDyeShortcuts(builder, DyeColor.LIGHT_BLUE, "浅蓝", "浅蓝色", "淺藍", "淺藍色", "淡蓝", "淡蓝色", "淡藍", "淡藍色");
-        addDyeShortcuts(builder, DyeColor.YELLOW, "黄", "黄色", "黃", "黃色");
-        addDyeShortcuts(builder, DyeColor.LIME, "黄绿", "黄绿色", "黃綠", "黃綠色", "青柠", "青柠色", "青檸", "青檸色");
-        addDyeShortcuts(builder, DyeColor.PINK, "粉", "粉色");
-        addDyeShortcuts(builder, DyeColor.GRAY, "灰", "灰色");
-        addDyeShortcuts(builder, DyeColor.LIGHT_GRAY, "浅灰", "浅灰色", "淺灰", "淺灰色", "淡灰", "淡灰色");
-        addDyeShortcuts(builder, DyeColor.CYAN, "青", "青色");
-        addDyeShortcuts(builder, DyeColor.PURPLE, "紫", "紫色");
-        addDyeShortcuts(builder, DyeColor.BLUE, "蓝", "蓝色", "藍", "藍色");
-        addDyeShortcuts(builder, DyeColor.BROWN, "棕", "棕色", "褐", "褐色");
-        addDyeShortcuts(builder, DyeColor.GREEN, "绿", "绿色", "綠", "綠色");
-        addDyeShortcuts(builder, DyeColor.RED, "红", "红色", "紅", "紅色");
-        addDyeShortcuts(builder, DyeColor.BLACK, "黑", "黑色");
+        addDyeShortcuts(builder, DyeColor.WHITE, "白");
+        addDyeShortcuts(builder, DyeColor.ORANGE, "橙");
+        addDyeShortcuts(builder, DyeColor.MAGENTA, "品红");
+        addDyeShortcuts(builder, DyeColor.LIGHT_BLUE, "浅蓝");
+        addDyeShortcuts(builder, DyeColor.YELLOW, "黄");
+        addDyeShortcuts(builder, DyeColor.LIME, "黄绿");
+        addDyeShortcuts(builder, DyeColor.PINK, "粉");
+        addDyeShortcuts(builder, DyeColor.GRAY, "灰");
+        addDyeShortcuts(builder, DyeColor.LIGHT_GRAY, "浅灰");
+        addDyeShortcuts(builder, DyeColor.CYAN, "青");
+        addDyeShortcuts(builder, DyeColor.PURPLE, "紫");
+        addDyeShortcuts(builder, DyeColor.BLUE, "蓝");
+        addDyeShortcuts(builder, DyeColor.BROWN, "棕");
+        addDyeShortcuts(builder, DyeColor.GREEN, "绿");
+        addDyeShortcuts(builder, DyeColor.RED, "红");
+        addDyeShortcuts(builder, DyeColor.BLACK, "黑");
 
         return builder.build();
     }
