@@ -87,7 +87,7 @@ public final class Capabilities {
         registerer.registerToBlock(EntityManipulationHandlers.ENTITY_MANIPULATION_PACKAGE, ChineseUtils.bracketOf("移形"), WenyanAddon.ENTITY_MANIPULATION_BLOCK.get());
         registerer.registerToBlock(MusicHandlers.MUSIC_BLOCK_PACKAGE, ChineseUtils.bracketOf("奏"), WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK.get());
-        registerer.registerToBlock(EntityHandlers.STORAGE_RUNE_PACKAGE, ChineseUtils.bracketOf("納"), WenyanAddon.STORAGE_RUNE_BLOCK.get());
+        registerer.registerToBlock(DataDiskHandlers.STORAGE_RUNE_PACKAGE, ChineseUtils.bracketOf("納"), WenyanAddon.STORAGE_RUNE_BLOCK.get());
 
         registerer.registerToBlock(Dye.DYE_PACKAGE, ChineseUtils.bracketOf("染"), WenyanAddon.DYE_BLOCK.get());
 
