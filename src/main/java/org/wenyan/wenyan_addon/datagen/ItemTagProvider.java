@@ -20,7 +20,7 @@ public class ItemTagProvider extends ItemTagsProvider {
         tag(WyRegistration.PAPER_MODULE_ITEM).add(
                 WenyanAddon.EXAMPLE_BLOCK_ITEM.get(),
                 WenyanAddon.PROJECTILE_SPAWNER_BLOCK_ITEM.get(),
-                WenyanAddon.ELEMENTAL_BLOCK_ITEM.get(),
+                WenyanAddon.FLUID_BLOCK_ITEM.get(),
                 WenyanAddon.WORLD_INTERACTION_BLOCK_ITEM.get(),
                 WenyanAddon.ENTITY_MANIPULATION_BLOCK_ITEM.get(),
                 WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK_ITEM.get(),

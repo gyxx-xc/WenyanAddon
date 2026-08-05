@@ -17,7 +17,7 @@ import java.util.function.Function;
 
 
 public class FluidHandlers {
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_ELEMENTAL_PACKAGE = _ -> HandlerPackageBuilder.create()
+    public static final Function<ItemStack, RawHandlerPackage> ITEM_FLUID_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("在指定位置放置水源方块")
             .handler(ChineseUtils.bracketOf("水源"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
@@ -57,7 +57,7 @@ public class FluidHandlers {
                 return WenyanNull.NULL;
             })
             .build();
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ELEMENTAL_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
+    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> FLUID_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("在指定位置放置水源方块")
             .handler(ChineseUtils.bracketOf("水源"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);

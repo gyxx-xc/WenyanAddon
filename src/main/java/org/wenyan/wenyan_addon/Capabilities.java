@@ -64,7 +64,7 @@ public final class Capabilities {
 
         registerer.registerToItem(EntityManipulationHandlers.ITEM_ENTITY_MANIPULATION_PACKAGE, ChineseUtils.bracketOf("移形"), WenyanAddon.ENTITY_MANIPULATION_BLOCK_ITEM);
         registerer.registerToItem(MusicHandlers.ITEM_MUSIC_PACKAGE, ChineseUtils.bracketOf("奏"), WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK_ITEM);
-        registerer.registerToItem(FluidHandlers.ITEM_ELEMENTAL_PACKAGE, ChineseUtils.bracketOf("流体"), WenyanAddon.ELEMENTAL_BLOCK_ITEM);
+        registerer.registerToItem(FluidHandlers.ITEM_FLUID_PACKAGE, ChineseUtils.bracketOf("流体"), WenyanAddon.FLUID_BLOCK_ITEM);
         registerer.registerToItem(WorldInteractionHandlers.ITEM_WORLD_INTERACTION_PACKAGE, ChineseUtils.bracketOf("交感"), WenyanAddon.WORLD_INTERACTION_BLOCK_ITEM);
         registerer.registerToItem(WorldHandlers.ITEM_READ_WRITE_PACKAGE, ChineseUtils.bracketOf("文本读写"), WenyanAddon.READ_WRITE_BLOCK_ITEM);
         registerer.registerToItem(WorldHandlers.ITEM_PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK_ITEM);
@@ -80,13 +80,13 @@ public final class Capabilities {
 
         registerer.registerToBlock(MarkerHandler.MARKER_PACKAGE, ChineseUtils.bracketOf("标记"), WenyanAddon.MARKER_BLOCK.get());
         registerer.registerToBlock(ProjectileHandlers.PROJECTILE_SPAWNER_PACKAGE, ChineseUtils.bracketOf("投射"), WenyanAddon.PROJECTILE_SPAWNER_BLOCK.get());
-        registerer.registerToBlock(FluidHandlers.ELEMENTAL_PACKAGE, ChineseUtils.bracketOf("流体"), WenyanAddon.ELEMENTAL_BLOCK.get());
+        registerer.registerToBlock(FluidHandlers.FLUID_PACKAGE, ChineseUtils.bracketOf("流体"), WenyanAddon.FLUID_BLOCK.get());
         registerer.registerToBlock(WorldInteractionHandlers.WORLD_INTERACTION_PACKAGE, ChineseUtils.bracketOf("交感"), WenyanAddon.WORLD_INTERACTION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.READ_WRITE_PACKAGE, ChineseUtils.bracketOf("文本读写"), WenyanAddon.READ_WRITE_BLOCK.get());
         registerer.registerToBlock(NamingHandlers.NAMING_PACKAGE, ChineseUtils.bracketOf("命名"), WenyanAddon.NAMING_BLOCK.get());
         registerer.registerToBlock(EntityManipulationHandlers.ENTITY_MANIPULATION_PACKAGE, ChineseUtils.bracketOf("移形"), WenyanAddon.ENTITY_MANIPULATION_BLOCK.get());
         registerer.registerToBlock(MusicHandlers.MUSIC_BLOCK_PACKAGE, ChineseUtils.bracketOf("奏"), WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK.get());
-        registerer.registerToBlock(WorldHandlers.PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK.get());
+        registerer.registerToBlock(ParticleHandlers.PARTICLE_PACKAGE, ChineseUtils.bracketOf("粒子"), WenyanAddon.PARTICLE_BLOCK.get());
         registerer.registerToBlock(DataDiskHandlers.STORAGE_RUNE_PACKAGE, ChineseUtils.bracketOf("纳"), WenyanAddon.STORAGE_RUNE_BLOCK.get());
 
         registerer.registerToBlock(DyeHandlers.DYE_PACKAGE, ChineseUtils.bracketOf("染"), WenyanAddon.DYE_BLOCK.get());

@@ -46,8 +46,8 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> PROJECTILE_SPAWNER_BLOCK = BLOCKS.registerSimpleBlock("projectile_spawner_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> PROJECTILE_SPAWNER_BLOCK_ITEM = registerTooltipBlockItem("projectile_spawner_block", PROJECTILE_SPAWNER_BLOCK);
 
-    public static final DeferredBlock<Block> ELEMENTAL_BLOCK = BLOCKS.registerSimpleBlock("elemental_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
-    public static final DeferredItem<BlockItem> ELEMENTAL_BLOCK_ITEM = registerTooltipBlockItem("elemental_block", ELEMENTAL_BLOCK);
+    public static final DeferredBlock<Block> FLUID_BLOCK = BLOCKS.registerSimpleBlock("fluid_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
+    public static final DeferredItem<BlockItem> FLUID_BLOCK_ITEM = registerTooltipBlockItem("fluid_block", FLUID_BLOCK);
 
     public static final DeferredBlock<Block> WORLD_INTERACTION_BLOCK = BLOCKS.registerSimpleBlock("world_interaction_block", p -> p.mapColor(MapColor.STONE).strength(2.0f).sound(SoundType.STONE));
     public static final DeferredItem<BlockItem> WORLD_INTERACTION_BLOCK_ITEM = registerTooltipBlockItem("world_interaction_block", WORLD_INTERACTION_BLOCK);
@@ -107,7 +107,7 @@ public class WenyanAddon {
             .displayItems((parameters, output) -> {
                 output.accept(EXAMPLE_BLOCK_ITEM.get());
                 output.accept(PROJECTILE_SPAWNER_BLOCK_ITEM.get());
-                output.accept(ELEMENTAL_BLOCK_ITEM.get());
+                output.accept(FLUID_BLOCK_ITEM.get());
                 output.accept(WORLD_INTERACTION_BLOCK_ITEM.get());
                 output.accept(ENTITY_MANIPULATION_BLOCK_ITEM.get());
                 output.accept(NOTE_BLOCK_FUNCTION_BLOCK_ITEM.get());
