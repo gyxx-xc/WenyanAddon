@@ -29,7 +29,7 @@ public final class WorldSnapshotMapper {
 
     public static WenyanMapValue entity(Entity entity) {
         WenyanMapValue map = new WenyanMapValue();
-        map.put("類", new WenyanString(entity.getEncodeId() == null ? entity.getType().toString() : entity.getEncodeId()));
+        map.put("类", new WenyanString(entity.getEncodeId() == null ? entity.getType().toString() : entity.getEncodeId()));
         map.put("uuid", new WenyanString(entity.getStringUUID()));
         map.put("名", new WenyanString(entity.getName().getString()));
         map.put("活", WenyanValues.of(entity.isAlive()));
@@ -44,7 +44,7 @@ public final class WorldSnapshotMapper {
                 entity.saveWithoutId(output);
                 map.put("nbt", tag(output.buildResult()));
             } catch (Exception e) {
-                map.put("亂", new WenyanString(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
+                map.put("乱", new WenyanString(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
             }
         }
         return map;
@@ -54,22 +54,22 @@ public final class WorldSnapshotMapper {
         BlockState state = level.getBlockState(pos);
         WenyanMapValue map = new WenyanMapValue();
         Identifier blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-        map.put("方塊", new WenyanString(blockId == null ? state.getBlock().toString() : blockId.toString()));
+        map.put("方块", new WenyanString(blockId == null ? state.getBlock().toString() : blockId.toString()));
         map.put("位置", position(pos));
-        map.put("屬性", properties(state));
+        map.put("属性", properties(state));
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity != null) {
             WenyanMapValue be = new WenyanMapValue();
             Identifier typeId = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntity.getType());
-            be.put("類", new WenyanString(typeId == null ? blockEntity.getType().toString() : typeId.toString()));
-            be.put("組件", components(blockEntity.components()));
+            be.put("类", new WenyanString(typeId == null ? blockEntity.getType().toString() : typeId.toString()));
+            be.put("组件", components(blockEntity.components()));
             try {
                 CompoundTag tag = blockEntity.saveWithoutMetadata(level.registryAccess());
                 be.put("nbt", tag(tag));
             } catch (Exception e) {
-                be.put("亂", new WenyanString(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
+                be.put("乱", new WenyanString(e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage()));
             }
-            map.put("方塊實體", be);
+            map.put("方块实体", be);
         }
         return map;
     }
