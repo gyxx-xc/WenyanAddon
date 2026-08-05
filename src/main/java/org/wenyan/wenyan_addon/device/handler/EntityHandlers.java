@@ -1,55 +1,26 @@
 package org.wenyan.wenyan_addon.device.handler;
 
-import dev.anvilcraft.ping.network.payload.PositionPingPayload;
-import dev.anvilcraft.ping.util.PingType;
 import indi.wenyan.content.block.runner.BlockRequest;
-import indi.wenyan.content.entity.ThrowEntityContext;
-import indi.wenyan.content.entity.ThrowRunnerEntity;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
 import indi.wenyan.interpreter_impl.args.ArgsSpecBuilder;
-import indi.wenyan.interpreter_impl.args.WenyanArgsResolver;
-import indi.wenyan.interpreter_impl.value.WenyanEntity;
-import indi.wenyan.interpreter_impl.value.WenyanVec3;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
-import indi.wenyan.judou.api.values.IWenyanValue;
 import indi.wenyan.judou.api.values.WenyanNull;
 import indi.wenyan.judou.api.values.exception.WenyanException;
-import indi.wenyan.judou.api.values.primitive.WenyanBoolean;
 import indi.wenyan.judou.api.values.primitive.WenyanDouble;
 import indi.wenyan.judou.api.values.primitive.WenyanList;
 import indi.wenyan.judou.api.values.primitive.WenyanString;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
-import net.minecraft.world.entity.projectile.arrow.Arrow;
-import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball;
-import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.wenyan.wenyan_addon.StorageRuneBlockEntity;
 import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import org.wenyan.wenyan_addon.storage.DataDiskStorage;
@@ -60,21 +31,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 public final class EntityHandlers {
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> NAMING_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("为指定位置的实体命名")
-            .handler(ChineseUtils.bracketOf("命名"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = BlockHandlerHelper.singleVec3ArgsSpec.copy().string_().resolve(request);
-                String name = args.get(3);
-                Vec3 center = new Vec3(bp.getX() + (double) args.get(0), bp.getY() + (double) args.get(1), bp.getZ() + (double) args.get(2));
-                for (Entity entity : ctx.level().getEntities(null, new AABB(center.subtract(0.5, 0.5, 0.5), center.add(0.5, 0.5, 0.5)))) {
-                    entity.setCustomName(Component.literal(name));
-                }
-            }))
-            .build();
-
     public static final ArgsSpecBuilder.Step<?> storageRuneArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().double_().range(0, 16).dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> STORAGE_RUNE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("将指定范围内的物品收入存储符文")
@@ -212,32 +170,6 @@ public final class EntityHandlers {
                 return DataDiskStorage.read(serverLevel, disk.get()).getAttribute("鍵");
             }))
             .build();
-
-
-
-
-
-
-
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_NAMING_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("为指定位置的实体命名")
-            .handler(ChineseUtils.bracketOf("命名"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = BlockHandlerHelper.singleVec3ArgsSpec.copy().string_().resolve(request);
-                    String name = args.get(3);
-                    Vec3 center = new Vec3(
-                            entity.blockPosition().getX() + (double) args.get(0),
-                            entity.blockPosition().getY() + (double) args.get(1),
-                            entity.blockPosition().getZ() + (double) args.get(2)
-                    );
-                    for (Entity e : entity.level().getEntities(null, new AABB(center.subtract(0.5, 0.5, 0.5), center.add(0.5, 0.5, 0.5)))) {
-                        e.setCustomName(Component.literal(name));
-                    }
-                }
-                return WenyanNull.NULL;
-            })
-            .build();
-
     private EntityHandlers() {
     }
 
