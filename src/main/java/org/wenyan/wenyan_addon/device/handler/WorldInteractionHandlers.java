@@ -22,12 +22,12 @@ import java.util.function.Function;
 public class WorldInteractionHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> WORLD_INTERACTION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("对指定位置使用骨粉催生植物")
-            .handler(ChineseUtils.bracketOf("化生"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("催生"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
                 BoneMealItem.applyBonemeal(ItemStack.EMPTY, ctx.level(), BlockHandlerHelper.offsetPos(bp, args), null);
             }))
             .description("在指定位置上方点燃火焰")
-            .handler(ChineseUtils.bracketOf("燃"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("点燃"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
                 BlockPos above = BlockHandlerHelper.offsetPos(bp, args).above();
                 if (ctx.level().getBlockState(above).isAir()) {
@@ -35,7 +35,7 @@ public class WorldInteractionHandlers {
                 }
             }))
             .description("扑灭指定位置的火焰并清除附近实体的着火状态")
-            .handler(ChineseUtils.bracketOf("滅"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("熄灭"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
                 BlockPos pos = BlockHandlerHelper.offsetPos(bp, args);
                 if (ctx.level().getBlockState(pos).is(Blocks.FIRE)) {
@@ -48,7 +48,7 @@ public class WorldInteractionHandlers {
             .build();
     public static final Function<ItemStack, RawHandlerPackage> ITEM_WORLD_INTERACTION_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("对指定位置使用骨粉催生植物")
-            .handler(ChineseUtils.bracketOf("化生"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("催生"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
                     BoneMealItem.applyBonemeal(ItemStack.EMPTY, entity.level(), BlockHandlerHelper.offsetPos(entity.blockPosition(), args), null);
@@ -56,7 +56,7 @@ public class WorldInteractionHandlers {
                 return WenyanNull.NULL;
             })
             .description("在指定位置上方点燃火焰")
-            .handler(ChineseUtils.bracketOf("燃"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("点燃"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
                     BlockPos above = BlockHandlerHelper.offsetPos(entity.blockPosition(), args).above();
@@ -67,7 +67,7 @@ public class WorldInteractionHandlers {
                 return WenyanNull.NULL;
             })
             .description("扑灭指定位置的火焰并清除附近实体的着火状态")
-            .handler(ChineseUtils.bracketOf("滅"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("熄灭"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
                     BlockPos pos = BlockHandlerHelper.offsetPos(entity.blockPosition(), args);

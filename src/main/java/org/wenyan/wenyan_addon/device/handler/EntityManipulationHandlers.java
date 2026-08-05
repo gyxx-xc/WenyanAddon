@@ -32,7 +32,7 @@ public class EntityManipulationHandlers {
                 objective.teleportTo(objective.getX() + delta.x, objective.getY() + delta.y, objective.getZ() + delta.z);
             }))
             .description("将指定实体沿视线方向瞬移")
-            .handler(ChineseUtils.bracketOf("閃"), BlockHandlerHelper.wrapVoid((_, request) -> {
+            .handler(ChineseUtils.bracketOf("闪"), BlockHandlerHelper.wrapVoid((_, request) -> {
                 var args = request.args();
                 Entity objective = args.get(0).as(WenyanEntity.TYPE).value();
                 double distance = args.get(1).as(WenyanDouble.TYPE).value();
@@ -65,7 +65,7 @@ public class EntityManipulationHandlers {
                 return WenyanNull.NULL;
             })
             .description("将指定实体沿视线方向瞬移")
-            .handler(ChineseUtils.bracketOf("閃"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("闪"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(_)) {
                     var args = argsRequest.args();
                     Entity objective = args.get(0).as(WenyanEntity.TYPE).value();

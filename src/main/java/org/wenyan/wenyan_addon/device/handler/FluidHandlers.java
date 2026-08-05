@@ -35,7 +35,7 @@ public class FluidHandlers {
                 return WenyanNull.NULL;
             })
             .description("清除指定位置的流体（水或熔岩）")
-            .handler(ChineseUtils.bracketOf("除流"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("清除流体"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
                     BlockPos pos = BlockHandlerHelper.offsetPos(entity.blockPosition(), args);
@@ -69,7 +69,7 @@ public class FluidHandlers {
                 ctx.level().setBlock(BlockHandlerHelper.offsetPos(bp, args), Blocks.LAVA.defaultBlockState(), 3);
             }))
             .description("清除指定位置的流体（水或熔岩）")
-            .handler(ChineseUtils.bracketOf("除流"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("清除流体"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
                 BlockPos pos = BlockHandlerHelper.offsetPos(bp, args);
                 if (!ctx.level().getBlockState(pos).getFluidState().isEmpty()) {
