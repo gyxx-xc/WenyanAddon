@@ -31,13 +31,14 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("enchant_block", "附魔石");
         BLOCK_NAMES.put("storage_rune_block", "符咒收纳柜");
         BLOCK_NAMES.put("message_block", "消息石");
+        BLOCK_NAMES.put("time_block", "时间石");
 
         ITEM_TOOLTIPS.put("example_block", "範例功能入口");
-        ITEM_TOOLTIPS.put("projectile_spawner_block", "发射一些投射物");
+        ITEM_TOOLTIPS.put("projectile_spawner_block", "发射一些投射物，例如箭，雪球，火球，烟花");
         ITEM_TOOLTIPS.put("fluid_block", "操控流体");
-        ITEM_TOOLTIPS.put("world_interaction_block", "与世界进行交互");
+        ITEM_TOOLTIPS.put("world_interaction_block", "与世界进行交互，例如挖掘，破坏，交换方块位置");
         ITEM_TOOLTIPS.put("entity_manipulation_block", "操控实体");
-        ITEM_TOOLTIPS.put("note_block_function_block", "操控声音");
+        ITEM_TOOLTIPS.put("music_block", "操控声音，可以尝试演奏一曲");
         ITEM_TOOLTIPS.put("read_write_block", "读写文本内容，告示牌，讲台");
         ITEM_TOOLTIPS.put("naming_block", "命名目标物件");
         ITEM_TOOLTIPS.put("particle_block", "生成粒子效果");
@@ -51,6 +52,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("storage_rune_block", "用来存储数据磁盘的柜子，还有着发现更隐蔽信息的功能");
         ITEM_TOOLTIPS.put("data_disk", "持久化储存数据");
         ITEM_TOOLTIPS.put("message_block", "给玩家发送消息");
+        ITEM_TOOLTIPS.put("time_block", "获取时间，以及修改时间表达的方式");
     }
 
     public AddonLanguageProvider(PackOutput output, String locale) {

@@ -99,6 +99,9 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> MESSAGE_BLOCK = BLOCKS.registerSimpleBlock("message_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
     public static final DeferredItem<BlockItem> MESSAGE_BLOCK_ITEM = registerTooltipBlockItem("message_block", MESSAGE_BLOCK);
 
+    public static final DeferredBlock<Block> TIME_BLOCK = BLOCKS.registerSimpleBlock("time_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
+    public static final DeferredItem<BlockItem> TIME_BLOCK_ITEM = registerTooltipBlockItem("time_block", TIME_BLOCK);
+
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WENYAN_ADDON_TAB = CREATIVE_MODE_TABS.register("wenyan_addon", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.wenyan_addon"))
@@ -129,6 +132,7 @@ public class WenyanAddon {
                 output.accept(PongRegistration.CHAMPAGNE_RACK_ITEM.get());
                 output.accept(PongRegistration.PLUG.get());
                 output.accept(MESSAGE_BLOCK_ITEM.get());
+                output.accept(TIME_BLOCK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")

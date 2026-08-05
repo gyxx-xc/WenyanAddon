@@ -77,6 +77,7 @@ public final class Capabilities {
         registerer.registerToItem(NamingHandlers.ITEM_NAMING_PACKAGE, ChineseUtils.bracketOf("命名"), WenyanAddon.NAMING_BLOCK_ITEM);
 
         registerer.registerToItem(MessageHandlers.ITEM_NOTE_PACKAGE, ChineseUtils.bracketOf("消息"),WenyanAddon.MESSAGE_BLOCK_ITEM);
+        registerer.registerToItem(TimeHandlers.ITEM_TIME_PACKAGE, ChineseUtils.bracketOf("时间"),WenyanAddon.TIME_BLOCK_ITEM);
 
         registerer.registerToBlock(MarkerHandler.MARKER_PACKAGE, ChineseUtils.bracketOf("标记"), WenyanAddon.MARKER_BLOCK.get());
         registerer.registerToBlock(ProjectileHandlers.PROJECTILE_SPAWNER_PACKAGE, ChineseUtils.bracketOf("投射"), WenyanAddon.PROJECTILE_SPAWNER_BLOCK.get());
@@ -96,6 +97,6 @@ public final class Capabilities {
         registerer.registerToBlock(EnchantHandlers.ENCHANT_PACKAGE, ChineseUtils.bracketOf("附魔"), WenyanAddon.ENCHANT_BLOCK.get());
 
         registerer.registerToBlock(MessageHandlers.NOTE_BLOCK_PACKAGE, ChineseUtils.bracketOf("消息"), WenyanAddon.MESSAGE_BLOCK.get());
-
+        registerer.registerToBlock(TimeHandlers.TIME_PACKAGE, ChineseUtils.bracketOf("时间"), WenyanAddon.TIME_BLOCK.get());
     }
 }
