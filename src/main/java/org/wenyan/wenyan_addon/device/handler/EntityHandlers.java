@@ -63,50 +63,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class EntityHandlers {
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> SPAWN_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("在指定位置召唤实体")
-            .handler(ChineseUtils.bracketOf("召"), BlockHandlerHelper.wrap((ctx, request) -> {
-                if (ctx.level() instanceof ServerLevel serverLevel) {
-                    var args = WenyanArgsResolver.build()
-                            .string_().double_().double_().double_().dummy()
-                            .resolve(request);
-                    var entityTypeRef = BuiltInRegistries.ENTITY_TYPE.get(Identifier.parse(args.get(0)));
-                    if (entityTypeRef.isPresent()) {
-                        EntityType<?> entityType = entityTypeRef.get().value();
-                        BlockPos pos = new BlockPos(
-                                (int) (bp.getX() + (double) args.get(1)),
-                                (int) (bp.getY() + (double) args.get(2)),
-                                (int) (bp.getZ() + (double) args.get(3))
-                        );
-                        Entity entity = entityType.spawn(serverLevel, pos, EntitySpawnReason.COMMAND);
-                        return new WenyanDouble(entity != null ? 1 : 0);
-                    }
-                }
-                return new WenyanDouble(0);
-            }))
-            .description("对指定范围内的生物造成伤害")
-            .handler(ChineseUtils.bracketOf("傷"), BlockHandlerHelper.wrap((ctx, request) -> {
-                if (ctx.level() instanceof ServerLevel serverLevel) {
-                    var args = WenyanArgsResolver.build()
-                            .double_().double_().double_().double_().dummy()
-                            .resolve(request);
-                    Vec3 center = new Vec3(
-                            bp.getX() + (double) args.get(0),
-                            bp.getY() + (double) args.get(1),
-                            bp.getZ() + (double) args.get(2)
-                    );
-                    float amount = (float) (double) args.get(3);
-                    int count = 0;
-                    for (LivingEntity entity : serverLevel.getEntitiesOfClass(LivingEntity.class,
-                            new AABB(center.subtract(0.5, 0.5, 0.5), center.add(0.5, 0.5, 0.5)))) {
-                        entity.hurtServer(serverLevel, serverLevel.damageSources().generic(), amount);
-                        count++;
-                    }
-                    return new WenyanDouble(count);
-                }
-                return new WenyanDouble(0);
-            }))
-            .build();
+
 
     public static final ArgsSpecBuilder.Step<?> GRANT_EFFECT_ARGS_SPEC = WenyanArgsResolver.build()
             .string_().double_().double_().dummy();
@@ -152,18 +109,6 @@ public final class EntityHandlers {
     public static final ArgsSpecBuilder.Step<?> expArgsSpec = WenyanArgsResolver.build().int_().dummy();
     public static final ArgsSpecBuilder.Step<?> messageArgsSpec = WenyanArgsResolver.build().string_().dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_STATUS_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("将附近玩家生命值恢复至满")
-            .handler(ChineseUtils.bracketOf("療"), BlockHandlerHelper.wrapVoid((ctx, _) -> ctx.level().getEntitiesOfClass(Player.class, new AABB(bp).inflate(1.5))
-                    .stream().findFirst().ifPresent(player -> player.heal(player.getMaxHealth()))))
-            .description("将附近玩家饱食度和饱和度补满")
-            .handler(ChineseUtils.bracketOf("飽"), BlockHandlerHelper.wrapVoid((ctx, _) -> ctx.level().getEntitiesOfClass(Player.class, new AABB(bp).inflate(1.5))
-                    .stream().findFirst().ifPresent(player -> player.getFoodData().eat(20, 20))))
-            .description("为附近玩家增加指定等级的经验")
-            .handler(ChineseUtils.bracketOf("賜經驗"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = expArgsSpec.resolve(request);
-                ctx.level().getEntitiesOfClass(Player.class, new AABB(bp).inflate(1.5))
-                        .stream().findFirst().ifPresent(player -> player.giveExperienceLevels(args.get(0)));
-            }))
             .description("向附近玩家发送一条系统消息")
             .handler(ChineseUtils.bracketOf("告"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = messageArgsSpec.resolve(request);
@@ -550,51 +495,6 @@ public final class EntityHandlers {
             }))
             .build();
 
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_SPAWN_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("在指定位置召唤实体")
-            .handler(ChineseUtils.bracketOf("召"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel serverLevel) {
-                    var args = WenyanArgsResolver.build()
-                            .string_().double_().double_().double_().dummy()
-                            .resolve(request);
-                    var entityTypeRef = BuiltInRegistries.ENTITY_TYPE.get(Identifier.parse(args.get(0)));
-                    if (entityTypeRef.isPresent()) {
-                        EntityType<?> entityType = entityTypeRef.get().value();
-                        BlockPos pos = new BlockPos(
-                                (int) (entity.blockPosition().getX() + (double) args.get(1)),
-                                (int) (entity.blockPosition().getY() + (double) args.get(2)),
-                                (int) (entity.blockPosition().getZ() + (double) args.get(3))
-                        );
-                        Entity spawned = entityType.spawn(serverLevel, pos, EntitySpawnReason.COMMAND);
-                        return new WenyanDouble(spawned != null ? 1 : 0);
-                    }
-                }
-                return new WenyanDouble(0);
-            })
-            .description("对指定范围内的生物造成伤害")
-            .handler(ChineseUtils.bracketOf("傷"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity) && entity.level() instanceof ServerLevel serverLevel) {
-                    var args = WenyanArgsResolver.build()
-                            .double_().double_().double_().double_().dummy()
-                            .resolve(request);
-                    Vec3 center = new Vec3(
-                            entity.blockPosition().getX() + (double) args.get(0),
-                            entity.blockPosition().getY() + (double) args.get(1),
-                            entity.blockPosition().getZ() + (double) args.get(2)
-                    );
-                    float amount = (float) (double) args.get(3);
-                    int count = 0;
-                    for (LivingEntity living : serverLevel.getEntitiesOfClass(LivingEntity.class,
-                            new AABB(center.subtract(0.5, 0.5, 0.5), center.add(0.5, 0.5, 0.5)))) {
-                        living.hurtServer(serverLevel, serverLevel.damageSources().generic(), amount);
-                        count++;
-                    }
-                    return new WenyanDouble(count);
-                }
-                return new WenyanDouble(0);
-            })
-            .build();
-
     public static final Function<ItemStack, RawHandlerPackage> ITEM_POTION_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("为附近的生物或玩家添加指定药水效果")
             .handler(ChineseUtils.bracketOf("賜效"), (ctx, request) -> {
@@ -635,43 +535,6 @@ public final class EntityHandlers {
                     return new WenyanDouble(1);
                 }
                 return new WenyanDouble(0);
-            })
-            .build();
-
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_ENTITY_STATUS_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("将附近玩家生命值恢复至满")
-            .handler(ChineseUtils.bracketOf("療"), (ctx, _) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    entity.level().getEntitiesOfClass(Player.class, new AABB(entity.blockPosition()).inflate(1.5))
-                            .stream().findFirst().ifPresent(player -> player.heal(player.getMaxHealth()));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("将附近玩家饱食度和饱和度补满")
-            .handler(ChineseUtils.bracketOf("飽"), (ctx, _) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    entity.level().getEntitiesOfClass(Player.class, new AABB(entity.blockPosition()).inflate(1.5))
-                            .stream().findFirst().ifPresent(player -> player.getFoodData().eat(20, 20));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("为附近玩家增加指定等级的经验")
-            .handler(ChineseUtils.bracketOf("賜經驗"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = expArgsSpec.resolve(request);
-                    entity.level().getEntitiesOfClass(Player.class, new AABB(entity.blockPosition()).inflate(1.5))
-                            .stream().findFirst().ifPresent(player -> player.giveExperienceLevels(args.get(0)));
-                }
-                return WenyanNull.NULL;
-            })
-            .description("向附近玩家发送一条系统消息")
-            .handler(ChineseUtils.bracketOf("告"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = messageArgsSpec.resolve(request);
-                    entity.level().getEntitiesOfClass(Player.class, new AABB(entity.blockPosition()).inflate(1.5))
-                            .stream().findFirst().ifPresent(player -> player.sendSystemMessage(Component.literal(args.get(0))));
-                }
-                return WenyanNull.NULL;
             })
             .build();
 
