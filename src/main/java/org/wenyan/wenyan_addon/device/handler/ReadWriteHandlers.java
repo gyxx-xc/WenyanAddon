@@ -33,13 +33,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className ReadWriteHandlers
- * @Description TODO
- * @date 2026/8/5 17:04
- */
+
 public class ReadWriteHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> READ_WRITE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("读取文字，告示牌或讲台")
