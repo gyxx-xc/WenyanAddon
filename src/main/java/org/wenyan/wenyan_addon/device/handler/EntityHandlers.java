@@ -63,60 +63,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public final class EntityHandlers {
-
-
-    public static final ArgsSpecBuilder.Step<?> GRANT_EFFECT_ARGS_SPEC = WenyanArgsResolver.build()
-            .string_().double_().double_().dummy();
-    public static final ArgsSpecBuilder.Step<?> REMOVE_EFFECT_ARGS_SPEC = WenyanArgsResolver.build()
-            .string_().dummy();
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> POTION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("为附近的生物或玩家添加指定药水效果")
-            .handler(ChineseUtils.bracketOf("賜效"), BlockHandlerHelper.wrap((ctx, request) -> {
-                Level level = ctx.level();
-                var args = GRANT_EFFECT_ARGS_SPEC.resolve(request);
-                String effectId = args.get(0);
-                int duration = (int) ((double) args.get(1));
-                int amplifier = (int) ((double) args.get(2));
-                var effectOpt = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(effectId));
-                if (effectOpt.isEmpty()) {
-                    return new WenyanDouble(0);
-                }
-                LivingEntity target = findNearestLivingEntity(level, bp);
-                if (target == null) {
-                    return new WenyanDouble(0);
-                }
-                target.addEffect(new MobEffectInstance(effectOpt.get(), duration, amplifier));
-                return new WenyanDouble(1);
-            }))
-            .description("驱除附近生物或玩家身上的指定药水效果")
-            .handler(ChineseUtils.bracketOf("驅效"), BlockHandlerHelper.wrap((ctx, request) -> {
-                Level level = ctx.level();
-                var args = REMOVE_EFFECT_ARGS_SPEC.resolve(request);
-                String effectId = args.get(0);
-                var effectOpt = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(effectId));
-                if (effectOpt.isEmpty()) {
-                    return new WenyanDouble(0);
-                }
-                LivingEntity target = findNearestLivingEntity(level, bp);
-                if (target == null) {
-                    return new WenyanDouble(0);
-                }
-                target.removeEffect(effectOpt.get());
-                return new WenyanDouble(1);
-            }))
-            .build();
-
-    public static final ArgsSpecBuilder.Step<?> expArgsSpec = WenyanArgsResolver.build().int_().dummy();
-    public static final ArgsSpecBuilder.Step<?> messageArgsSpec = WenyanArgsResolver.build().string_().dummy();
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_STATUS_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("向附近玩家发送一条系统消息")
-            .handler(ChineseUtils.bracketOf("告"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = messageArgsSpec.resolve(request);
-                ctx.level().getEntitiesOfClass(Player.class, new AABB(bp).inflate(1.5))
-                        .stream().findFirst().ifPresent(player -> player.sendSystemMessage(Component.literal(args.get(0))));
-            }))
-            .build();
-
     public static final ArgsSpecBuilder.Step<?> markerArgsSpec = WenyanArgsResolver.build()
             .string_().double_().double_().double_().dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> MARKER_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
@@ -495,48 +441,7 @@ public final class EntityHandlers {
             }))
             .build();
 
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_POTION_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("为附近的生物或玩家添加指定药水效果")
-            .handler(ChineseUtils.bracketOf("賜效"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    Level level = entity.level();
-                    var args = GRANT_EFFECT_ARGS_SPEC.resolve(request);
-                    String effectId = args.get(0);
-                    int duration = (int) ((double) args.get(1));
-                    int amplifier = (int) ((double) args.get(2));
-                    var effectOpt = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(effectId));
-                    if (effectOpt.isEmpty()) {
-                        return new WenyanDouble(0);
-                    }
-                    LivingEntity target = findNearestLivingEntity(level, entity.blockPosition());
-                    if (target == null) {
-                        return new WenyanDouble(0);
-                    }
-                    target.addEffect(new MobEffectInstance(effectOpt.get(), duration, amplifier));
-                    return new WenyanDouble(1);
-                }
-                return new WenyanDouble(0);
-            })
-            .description("驱除附近生物或玩家身上的指定药水效果")
-            .handler(ChineseUtils.bracketOf("驅效"), (ctx, request) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    Level level = entity.level();
-                    var args = REMOVE_EFFECT_ARGS_SPEC.resolve(request);
-                    String effectId = args.get(0);
-                    var effectOpt = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(effectId));
-                    if (effectOpt.isEmpty()) {
-                        return new WenyanDouble(0);
-                    }
-                    LivingEntity target = findNearestLivingEntity(level, entity.blockPosition());
-                    if (target == null) {
-                        return new WenyanDouble(0);
-                    }
-                    target.removeEffect(effectOpt.get());
-                    return new WenyanDouble(1);
-                }
-                return new WenyanDouble(0);
-            })
-            .build();
+
 
     public static final Function<ItemStack, RawHandlerPackage> ITEM_MARKER_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("在世界上标记一个普通坐标点")
