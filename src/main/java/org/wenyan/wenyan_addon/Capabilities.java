@@ -64,7 +64,7 @@ public final class Capabilities {
 
         registerer.registerToItem(EntityManipulationHandlers.ITEM_ENTITY_MANIPULATION_PACKAGE, ChineseUtils.bracketOf("移形"), WenyanAddon.ENTITY_MANIPULATION_BLOCK_ITEM);
         registerer.registerToItem(MusicHandlers.ITEM_MUSIC_PACKAGE, ChineseUtils.bracketOf("奏"), WenyanAddon.NOTE_BLOCK_FUNCTION_BLOCK_ITEM);
-        registerer.registerToItem(WorldHandlers.ITEM_ELEMENTAL_PACKAGE, ChineseUtils.bracketOf("元素"), WenyanAddon.ELEMENTAL_BLOCK_ITEM);
+        registerer.registerToItem(FluidHandlers.ITEM_ELEMENTAL_PACKAGE, ChineseUtils.bracketOf("元素"), WenyanAddon.ELEMENTAL_BLOCK_ITEM);
         registerer.registerToItem(WorldHandlers.ITEM_WORLD_INTERACTION_PACKAGE, ChineseUtils.bracketOf("交感"), WenyanAddon.WORLD_INTERACTION_BLOCK_ITEM);
         registerer.registerToItem(WorldHandlers.ITEM_READ_WRITE_PACKAGE, ChineseUtils.bracketOf("讀寫"), WenyanAddon.READ_WRITE_BLOCK_ITEM);
         registerer.registerToItem(WorldHandlers.ITEM_PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK_ITEM);
@@ -80,7 +80,7 @@ public final class Capabilities {
 
         registerer.registerToBlock(MarkerHandler.MARKER_PACKAGE, ChineseUtils.bracketOf("标"), WenyanAddon.MARKER_BLOCK.get());
         registerer.registerToBlock(ProjectileHandlers.PROJECTILE_SPAWNER_PACKAGE, ChineseUtils.bracketOf("投射"), WenyanAddon.PROJECTILE_SPAWNER_BLOCK.get());
-        registerer.registerToBlock(WorldHandlers.ELEMENTAL_PACKAGE, ChineseUtils.bracketOf("元素"), WenyanAddon.ELEMENTAL_BLOCK.get());
+        registerer.registerToBlock(FluidHandlers.ELEMENTAL_PACKAGE, ChineseUtils.bracketOf("元素"), WenyanAddon.ELEMENTAL_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.WORLD_INTERACTION_PACKAGE, ChineseUtils.bracketOf("交感"), WenyanAddon.WORLD_INTERACTION_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.READ_WRITE_PACKAGE, ChineseUtils.bracketOf("讀寫"), WenyanAddon.READ_WRITE_BLOCK.get());
         registerer.registerToBlock(NamingHandlers.NAMING_PACKAGE, ChineseUtils.bracketOf("命名"), WenyanAddon.NAMING_BLOCK.get());
