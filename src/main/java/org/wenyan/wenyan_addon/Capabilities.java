@@ -14,6 +14,7 @@ import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import org.jspecify.annotations.NonNull;
 import org.wenyan.wenyan_addon.device.handler.*;
 import org.wenyan.wenyan_addon.device.handler.DyeHandlers;
+import org.wenyan.wenyan_addon.device.handler.data_disk.DataDiskHandlers;
 
 public final class Capabilities {
     private Capabilities() {}

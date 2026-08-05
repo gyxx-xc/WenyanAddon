@@ -1,4 +1,4 @@
-package org.wenyan.wenyan_addon.storage;
+package org.wenyan.wenyan_addon.data_storage;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

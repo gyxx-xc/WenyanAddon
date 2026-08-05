@@ -1,4 +1,4 @@
-package org.wenyan.wenyan_addon;
+package org.wenyan.wenyan_addon.device.handler.data_disk;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import org.wenyan.wenyan_addon.storage.DataDiskStorage;
+import org.wenyan.wenyan_addon.data_storage.DataDiskStorage;
 
 public class StorageRuneBlock extends Block implements EntityBlock {
     public StorageRuneBlock(Properties properties) {
@@ -30,6 +30,8 @@ public class StorageRuneBlock extends Block implements EntityBlock {
     public @Nullable BlockEntity newBlockEntity(@NonNull BlockPos pos, @NonNull BlockState state) {
         return new StorageRuneBlockEntity(pos, state);
     }
+
+    // ===== 交互：插入磁盘 =====
 
     @Override
     protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
@@ -47,6 +49,8 @@ public class StorageRuneBlock extends Block implements EntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    // ===== 交互：潜行右键弹出磁盘 =====
+
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (!player.isSecondaryUseActive() || !(level.getBlockEntity(pos) instanceof StorageRuneBlockEntity storage)) {
@@ -62,13 +66,12 @@ public class StorageRuneBlock extends Block implements EntityBlock {
         return InteractionResult.SUCCESS;
     }
 
+    // ===== 方块破坏时弹出所有磁盘 =====
+
     @Override
     protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
         if (level.getBlockEntity(pos) instanceof StorageRuneBlockEntity storage) {
             ItemStack extracted;
-            while (!(extracted = storage.extractAny(64)).isEmpty()) {
-                popResource(level, pos, extracted);
-            }
             while (!(extracted = storage.extractLastDisk()).isEmpty()) {
                 popResource(level, pos, extracted);
             }

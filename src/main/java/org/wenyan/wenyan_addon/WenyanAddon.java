@@ -23,6 +23,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.wenyan.pong.Pong;
 import org.wenyan.pong.setup.PongRegistration;
+import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlock;
+import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlockEntity;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
 import org.wenyan.wenyan_addon.item.TooltipItem;
 

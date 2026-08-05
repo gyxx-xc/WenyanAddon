@@ -1,4 +1,4 @@
-package org.wenyan.wenyan_addon.storage;
+package org.wenyan.wenyan_addon.data_storage;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -51,7 +51,7 @@ public final class WenyanJsonCodec {
         } catch (WenyanException e) {
             return opaque(value, e.getMessage());
         }
-        return opaque(value, "unsupported wenyan value");
+        return opaque(value, "不支持的文言类型");
     }
 
     public static IWenyanValue fromJson(JsonElement json) {
@@ -89,7 +89,7 @@ public final class WenyanJsonCodec {
         IWenyanValue value = fromJson(json);
         return value.tryAs(WenyanMapValue.TYPE).orElseGet(() -> {
             WenyanMapValue fallback = new WenyanMapValue();
-            fallback.put("亂", value);
+            fallback.put("乱", value);
             return fallback;
         });
     }
@@ -104,9 +104,9 @@ public final class WenyanJsonCodec {
 
     private static JsonObject opaque(IWenyanValue value, String reason) {
         JsonObject object = new JsonObject();
-        object.addProperty("亂", value == null ? "" : value.toString());
+        object.addProperty("乱", value == null ? "" : value.toString());
         object.addProperty("因", reason == null ? "" : reason);
-        object.addProperty("類", value == null ? "null" : value.type().toString());
+        object.addProperty("类", value == null ? "null" : value.type().toString());
         return object;
     }
 }

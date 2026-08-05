@@ -9,11 +9,6 @@ import indi.wenyan.judou.api.values.IWenyanValue;
 import indi.wenyan.judou.api.values.WenyanNull;
 import indi.wenyan.judou.api.values.exception.WenyanException;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import org.wenyan.wenyan_addon.StorageRuneBlockEntity;
 
 public enum BlockHandlerHelper {
     ;
@@ -64,28 +59,5 @@ public enum BlockHandlerHelper {
             }
             return WenyanNull.NULL;
         };
-    }
-
-    public static int absorbItems(Level level, StorageRuneBlockEntity storage, BlockPos pos, double radius) {
-        double x = pos.getX() + 0.5;
-        double y = pos.getY() + 0.5;
-        double z = pos.getZ() + 0.5;
-        AABB area = new AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius);
-        int absorbed = 0;
-        for (ItemEntity itemEntity : level.getEntitiesOfClass(ItemEntity.class, area, entity -> !entity.getItem().isEmpty())) {
-            ItemStack stack = itemEntity.getItem();
-            int accepted = storage.insert(stack);
-            if (accepted <= 0) {
-                continue;
-            }
-            absorbed += accepted;
-            stack.shrink(accepted);
-            if (stack.isEmpty()) {
-                itemEntity.discard();
-            } else {
-                itemEntity.setItem(stack);
-            }
-        }
-        return absorbed;
     }
 }
