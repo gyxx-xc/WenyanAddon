@@ -68,7 +68,7 @@ public final class Capabilities {
         registerer.registerToItem(WorldInteractionHandlers.ITEM_WORLD_INTERACTION_PACKAGE, ChineseUtils.bracketOf("交感"), WenyanAddon.WORLD_INTERACTION_BLOCK_ITEM);
         registerer.registerToItem(ReadWriteHandlers.ITEM_READ_WRITE_PACKAGE, ChineseUtils.bracketOf("文本读写"), WenyanAddon.READ_WRITE_BLOCK_ITEM);
         registerer.registerToItem(ParticleHandlers.ITEM_PARTICLE_PACKAGE, ChineseUtils.bracketOf("塵"), WenyanAddon.PARTICLE_BLOCK_ITEM);
-        registerer.registerToItem(WorldHandlers.ITEM_BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("方块操作"), WenyanAddon.BLOCK_EDIT_BLOCK_ITEM);
+        registerer.registerToItem(BlockEditHandlers.ITEM_BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("方块操作"), WenyanAddon.BLOCK_EDIT_BLOCK_ITEM);
         registerer.registerToItem(WorldHandlers.ITEM_ENCHANT_PACKAGE, ChineseUtils.bracketOf("附魔"), WenyanAddon.ENCHANT_BLOCK_ITEM);
 
         registerer.registerToItem(PotionHandlers.ITEM_POTION_PACKAGE, ChineseUtils.bracketOf("药"), WenyanAddon.POTION_BLOCK_ITEM);
@@ -92,7 +92,7 @@ public final class Capabilities {
         registerer.registerToBlock(DyeHandlers.DYE_PACKAGE, ChineseUtils.bracketOf("染"), WenyanAddon.DYE_BLOCK.get());
 
         registerer.registerToBlock(PotionHandlers.POTION_PACKAGE, ChineseUtils.bracketOf("药"), WenyanAddon.POTION_BLOCK.get());
-        registerer.registerToBlock(WorldHandlers.BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("方块操作"), WenyanAddon.BLOCK_EDIT_BLOCK.get());
+        registerer.registerToBlock(BlockEditHandlers.BLOCK_EDIT_PACKAGE, ChineseUtils.bracketOf("方块操作"), WenyanAddon.BLOCK_EDIT_BLOCK.get());
         registerer.registerToBlock(WorldHandlers.ENCHANT_PACKAGE, ChineseUtils.bracketOf("附魔"), WenyanAddon.ENCHANT_BLOCK.get());
 
         registerer.registerToBlock(MessageHandlers.NOTE_BLOCK_PACKAGE, ChineseUtils.bracketOf("消息"), WenyanAddon.MESSAGE_BLOCK.get());
