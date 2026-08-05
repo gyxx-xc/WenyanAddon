@@ -23,13 +23,6 @@ import java.util.function.Function;
 public final class NoteBlockHandlers {
 
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> NOTE_BLOCK_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("演奏指定音高的音符盒音效")
-            .handler(ChineseUtils.bracketOf("奏乐"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = WenyanArgsResolver.build().double_().range(0, 24).resolve(request);
-                int note = (int) Math.clamp((double) args.get(0), 0, 24);
-                float pitch = (float) Math.pow(2.0, (note - 12) / 12.0);
-                ctx.level().playSound(null, bp, SoundEvents.NOTE_BLOCK_HARP.value(), SoundSource.BLOCKS, 3.0F, pitch);
-            }))
             .description("向指定范围内玩家发送消息")
             .handler(ChineseUtils.bracketOf("告"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
                 var args = WenyanArgsResolver.build().string_().resolve(request);
@@ -42,16 +35,6 @@ public final class NoteBlockHandlers {
             .build();
 
     public static final Function<ItemStack, RawHandlerPackage> ITEM_NOTE_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("演奏指定音高的音符盒音效")
-            .handler(ChineseUtils.bracketOf("奏乐"), (ctx, argsRequest) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = WenyanArgsResolver.build().double_().range(0, 24).resolve(argsRequest);
-                    int note = (int) Math.clamp((double) args.get(0), 0, 24);
-                    float pitch = (float) Math.pow(2.0, (note - 12) / 12.0);
-                    entity.level().playSound(null, entity, SoundEvents.NOTE_BLOCK_HARP.value(), SoundSource.PLAYERS, 3.0F, pitch);
-                }
-                return WenyanNull.NULL;
-            })
             .description("向指定范围内玩家发送消息")
             .handler(ChineseUtils.bracketOf("告"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
