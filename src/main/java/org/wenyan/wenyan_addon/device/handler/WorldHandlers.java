@@ -146,57 +146,7 @@ public final class WorldHandlers {
 
 
 
-    public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> READ_WRITE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("读取告示牌上的文字")
-            .handler(ChineseUtils.bracketOf("讀示"), BlockHandlerHelper.wrap((ctx, request) -> {
-                var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
-                BlockEntity be = ctx.level().getBlockEntity(BlockHandlerHelper.offsetPos(bp, args));
-                if (be instanceof SignBlockEntity sign) {
-                    StringBuilder sb = new StringBuilder();
-                    for (Component msg : sign.getFrontText().getMessages(false)) {
-                        sb.append(msg.getString());
-                    }
-                    return new WenyanString(sb.toString());
-                }
-                return WenyanNull.NULL;
-            }))
-            .description("将文字写入告示牌的四面")
-            .handler(ChineseUtils.bracketOf("書示"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = BlockHandlerHelper.singleVec3ArgsSpec.copy()
-                        .string_().string_().string_().string_()
-                        .resolve(request);
-                BlockPos pos = BlockHandlerHelper.offsetPos(bp, args);
-                BlockEntity be = ctx.level().getBlockEntity(pos);
-                if (be instanceof SignBlockEntity sign) {
-                    var text = sign.getFrontText()
-                            .setMessage(0, Component.literal(args.get(3)))
-                            .setMessage(1, Component.literal(args.get(4)))
-                            .setMessage(2, Component.literal(args.get(5)))
-                            .setMessage(3, Component.literal(args.get(6)));
-                    sign.setText(text, true);
-                }
-            }))
-            .description("读取讲台上书本的内容和标题")
-            .handler(ChineseUtils.bracketOf("讀講臺"), BlockHandlerHelper.wrap((ctx, request) -> {
-                var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
-                BlockEntity be = ctx.level().getBlockEntity(BlockHandlerHelper.offsetPos(bp, args));
-                if (be instanceof LecternBlockEntity lectern) {
-                    ItemStack book = lectern.getBook();
-                    if (!book.isEmpty()) {
-                        WrittenBookContent content = book.get(DataComponents.WRITTEN_BOOK_CONTENT);
-                        if (content != null) {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append(content.title().get(false)).append("\n");
-                            for (var page : content.pages()) {
-                                sb.append(page.get(false));
-                            }
-                            return new WenyanString(sb.toString());
-                        }
-                    }
-                }
-                return WenyanNull.NULL;
-            }))
-            .build();
+
 
 
 
@@ -258,92 +208,8 @@ public final class WorldHandlers {
             .build();
 
 
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_READ_WRITE_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("读取告示牌上的文字")
-            .handler(ChineseUtils.bracketOf("讀示"), (ctx, argsRequest) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
-                    BlockEntity be = entity.level().getBlockEntity(BlockHandlerHelper.offsetPos(entity.blockPosition(), args));
-                    if (be instanceof SignBlockEntity sign) {
-                        StringBuilder sb = new StringBuilder();
-                        for (Component msg : sign.getFrontText().getMessages(false)) {
-                            sb.append(msg.getString());
-                        }
-                        return new WenyanString(sb.toString());
-                    }
-                }
-                return WenyanNull.NULL;
-            })
-            .description("将文字写入告示牌的四面")
-            .handler(ChineseUtils.bracketOf("書示"), (ctx, argsRequest) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = BlockHandlerHelper.singleVec3ArgsSpec.copy()
-                            .string_().string_().string_().string_()
-                            .resolve(argsRequest);
-                    BlockPos pos = BlockHandlerHelper.offsetPos(entity.blockPosition(), args);
-                    BlockEntity be = entity.level().getBlockEntity(pos);
-                    if (be instanceof SignBlockEntity sign) {
-                        var text = sign.getFrontText()
-                                .setMessage(0, Component.literal(args.get(3)))
-                                .setMessage(1, Component.literal(args.get(4)))
-                                .setMessage(2, Component.literal(args.get(5)))
-                                .setMessage(3, Component.literal(args.get(6)));
-                        sign.setText(text, true);
-                    }
-                }
-                return WenyanNull.NULL;
-            })
-            .description("读取讲台上书本的内容和标题")
-            .handler(ChineseUtils.bracketOf("讀講臺"), (ctx, argsRequest) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
-                    BlockEntity be = entity.level().getBlockEntity(BlockHandlerHelper.offsetPos(entity.blockPosition(), args));
-                    if (be instanceof LecternBlockEntity lectern) {
-                        ItemStack book = lectern.getBook();
-                        if (!book.isEmpty()) {
-                            WrittenBookContent content = book.get(DataComponents.WRITTEN_BOOK_CONTENT);
-                            if (content != null) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(content.title().get(false)).append("\n");
-                                for (var page : content.pages()) {
-                                    sb.append(page.get(false));
-                                }
-                                return new WenyanString(sb.toString());
-                            }
-                        }
-                    }
-                }
-                return WenyanNull.NULL;
-            })
-            .build();
-    public static final Function<ItemStack, RawHandlerPackage> ITEM_PARTICLE_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("在符文周围生成指定颜色的粒子效果")
-            .handler(ChineseUtils.bracketOf("放塵"), (ctx, argsRequest) -> {
-                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = WenyanArgsResolver.build()
-                            .int_().range(0, 255)
-                            .int_().range(0, 255)
-                            .int_().range(0, 255)
-                            .int_().range(1, 20)
-                            .resolve(argsRequest);
-                    int color = 0xFF000000
-                            | (((int) args.get(0) & 0xFF) << 16)
-                            | (((int) args.get(1) & 0xFF) << 8)
-                            | ((int) args.get(2) & 0xFF);
-                    DustParticleOptions dust = new DustParticleOptions(color, 1.0f);
-                    if (entity.level() instanceof ServerLevel server) {
-                        BlockPos bp = entity.blockPosition();
-                        for (int i = 0; i < (int) args.get(3); i++) {
-                            double sx = bp.getX() + server.getRandom().nextGaussian() * 0.5;
-                            double sy = bp.getY() + server.getRandom().nextGaussian() * 0.5;
-                            double sz = bp.getZ() + server.getRandom().nextGaussian() * 0.5;
-                            server.sendParticles(dust, sx, sy, sz, 1, 0.0, 0.0, 0.0, 0.0);
-                        }
-                    }
-                }
-                return WenyanNull.NULL;
-            })
-            .build();
+
+
     public static final Function<ItemStack, RawHandlerPackage> ITEM_BLOCK_EDIT_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("在指定位置放置方块")
             .handler(ChineseUtils.bracketOf("置"), (ctx, argsRequest) -> {

@@ -1,16 +1,21 @@
 package org.wenyan.wenyan_addon.device.handler;
 
+import indi.wenyan.content.entity.ThrowEntityContext;
+import indi.wenyan.content.entity.ThrowRunnerEntity;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
 import indi.wenyan.interpreter_impl.args.WenyanArgsResolver;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
+import indi.wenyan.judou.api.values.WenyanNull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class ParticleHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> PARTICLE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
@@ -36,5 +41,33 @@ public class ParticleHandlers {
                     }
                 }
             }))
+            .build();
+    public static final Function<ItemStack, RawHandlerPackage> ITEM_PARTICLE_PACKAGE = _ -> HandlerPackageBuilder.create()
+            .description("在符文周围生成指定颜色的粒子效果")
+            .handler(ChineseUtils.bracketOf("放塵"), (ctx, argsRequest) -> {
+                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
+                    var args = WenyanArgsResolver.build()
+                            .int_().range(0, 255)
+                            .int_().range(0, 255)
+                            .int_().range(0, 255)
+                            .int_().range(1, 20)
+                            .resolve(argsRequest);
+                    int color = 0xFF000000
+                            | (((int) args.get(0) & 0xFF) << 16)
+                            | (((int) args.get(1) & 0xFF) << 8)
+                            | ((int) args.get(2) & 0xFF);
+                    DustParticleOptions dust = new DustParticleOptions(color, 1.0f);
+                    if (entity.level() instanceof ServerLevel server) {
+                        BlockPos bp = entity.blockPosition();
+                        for (int i = 0; i < (int) args.get(3); i++) {
+                            double sx = bp.getX() + server.getRandom().nextGaussian() * 0.5;
+                            double sy = bp.getY() + server.getRandom().nextGaussian() * 0.5;
+                            double sz = bp.getZ() + server.getRandom().nextGaussian() * 0.5;
+                            server.sendParticles(dust, sx, sy, sz, 1, 0.0, 0.0, 0.0, 0.0);
+                        }
+                    }
+                }
+                return WenyanNull.NULL;
+            })
             .build();
 }
