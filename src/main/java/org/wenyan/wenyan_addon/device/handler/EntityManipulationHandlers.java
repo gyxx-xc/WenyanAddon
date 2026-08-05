@@ -21,13 +21,7 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className EntityManipulationHandlers
- * @Description TODO
- * @date 2026/8/5 14:20
- */
+
 public class EntityManipulationHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> ENTITY_MANIPULATION_PACKAGE = (_, _) -> HandlerPackageBuilder.create()
             .description("将指定实体传送至相对位置")

@@ -23,13 +23,7 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className MarkeHandler
- * @Description TODO
- * @date 2026/8/5 14:05
- */
+
 public class MarkerHandler {
     public static final ArgsSpecBuilder.Step<?> markerArgsSpec = WenyanArgsResolver.build()
             .string_().double_().double_().double_().dummy();

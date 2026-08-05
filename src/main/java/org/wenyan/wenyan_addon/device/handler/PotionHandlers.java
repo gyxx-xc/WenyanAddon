@@ -22,13 +22,7 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className PotionHandlers
- * @Description TODO
- * @date 2026/8/5 12:52
- */
+
 public class PotionHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> POTION_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("为附近的生物或玩家添加指定药水效果")

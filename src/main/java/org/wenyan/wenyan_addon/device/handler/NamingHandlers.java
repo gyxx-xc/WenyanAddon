@@ -18,13 +18,7 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className NamingHandlers
- * @Description TODO
- * @date 2026/8/5 14:21
- */
+
 public class NamingHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> NAMING_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("为指定位置的实体命名")

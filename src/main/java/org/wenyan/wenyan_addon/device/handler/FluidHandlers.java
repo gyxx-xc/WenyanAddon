@@ -15,13 +15,7 @@ import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className FluidHandlers
- * @Description TODO
- * @date 2026/8/5 16:37
- */
+
 public class FluidHandlers {
     public static final Function<ItemStack, RawHandlerPackage> ITEM_ELEMENTAL_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("在指定位置放置水源方块")

@@ -28,13 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiFunction;
 
-/**
- * @author qq240
- * @version 1.0
- * @className DataDiskHandlers
- * @Description TODO
- * @date 2026/8/5 14:25
- */
+
 public class DataDiskHandlers {
     public static final ArgsSpecBuilder.Step<?> storageRuneArgsSpec = BlockHandlerHelper.singleVec3ArgsSpec.copy().double_().range(0, 16).dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> STORAGE_RUNE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()

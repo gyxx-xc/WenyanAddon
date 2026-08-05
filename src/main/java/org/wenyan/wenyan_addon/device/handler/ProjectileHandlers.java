@@ -36,13 +36,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-/**
- * @author qq240
- * @version 1.0
- * @className ProjectileHandlers
- * @Description TODO
- * @date 2026/8/5 14:16
- */
+
 public class ProjectileHandlers {
     private static Vec3 lampToRangeByBiFunction(BlockPos bp, Vec3 target) throws WenyanException.WenyanDataException {
         double dx = target.x - (bp.getX() + 0.5);
