@@ -30,6 +30,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("block_edit_block", "天地土木石");
         BLOCK_NAMES.put("enchant_block", "附靈石");
         BLOCK_NAMES.put("storage_rune_block", "符咒收納櫃");
+        BLOCK_NAMES.put("message_block", "消息石");
 
         ITEM_TOOLTIPS.put("example_block", "範例功能入口");
         ITEM_TOOLTIPS.put("projectile_spawner_block", "發射投射實體");
@@ -49,6 +50,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("enchant_block", "對物體進行附魔");
         ITEM_TOOLTIPS.put("storage_rune_block", "用來存儲包含物品、方塊等數據的符咒的櫃子");
         ITEM_TOOLTIPS.put("data_disk", "用持久化儲存資料，包括方塊，物體的數據");
+        BLOCK_NAMES.put("message_block", "给玩家发送消息");
     }
 
     public AddonLanguageProvider(PackOutput output, String locale) {

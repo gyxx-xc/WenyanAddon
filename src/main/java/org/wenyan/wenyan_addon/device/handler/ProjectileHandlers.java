@@ -18,6 +18,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
 import net.minecraft.world.entity.projectile.arrow.Arrow;
@@ -53,6 +54,16 @@ public class ProjectileHandlers {
         }
         return target;
     }
+    private static Vec3 lampToRangeByFunction(Entity entity, Vec3 target) throws WenyanException.WenyanDataException {
+        double dx = target.x - (entity.getX() + 0.5);
+        double dy = target.y - (entity.getY() + 0.5);
+        double dz = target.z - (entity.getZ() + 0.5);
+        double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (dist > 3) {
+            throw new WenyanException.WenyanDataException("施法距离过远");
+        }
+        return target;
+    }
 
     private static IntList rgbListToColorsByBiFunction(List<IWenyanValue> rgbList) throws WenyanException.WenyanTypeException {
         IntList colors = new IntArrayList();
@@ -67,20 +78,14 @@ public class ProjectileHandlers {
         }
         return colors;
     }
-
-    public static final ArgsSpecBuilder.Step<?> projectileSpawnerArgsSpec = WenyanArgsResolver.build()
-            .double_().range(-1, 1)
-            .double_().range(-1, 1)
-            .double_().range(-1, 1)
-            .dummy();
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> PROJECTILE_SPAWNER_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
-            .description("发射箭矢")
+            .description("生成箭矢")
             .handler(ChineseUtils.bracketOf("箭"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = projectileSpawnerArgsSpec.resolve(request);
-                Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                Arrow arrow = new Arrow(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, ItemStack.EMPTY, null);
+                var args = request.args();
+                Vec3 target = lampToRangeByBiFunction(bp, args.get(0).as(WenyanVec3.TYPE).value());
+                Arrow arrow = new Arrow(ctx.level(), target.x, target.y, target.z,
+                        new ItemStack(Items.ARROW), null);
                 arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                arrow.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                 ctx.level().addFreshEntity(arrow);
             }))
             .description("发射烟花火箭")
@@ -89,9 +94,9 @@ public class ProjectileHandlers {
                 int shapeId = (int) args.get(0).as(WenyanDouble.TYPE).value();
                 FireworkExplosion.Shape shape = switch (shapeId) {
                     case 1 -> FireworkExplosion.Shape.SMALL_BALL;
-                    case 3 -> FireworkExplosion.Shape.STAR;
-                    case 4 -> FireworkExplosion.Shape.CREEPER;
-                    case 5 -> FireworkExplosion.Shape.BURST;
+                    case 2 -> FireworkExplosion.Shape.STAR;
+                    case 3 -> FireworkExplosion.Shape.CREEPER;
+                    case 4 -> FireworkExplosion.Shape.BURST;
                     default -> FireworkExplosion.Shape.LARGE_BALL;
                 };
 
@@ -137,30 +142,32 @@ public class ProjectileHandlers {
                 );
                 ctx.level().addFreshEntity(firework);
             }))
-            .description("发射雪球")
+            .description("生成雪球")
             .handler(ChineseUtils.bracketOf("雪丸"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = projectileSpawnerArgsSpec.resolve(request);
-                Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                Snowball snowball = new Snowball(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, ItemStack.EMPTY);
-                snowball.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
+                var args = request.args();
+                Vec3 target = lampToRangeByBiFunction(bp, args.get(0).as(WenyanVec3.TYPE).value());
+                Snowball snowball = new Snowball(ctx.level(), target.x, target.y, target.z,
+                        new ItemStack(Items.SNOWBALL));
+                ctx.level().addFreshEntity(snowball);
             }))
-            .description("发射火球")
+            .description("生成火球")
             .handler(ChineseUtils.bracketOf("火丸"), BlockHandlerHelper.wrapVoid((ctx, request) -> {
-                var args = projectileSpawnerArgsSpec.resolve(request);
-                Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                SmallFireball fireball = new SmallFireball(ctx.level(), bp.getX() + 0.5, bp.getY() + 1, bp.getZ() + 0.5, dir);
+                var args = request.args();
+                Vec3 target = lampToRangeByBiFunction(bp, args.get(0).as(WenyanVec3.TYPE).value());
+                SmallFireball fireball = new SmallFireball(ctx.level(), target.x, target.y, target.z,
+                        new Vec3(0, 0, 0));
                 ctx.level().addFreshEntity(fireball);
             }))
             .build();
     public static final Function<ItemStack, RawHandlerPackage> ITEM_PROJECTILE_SPAWNER_PACKAGE = _ -> HandlerPackageBuilder.create()
-            .description("生成一根箭矢")
+            .description("生成箭矢")
             .handler(ChineseUtils.bracketOf("箭"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = projectileSpawnerArgsSpec.resolve(request);
-                    Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                    Arrow arrow = new Arrow(entity.level(), entity.blockPosition().getX() + 0.5, entity.blockPosition().getY() + 1, entity.blockPosition().getZ() + 0.5, ItemStack.EMPTY, null);
+                    var args = request.args();
+                    Vec3 target = lampToRangeByFunction(entity, args.get(0).as(WenyanVec3.TYPE).value());
+                    Arrow arrow = new Arrow(entity.level(), target.x, target.y, target.z,
+                            new ItemStack(Items.ARROW), null);
                     arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
-                    arrow.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
                     entity.level().addFreshEntity(arrow);
                 }
                 return WenyanNull.NULL;
@@ -172,9 +179,9 @@ public class ProjectileHandlers {
                     int shapeId = (int) args.get(0).as(WenyanDouble.TYPE).value();
                     FireworkExplosion.Shape shape = switch (shapeId) {
                         case 1 -> FireworkExplosion.Shape.SMALL_BALL;
-                        case 3 -> FireworkExplosion.Shape.STAR;
-                        case 4 -> FireworkExplosion.Shape.CREEPER;
-                        case 5 -> FireworkExplosion.Shape.BURST;
+                        case 2 -> FireworkExplosion.Shape.STAR;
+                        case 3 -> FireworkExplosion.Shape.CREEPER;
+                        case 4 -> FireworkExplosion.Shape.BURST;
                         default -> FireworkExplosion.Shape.LARGE_BALL;
                     };
 
@@ -200,7 +207,7 @@ public class ProjectileHandlers {
                     boolean hasTwinkle = args.get(4).as(WenyanBoolean.TYPE).value();
                     int flightDuration = Math.clamp((int) Math.round(args.get(5).as(WenyanDouble.TYPE).value()), 1, 3);
 
-                    Vec3 target = lampToRangeByBiFunction(entity.blockPosition(), args.get(6).as(WenyanVec3.TYPE).value());
+                    Vec3 target = lampToRangeByFunction(entity, args.get(6).as(WenyanVec3.TYPE).value());
                     ItemStack fireworkItem = new ItemStack(Items.FIREWORK_ROCKET);
 
                     FireworkExplosion explosion = new FireworkExplosion(
@@ -222,22 +229,24 @@ public class ProjectileHandlers {
                 }
                 return WenyanNull.NULL;
             })
-            .description("生成一个雪球")
+            .description("生成雪球")
             .handler(ChineseUtils.bracketOf("雪丸"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = projectileSpawnerArgsSpec.resolve(request);
-                    Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                    Snowball snowball = new Snowball(entity.level(), entity.blockPosition().getX() + 0.5, entity.blockPosition().getY() + 1, entity.blockPosition().getZ() + 0.5, ItemStack.EMPTY);
-                    snowball.shoot(dir.x, dir.y, dir.z, 0.6f, 10.0f);
+                    var args = request.args();
+                    Vec3 target = lampToRangeByFunction(entity, args.get(0).as(WenyanVec3.TYPE).value());
+                    Snowball snowball = new Snowball(entity.level(), target.x, target.y, target.z,
+                            new ItemStack(Items.SNOWBALL));
+                    entity.level().addFreshEntity(snowball);
                 }
                 return WenyanNull.NULL;
             })
-            .description("生成一个火球")
+            .description("生成火球")
             .handler(ChineseUtils.bracketOf("火丸"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = projectileSpawnerArgsSpec.resolve(request);
-                    Vec3 dir = new Vec3(args.get(0), args.get(1), args.get(2));
-                    SmallFireball fireball = new SmallFireball(entity.level(), entity.blockPosition().getX() + 0.5, entity.blockPosition().getY() + 1, entity.blockPosition().getZ() + 0.5, dir);
+                    var args = request.args();
+                    Vec3 target = lampToRangeByFunction(entity, args.get(0).as(WenyanVec3.TYPE).value());
+                    SmallFireball fireball = new SmallFireball(entity.level(), target.x, target.y, target.z,
+                            new Vec3(0, 0, 0));
                     entity.level().addFreshEntity(fireball);
                 }
                 return WenyanNull.NULL;
