@@ -76,7 +76,7 @@ public final class DataDiskStorage {
             if (tag == null) {
                 return WenyanBoolean.FALSE;
             }
-            return WenyanNbtCodec.fromNbt(tag);
+            return WenyanNbtCodec.fromNbt(tag, level);
         } catch (IOException | NbtException e) {
             WenyanAddon.LOGGER.warn("Failed to read Wenyan data disk {}", diskId, e);
             return WenyanBoolean.FALSE;
