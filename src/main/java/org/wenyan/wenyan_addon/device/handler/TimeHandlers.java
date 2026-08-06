@@ -29,6 +29,13 @@ public class TimeHandlers {
                 }
                 return WenyanValues.of(0);
             }))
+            .description("返回主世界时间（tick）")
+            .handler(ChineseUtils.bracketOf("时间"), BlockHandlerHelper.wrap((ctx, request) -> {
+                if (ctx.level() instanceof ServerLevel serverLevel) {
+                    return WenyanValues.of(serverLevel.getGameTime());
+                }
+                return WenyanValues.of(0);
+            }))
             .build();
 
     public static final Function<ItemStack, RawHandlerPackage> ITEM_TIME_PACKAGE = _ -> HandlerPackageBuilder.create()
@@ -38,6 +45,16 @@ public class TimeHandlers {
             })
             .description("返回当前服务器游戏时间（tick）")
             .handler(ChineseUtils.bracketOf("游戏刻"), (ctx, request) -> {
+                if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
+                    if (entity.level() instanceof ServerLevel serverLevel) {
+                        serverLevel.getGameTime();
+                        return WenyanValues.of(serverLevel.getGameTime());
+                    }
+                }
+                return WenyanValues.of(0);
+            })
+            .description("返回主世界时间（tick）")
+            .handler(ChineseUtils.bracketOf("时间"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     if (entity.level() instanceof ServerLevel serverLevel) {
                         serverLevel.getOverworldClockTime();
