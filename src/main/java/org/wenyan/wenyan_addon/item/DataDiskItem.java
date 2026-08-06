@@ -25,6 +25,8 @@ public class DataDiskItem extends TooltipItem {
     @Override
     public void inventoryTick(ItemStack itemStack, ServerLevel level, Entity owner, @Nullable EquipmentSlot slot) {
         super.inventoryTick(itemStack, level, owner, slot);
-        DataDiskStorage.getOrCreateDiskId(itemStack);
+        if (!DataDiskStorage.hasDiskId(itemStack)) {
+            DataDiskStorage.getOrCreateDiskId(itemStack);
+        }
     }
 }

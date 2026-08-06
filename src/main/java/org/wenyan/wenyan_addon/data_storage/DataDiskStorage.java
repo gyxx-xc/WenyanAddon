@@ -40,6 +40,14 @@ public final class DataDiskStorage {
         return id;
     }
 
+    public static boolean hasDiskId(ItemStack stack) {
+        if (!isDataDisk(stack)) {
+            return false;
+        }
+        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        return data != null && data.contains(DISK_ID_KEY);
+    }
+
     public static Optional<UUID> getDiskId(ItemStack stack) {
         if (!isDataDisk(stack)) {
             return Optional.empty();

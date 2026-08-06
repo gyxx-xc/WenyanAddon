@@ -2,7 +2,9 @@ package org.wenyan.wenyan_addon.device.handler.data_disk;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
@@ -103,6 +105,20 @@ public class StorageRuneBlockEntity extends BlockEntity {
             }
         }
         return false;
+    }
+
+    // ===== 方块移除时掉落所有磁盘 =====
+
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (this.level instanceof ServerLevel serverLevel) {
+            for (int slot = 0; slot < disks.size(); slot++) {
+                ItemStack disk = takeDisk(slot);
+                if (!disk.isEmpty()) {
+                    Block.popResource(serverLevel, pos, disk);
+                }
+            }
+        }
     }
 
     // ===== 序列化 =====

@@ -2,7 +2,6 @@ package org.wenyan.wenyan_addon.device.handler.data_disk;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -61,20 +60,5 @@ public class StorageRuneBlock extends Block implements EntityBlock {
                     Component.translatable("container." + WenyanAddon.MODID + ".storage_rune")));
         }
         return InteractionResult.SUCCESS;
-    }
-
-    // ===== 方块破坏时掉落所有磁盘 =====
-
-    @Override
-    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
-        if (level.getBlockEntity(pos) instanceof StorageRuneBlockEntity storage) {
-            for (int slot = 0; slot < storage.getDiskSlots(); slot++) {
-                ItemStack disk = storage.takeDisk(slot);
-                if (!disk.isEmpty()) {
-                    popResource(level, pos, disk);
-                }
-            }
-        }
-        super.affectNeighborsAfterRemoval(state, level, pos, movedByPiston);
     }
 }
