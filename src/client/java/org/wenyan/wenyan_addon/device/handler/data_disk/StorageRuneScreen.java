@@ -6,10 +6,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Inventory;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 
-@OnlyIn(Dist.CLIENT)
 public class StorageRuneScreen extends AbstractContainerScreen<StorageRuneMenu> {
     private static final int CONTAINER_ROWS = 1;
     private static final Identifier GUI = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
