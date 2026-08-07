@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.wenyan.wenyan_addon.mixin",
+  "mixins": [
+    "RunnerBlockEntityMixin",
+    "RunnerBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
