@@ -32,7 +32,7 @@ public class TimeHandlers {
             .description("返回主世界时间（tick）")
             .handler(ChineseUtils.bracketOf("时间"), BlockHandlerHelper.wrap((ctx, request) -> {
                 if (ctx.level() instanceof ServerLevel serverLevel) {
-                    return WenyanValues.of(serverLevel.getGameTime());
+                    return WenyanValues.of(serverLevel.getOverworldClockTime());
                 }
                 return WenyanValues.of(0);
             }))
@@ -58,7 +58,7 @@ public class TimeHandlers {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     if (entity.level() instanceof ServerLevel serverLevel) {
                         serverLevel.getOverworldClockTime();
-                        return WenyanValues.of(serverLevel.getGameTime());
+                        return WenyanValues.of(serverLevel.getOverworldClockTime());
                     }
                 }
                 return WenyanValues.of(0);
