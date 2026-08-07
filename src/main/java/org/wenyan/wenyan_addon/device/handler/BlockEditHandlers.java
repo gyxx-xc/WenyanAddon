@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
-import org.wenyan.wenyan_addon.mixin_util.CasterContext;
+import org.wenyan.wenyan_addon.mixin_util.BlockContextCasterAccessor;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -30,10 +30,12 @@ public class BlockEditHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> BLOCK_EDIT_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("放置背包中的方块")
             .handler(ChineseUtils.bracketOf("置"), BlockHandlerHelper.wrap((ctx, request) -> {
-                var args = request.args();
-                Vec3 placeVec = args.get(0).as(WenyanVec3.TYPE).value();
-                BlockPos pos = new BlockPos((int) placeVec.x, (int) placeVec.y, (int) placeVec.z);
-                ServerPlayer caster = CasterContext.get();
+                if (request.args().isEmpty()) {
+                    return WenyanValues.of(0);
+                }
+                Vec3 placeVec = request.args().get(0).as(WenyanVec3.TYPE).value();
+                BlockPos pos = BlockPos.containing(placeVec);
+                ServerPlayer caster = ((BlockContextCasterAccessor) (Object) ctx).getCaster();
                 if (caster == null) {
                     return WenyanValues.of(0);
                 }
@@ -84,8 +86,11 @@ public class BlockEditHandlers {
             .description("放置背包中的方块")
             .handler(ChineseUtils.bracketOf("置"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
-                    var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
-                    BlockPos pos = BlockHandlerHelper.offsetPos(entity.blockPosition(), args);
+                    if (argsRequest.args().isEmpty()) {
+                        return WenyanValues.of(0);
+                    }
+                    Vec3 placeVec = argsRequest.args().get(0).as(WenyanVec3.TYPE).value();
+                    BlockPos pos = BlockPos.containing(placeVec);
                     Player caster = entity.getPlayer();
                     if (caster == null) {
                         return WenyanValues.of(0);

@@ -1,13 +1,16 @@
 package org.wenyan.wenyan_addon.mixin;
 
+import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.content.block.runner.RunnerBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.wenyan.wenyan_addon.mixin_util.CasterContext;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.wenyan.wenyan_addon.mixin_util.BlockContextCasterAccessor;
 import org.wenyan.wenyan_addon.mixin_util.RunnerBlockEntityCasterAccessor;
 
 @Mixin(RunnerBlockEntity.class)
@@ -25,13 +28,10 @@ public abstract class RunnerBlockEntityMixin implements RunnerBlockEntityCasterA
         this.wenyanAddonCaster = caster;
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    private void wenyanAddon$enterTick(CallbackInfo ci) {
-        CasterContext.set(wenyanAddonCaster);
-    }
-
-    @Inject(method = "tick", at = @At("RETURN"))
-    private void wenyanAddon$exitTick(CallbackInfo ci) {
-        CasterContext.clear();
+    @Redirect(method = "lambda$tick$0", at = @At(value = "NEW", target = "Lindi/wenyan/content/block/runner/BlockRequest$BlockContext;"))
+    private BlockRequest.BlockContext wenyanAddon$createContext(Level level, BlockPos pos, BlockState state) {
+        BlockRequest.BlockContext context = new BlockRequest.BlockContext(level, pos, state);
+        ((BlockContextCasterAccessor) (Object) context).setCaster(wenyanAddonCaster);
+        return context;
     }
 }

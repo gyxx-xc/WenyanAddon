@@ -4,7 +4,8 @@
   "package": "org.wenyan.wenyan_addon.mixin",
   "mixins": [
     "RunnerBlockEntityMixin",
-    "RunnerBlockMixin"
+    "RunnerBlockMixin",
+    "BlockContextMixin"
   ],
   "injectors": {
     "defaultRequire": 1
