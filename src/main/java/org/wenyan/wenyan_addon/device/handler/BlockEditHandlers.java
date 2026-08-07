@@ -12,11 +12,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
@@ -29,7 +33,7 @@ import java.util.function.Function;
 public class BlockEditHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> BLOCK_EDIT_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("放置背包中的方块")
-            .handler(ChineseUtils.bracketOf("置"), BlockHandlerHelper.wrap((ctx, request) -> {
+            .handler(ChineseUtils.bracketOf("放置"), BlockHandlerHelper.wrap((ctx, request) -> {
                 if (request.args().isEmpty()) {
                     return WenyanValues.of(0);
                 }
@@ -50,12 +54,19 @@ public class BlockEditHandlers {
                 }
                 return WenyanValues.of(result ? 1 : 0);
             }))
-            .description("破坏指定位置的方块")
-            .handler(ChineseUtils.bracketOf("破"), BlockHandlerHelper.wrap((ctx, request) -> {
-                var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(request);
-                BlockPos pos = BlockHandlerHelper.offsetPos(bp, args);
-                boolean result = ctx.level().destroyBlock(pos, true);
-                return WenyanValues.of(result ? 1 : 0);
+            .description("挖掘指定位置的方块（钻石镐等级，掉落）")
+            .handler(ChineseUtils.bracketOf("挖掘"), BlockHandlerHelper.wrap((ctx, request) -> {
+                var args = request.args();
+                if (request.args().isEmpty()) {
+                    return WenyanValues.of(0);
+                }
+                Vec3 placeVec = request.args().get(0).as(WenyanVec3.TYPE).value();
+                BlockPos pos = BlockPos.containing(placeVec);
+                ServerPlayer caster = ((BlockContextCasterAccessor) (Object) ctx).getCaster();
+                if (caster == null) {
+                    return WenyanValues.of(0);
+                }
+                return WenyanValues.of(breakBlock(ctx.level(), pos, caster));
             }))
             .description("将指定位置的方块替换为另一种方块，尽量保留原方块属性")
             .handler(ChineseUtils.bracketOf("替"), BlockHandlerHelper.wrap((ctx, request) -> {
@@ -84,7 +95,7 @@ public class BlockEditHandlers {
             .build();
     public static final Function<ItemStack, RawHandlerPackage> ITEM_BLOCK_EDIT_PACKAGE = _ -> HandlerPackageBuilder.create()
             .description("放置背包中的方块")
-            .handler(ChineseUtils.bracketOf("置"), (ctx, argsRequest) -> {
+            .handler(ChineseUtils.bracketOf("放置"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     if (argsRequest.args().isEmpty()) {
                         return WenyanValues.of(0);
@@ -108,12 +119,16 @@ public class BlockEditHandlers {
                 }
                 return WenyanNull.NULL;
             })
-            .description("破坏指定位置的方块")
-            .handler(ChineseUtils.bracketOf("破"), (ctx, argsRequest) -> {
+            .description("挖掘指定位置的方块（钻石镐等级，掉落）")
+            .handler(ChineseUtils.bracketOf("挖掘"), (ctx, argsRequest) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = BlockHandlerHelper.singleVec3ArgsSpec.resolve(argsRequest);
-                    boolean result = entity.level().destroyBlock(BlockHandlerHelper.offsetPos(entity.blockPosition(), args), true);
-                    return WenyanValues.of(result ? 1 : 0);
+                    BlockPos pos = BlockHandlerHelper.offsetPos(entity.blockPosition(), args);
+                    Player caster = entity.getPlayer();
+                    if (caster == null) {
+                        return WenyanValues.of(0);
+                    }
+                    return WenyanValues.of(breakBlock(entity.level(), pos, caster));
                 }
                 return WenyanNull.NULL;
             })
@@ -149,6 +164,27 @@ public class BlockEditHandlers {
     // ===== 背包方块搜索 =====
 
     private static final int HOTBAR_SLOTS = 9;
+
+    private static int breakBlock(Level level, BlockPos pos, Player player) {
+        BlockState state = level.getBlockState(pos);
+        if (state.isAir()) {
+            return 0;
+        }
+        Block block = state.getBlock();
+        BlockEntity blockEntity = level.getBlockEntity(pos);
+        BlockState adjusted = block.playerWillDestroy(level, pos, state, player);
+        ItemStack diamondPickaxe = new ItemStack(Items.DIAMOND_PICKAXE);
+        boolean canHarvest = !adjusted.requiresCorrectToolForDrops() || diamondPickaxe.isCorrectToolForDrops(adjusted);
+        boolean removed = adjusted.onDestroyedByPlayer(level, pos, player, diamondPickaxe, canHarvest, level.getFluidState(pos));
+        if (removed) {
+            block.destroy(level, pos, adjusted);
+            if (canHarvest) {
+                block.playerDestroy(level, player, pos, adjusted, blockEntity, diamondPickaxe);
+            }
+            return 1;
+        }
+        return 0;
+    }
 
     private static ItemStack findBlockStack(Player player) {
         Inventory inventory = player.getInventory();
