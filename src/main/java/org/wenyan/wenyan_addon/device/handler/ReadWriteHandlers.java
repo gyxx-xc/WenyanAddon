@@ -3,6 +3,7 @@ package org.wenyan.wenyan_addon.device.handler;
 import indi.wenyan.content.entity.ThrowEntityContext;
 import indi.wenyan.content.entity.ThrowRunnerEntity;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
+import indi.wenyan.interpreter_impl.value.WenyanVec3;
 import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.utils.ChineseUtils;
 import indi.wenyan.judou.api.utils.WenyanValues;
@@ -38,10 +39,8 @@ public class ReadWriteHandlers {
     public static final BiFunction<BlockPos, BlockState, RawHandlerPackage> READ_WRITE_PACKAGE = (bp, _) -> HandlerPackageBuilder.create()
             .description("读取文字，告示牌或讲台")
             .handler(ChineseUtils.bracketOf("读"), BlockHandlerHelper.wrap((ctx, request) -> {
-                WenyanDouble x=request.args().get(0).as(WenyanDouble.TYPE);
-                WenyanDouble y=request.args().get(1).as(WenyanDouble.TYPE);
-                WenyanDouble z=request.args().get(2).as(WenyanDouble.TYPE);
-                BlockPos blockPos=new BlockPos((int) x.value(), (int) y.value(), (int) z.value());
+                var args=request.args();
+                BlockPos blockPos=BlockPos.containing(args.get(0).as(WenyanVec3.TYPE).value());
                 if (!ctx.level().isLoaded(blockPos)) {
                     throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                 }
@@ -87,12 +86,9 @@ public class ReadWriteHandlers {
             }))
             .description("写入文字，告示牌或讲台")
             .handler(ChineseUtils.bracketOf("写"), BlockHandlerHelper.wrap((ctx, request) -> {
-                WenyanDouble x=request.args().get(0).as(WenyanDouble.TYPE);
-                WenyanDouble y=request.args().get(1).as(WenyanDouble.TYPE);
-                WenyanDouble z=request.args().get(2).as(WenyanDouble.TYPE);
-                WenyanList list=request.args().get(3).as(WenyanList.TYPE);
-
-                BlockPos blockPos=new BlockPos((int) x.value(),(int) y.value(),(int) z.value());
+                var args=request.args();
+                BlockPos blockPos=BlockPos.containing(args.get(0).as(WenyanVec3.TYPE).value());
+                WenyanList list=request.args().get(1).as(WenyanList.TYPE);
                 if (!ctx.level().isLoaded(blockPos)) {
                     throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                 }
@@ -140,10 +136,7 @@ public class ReadWriteHandlers {
             .handler(ChineseUtils.bracketOf("读"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = request.args();
-                    WenyanDouble x = args.get(0).as(WenyanDouble.TYPE);
-                    WenyanDouble y = args.get(1).as(WenyanDouble.TYPE);
-                    WenyanDouble z = args.get(2).as(WenyanDouble.TYPE);
-                    BlockPos blockPos = new BlockPos((int) x.value(), (int) y.value(), (int) z.value());
+                    BlockPos blockPos=BlockPos.containing(args.get(0).as(WenyanVec3.TYPE).value());
                     if (!entity.level().isLoaded(blockPos)) {
                         throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                     }
@@ -184,12 +177,8 @@ public class ReadWriteHandlers {
             .handler(ChineseUtils.bracketOf("写"), (ctx, request) -> {
                 if (ctx instanceof ThrowEntityContext(ThrowRunnerEntity entity)) {
                     var args = request.args();
-                    WenyanDouble x = args.get(0).as(WenyanDouble.TYPE);
-                    WenyanDouble y = args.get(1).as(WenyanDouble.TYPE);
-                    WenyanDouble z = args.get(2).as(WenyanDouble.TYPE);
-                    WenyanList list = args.get(3).as(WenyanList.TYPE);
-
-                    BlockPos blockPos = new BlockPos((int) x.value(), (int) y.value(), (int) z.value());
+                    BlockPos blockPos=BlockPos.containing(args.get(0).as(WenyanVec3.TYPE).value());
+                    WenyanList list=request.args().get(1).as(WenyanList.TYPE);
                     if (!entity.level().isLoaded(blockPos)) {
                         throw new WenyanException.WenyanCheckerError(Component.translatable("wenyan_addon.error.no_loading").getString());
                     }
