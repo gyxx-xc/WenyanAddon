@@ -19,13 +19,16 @@ import indi.wenyan.judou.api.values.primitive.WenyanList;
 import indi.wenyan.judou.api.values.primitive.WenyanString;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -33,6 +36,7 @@ import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jspecify.annotations.Nullable;
 import org.wenyan.wenyan_addon.value.WenyanMapValue;
+import org.wenyan.wenyan_addon.value.WenyanPotionType;
 
 import java.util.Map;
 import java.util.UUID;
@@ -86,6 +90,20 @@ public final class WenyanNbtCodec {
                         vec.getDoubleOr("x", 0),
                         vec.getDoubleOr("y", 0),
                         vec.getDoubleOr("z", 0)));
+            }
+            case "potion" -> {
+                CompoundTag potionTag = tag.getCompoundOrEmpty(VALUE_KEY);
+                String raw = potionTag.getStringOr("e", "");
+                if (raw.isEmpty()) {
+                    yield WenyanNull.NULL;
+                }
+                try {
+                    var holder = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(raw));
+                    yield holder.<IWenyanValue>map(effect -> new WenyanPotionType(new MobEffectInstance(effect, 0, 0)))
+                            .orElse(WenyanNull.NULL);
+                } catch (IllegalArgumentException e) {
+                    yield WenyanNull.NULL;
+                }
             }
             case "block" -> {
                 try {
@@ -171,6 +189,12 @@ public final class WenyanNbtCodec {
             vec.putDouble("y", vec3.value().y);
             vec.putDouble("z", vec3.value().z);
             tag.put(VALUE_KEY, vec);
+        } else if (value instanceof WenyanPotionType potion) {
+            tag.putString(TYPE_KEY, "potion");
+            CompoundTag potionTag = new CompoundTag();
+            potionTag.putString("e", potion.value().getEffect().unwrapKey().map(key -> key.identifier().toString()).orElse(""));
+            potionTag.putString("n", potion.value().getEffect().value().getDisplayName().getString());
+            tag.put(VALUE_KEY, potionTag);
         } else if (value instanceof WenyanBlock block) {
             tag.putString(TYPE_KEY, "block");
             tag.putString(VALUE_KEY, BlockStateParser.serialize(block.value()));
