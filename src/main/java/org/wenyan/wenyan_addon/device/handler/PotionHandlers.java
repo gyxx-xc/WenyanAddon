@@ -99,7 +99,10 @@ public class PotionHandlers {
                     LivingEntity target = args.get(0).as(WenyanEntity.TYPE).value() instanceof LivingEntity living ? living : null;
                     WenyanPotionType potionType = args.get(1).as(WenyanPotionType.TYPE);
                     int amplifier = args.get(2).as(WenyanInteger.TYPE).value();
-                    int duration = args.get(3).as(WenyanInteger.TYPE).value();
+                    int duration = args.get(3).as(WenyanInteger.TYPE).value() * 20;//这个是按tick算的所以要乘20
+                    if (duration<0){
+                        return WenyanBoolean.FALSE;
+                    }
                     if (target == null) {
                         return WenyanBoolean.FALSE;
                     }
