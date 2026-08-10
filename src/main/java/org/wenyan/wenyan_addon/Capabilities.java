@@ -15,6 +15,7 @@ import org.jspecify.annotations.NonNull;
 import org.wenyan.wenyan_addon.device.handler.*;
 import org.wenyan.wenyan_addon.device.handler.DataDiskHandlers;
 import org.wenyan.wenyan_addon.device.handler.DyeHandlers;
+import org.wenyan.wenyan_addon.qi.QiHandlers;
 
 public final class Capabilities {
     private Capabilities() {}
@@ -99,5 +100,6 @@ public final class Capabilities {
 
         registerer.registerToBlock(MessageHandlers.NOTE_BLOCK_PACKAGE, ChineseUtils.bracketOf("消息"), WenyanAddon.MESSAGE_BLOCK.get());
         registerer.registerToBlock(TimeHandlers.TIME_PACKAGE, ChineseUtils.bracketOf("时间"), WenyanAddon.TIME_BLOCK.get());
+        registerer.registerToBlock(QiHandlers.QI_PACKAGE, ChineseUtils.bracketOf("灵气"), WenyanAddon.QI_BLOCK.get());
     }
 }

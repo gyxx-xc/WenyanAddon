@@ -31,6 +31,7 @@ import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlockEntity;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneMenu;
 import org.wenyan.wenyan_addon.item.DataDiskItem;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
+import org.wenyan.wenyan_addon.qi.player.PlayerQi;
 
 @Mod(WenyanAddon.MODID)
 public class WenyanAddon {
@@ -113,6 +114,9 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> TIME_BLOCK = BLOCKS.registerSimpleBlock("time_block", p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
     public static final DeferredItem<BlockItem> TIME_BLOCK_ITEM = registerTooltipBlockItem("time_block", TIME_BLOCK);
 
+    public static final DeferredBlock<Block> QI_BLOCK = BLOCKS.registerSimpleBlock("qi_block", p -> p.mapColor(MapColor.COLOR_CYAN).strength(2.0f).sound(SoundType.AMETHYST));
+    public static final DeferredItem<BlockItem> QI_BLOCK_ITEM = registerTooltipBlockItem("qi_block", QI_BLOCK);
+
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WENYAN_ADDON_TAB = CREATIVE_MODE_TABS.register("wenyan_addon", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.wenyan_addon"))
@@ -144,6 +148,7 @@ public class WenyanAddon {
                 output.accept(PongRegistration.PLUG.get());
                 output.accept(MESSAGE_BLOCK_ITEM.get());
                 output.accept(TIME_BLOCK_ITEM.get());
+                output.accept(QI_BLOCK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")
@@ -153,6 +158,7 @@ public class WenyanAddon {
         BLOCK_ENTITY_TYPES.register(modEventBus);
         MENUS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        PlayerQi.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
         Pong.register(modEventBus);
     }

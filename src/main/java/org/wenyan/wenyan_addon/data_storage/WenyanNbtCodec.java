@@ -35,6 +35,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.transfer.ResourceHandler;
 import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.jspecify.annotations.Nullable;
+import org.wenyan.wenyan_addon.qi.element.ElementType;
+import org.wenyan.wenyan_addon.value.WenyanElement;
 import org.wenyan.wenyan_addon.value.WenyanMapValue;
 import org.wenyan.wenyan_addon.value.WenyanPotionType;
 
@@ -101,6 +103,14 @@ public final class WenyanNbtCodec {
                     var holder = BuiltInRegistries.MOB_EFFECT.get(Identifier.parse(raw));
                     yield holder.<IWenyanValue>map(effect -> new WenyanPotionType(new MobEffectInstance(effect, 0, 0)))
                             .orElse(WenyanNull.NULL);
+                } catch (IllegalArgumentException e) {
+                    yield WenyanNull.NULL;
+                }
+            }
+            case "element" -> {
+                String raw = tag.getStringOr(VALUE_KEY, "");
+                try {
+                    yield new WenyanElement(ElementType.valueOf(raw));
                 } catch (IllegalArgumentException e) {
                     yield WenyanNull.NULL;
                 }
@@ -195,6 +205,9 @@ public final class WenyanNbtCodec {
             potionTag.putString("e", potion.value().getEffect().unwrapKey().map(key -> key.identifier().toString()).orElse(""));
             potionTag.putString("n", potion.value().getEffect().value().getDisplayName().getString());
             tag.put(VALUE_KEY, potionTag);
+        } else if (value instanceof WenyanElement element) {
+            tag.putString(TYPE_KEY, "element");
+            tag.putString(VALUE_KEY, element.value().name());
         } else if (value instanceof WenyanBlock block) {
             tag.putString(TYPE_KEY, "block");
             tag.putString(VALUE_KEY, BlockStateParser.serialize(block.value()));
