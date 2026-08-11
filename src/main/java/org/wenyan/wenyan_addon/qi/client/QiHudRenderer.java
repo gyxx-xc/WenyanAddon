@@ -12,12 +12,19 @@ import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
 import org.wenyan.wenyan_addon.qi.player.PlayerQiData;
 
+import java.util.List;
+
 @EventBusSubscriber(modid = WenyanAddon.MODID, value = Dist.CLIENT)
 public final class QiHudRenderer {
     private static final int BAR_X = 4;
     private static final int BAR_Y = 4;
     private static final int BAR_WIDTH = 100;
     private static final int BAR_HEIGHT = 6;
+    private static final int YIN_YANG_BAR_HEIGHT = 3;
+
+    private static final List<ElementType> WUXING_BAR_ELEMENTS = List.of(
+            ElementType.METAL, ElementType.WOOD, ElementType.WATER, ElementType.FIRE, ElementType.EARTH, ElementType.NEUTRAL);
+    private static final List<ElementType> YIN_YANG_BAR_ELEMENTS = List.of(ElementType.YIN, ElementType.YANG);
 
     private QiHudRenderer() {
     }
@@ -32,32 +39,39 @@ public final class QiHudRenderer {
         double max = PlayerQiData.MAX_QI;
 
         GuiGraphicsExtractor graphics = event.getGuiGraphics();
-        graphics.fill(BAR_X - 1, BAR_Y - 1, BAR_X + BAR_WIDTH + 1, BAR_Y + BAR_HEIGHT + 1, 0xFF000000);
+        drawBar(graphics, qi, max, WUXING_BAR_ELEMENTS, BAR_Y, BAR_HEIGHT,
+                Component.literal(Math.round(qi.getTotal()) + "/" + Math.round(max)));
+        drawBar(graphics, qi, max, YIN_YANG_BAR_ELEMENTS, BAR_Y + BAR_HEIGHT + 10, YIN_YANG_BAR_HEIGHT,
+                Component.literal(Math.round(qi.get(ElementType.YIN)) + "/" + Math.round(qi.get(ElementType.YANG))));
+    }
 
+    private static void drawBar(GuiGraphicsExtractor graphics, PlayerQiData qi, double max,
+                                List<ElementType> elements, int y, int height, Component label) {
+        graphics.fill(BAR_X - 1, y - 1, BAR_X + BAR_WIDTH + 1, y + height + 1, 0xFF000000);
         int x = BAR_X;
-        for (ElementType element : ElementType.values()) {
+        for (ElementType element : elements) {
             int segmentWidth = (int) Math.round(qi.get(element) / max * BAR_WIDTH);
             segmentWidth = Math.min(segmentWidth, BAR_X + BAR_WIDTH - x);
             if (segmentWidth > 0) {
-                graphics.fill(x, BAR_Y, x + segmentWidth, BAR_Y + BAR_HEIGHT, colorOf(element));
+                graphics.fill(x, y, x + segmentWidth, y + height, colorOf(element));
                 x += segmentWidth;
             }
             if (x >= BAR_X + BAR_WIDTH) {
                 break;
             }
         }
-        graphics.text(minecraft.font,
-                Component.literal(Math.round(qi.getTotal()) + "/" + Math.round(max)),
-                BAR_X, BAR_Y + BAR_HEIGHT + 1, 0xFFFFFFFF, false);
+        graphics.text(Minecraft.getInstance().font, label, BAR_X, y + height + 1, 0xFFFFFFFF, false);
     }
 
     private static int colorOf(ElementType element) {
         return switch (element) {
-            case METAL -> 0xFFF0F5FF;
-            case WOOD -> 0xFF00CED1;
-            case WATER -> 0xFF0A0A1A;
+            case METAL -> 0xFFE5C07B;
+            case WOOD -> 0xFF5FD35F;
+            case WATER -> 0xFF4FC1FF;
             case FIRE -> 0xFFE05A4E;
             case EARTH -> 0xFFB98A4F;
+            case YIN -> 0xFF7B5FD3;
+            case YANG -> 0xFFFFD75F;
             case NEUTRAL -> 0xFF9AA5B1;
         };
     }

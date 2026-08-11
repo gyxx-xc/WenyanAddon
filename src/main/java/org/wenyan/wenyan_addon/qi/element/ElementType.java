@@ -6,6 +6,8 @@ public enum ElementType {
     WATER("水"),
     FIRE("火"),
     EARTH("土"),
+    YIN("阴"),
+    YANG("阳"),
     NEUTRAL("无属性");
 
     private final String displayName;

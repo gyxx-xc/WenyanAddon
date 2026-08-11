@@ -27,6 +27,7 @@ public final class QiRestoreHandler {
         MinecraftServer server = event.getServer();
         tickCounter++;
         boolean rescan = tickCounter % SCAN_INTERVAL == 0;
+        double perTick = 1.0 / 20.0;
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (rescan) {
                 DOMINANT_CACHE.put(player.getUUID(),
@@ -34,10 +35,12 @@ public final class QiRestoreHandler {
             }
             ElementType dominant = DOMINANT_CACHE.get(player.getUUID());
             PlayerQiData qi = PlayerQi.of(player);
-            if (dominant == null) {
-                qi.restoreNatural(PlayerQiData.NATURAL_RESTORE_PER_SECOND / 20.0);
+            long dayTime = player.level().getOverworldClockTime() % 24000;
+            qi.updateYinYang(PlayerQiData.yangRatio(dayTime), perTick);
+            if (dominant != null) {
+                qi.restoreEnvironment(dominant, perTick);
             } else {
-                qi.restoreEnvironment(dominant, PlayerQiData.NATURAL_RESTORE_PER_SECOND / 20.0);
+                qi.restoreNatural(perTick);
             }
             PlayerQi.markDirty(player);
         }

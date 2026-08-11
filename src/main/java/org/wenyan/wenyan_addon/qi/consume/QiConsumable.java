@@ -1,14 +1,24 @@
 package org.wenyan.wenyan_addon.qi.consume;
 
-import java.util.List;
+import org.wenyan.wenyan_addon.qi.element.ElementType;
 
 /**
- * 灵气消耗接口：任何需要消耗灵气的设备（符咒设备、灵气石等）实现此接口，
- * 声明需要消耗的灵气构成（可包含多种元素）。消耗操作由 {@link QiConsumption#tryConsume} 执行。
+ * 灵气消耗接口：符咒设备实现此接口，声明符咒属性、基础消耗与阴阳倾向。
+ * 消耗操作由 {@link QiConsumption#tryConsume} 执行（五行 × 阴阳 优先级表）。
  */
 public interface QiConsumable {
     /**
-     * 需要消耗的灵气清单（可包含多种元素及其数量）。
+     * 符咒属性（五行元素，施法时按此元素参与相生/相克判定）。
      */
-    List<QiCost> qiCosts();
+    ElementType spellElement();
+
+    /**
+     * 基础消耗量（原消耗量 N）。
+     */
+    double baseQiCost();
+
+    /**
+     * 符咒阴阳倾向。
+     */
+    YinYangTendency tendency();
 }
