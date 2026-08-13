@@ -8,23 +8,21 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import org.wenyan.wenyan_addon.WenyanAddon;
+import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
+import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
 import org.wenyan.wenyan_addon.qi.player.PlayerQiData;
-
-import java.util.List;
 
 @EventBusSubscriber(modid = WenyanAddon.MODID, value = Dist.CLIENT)
 public final class QiHudRenderer {
     private static final int BAR_X = 4;
     private static final int BAR_Y = 4;
     private static final int BAR_WIDTH = 100;
+    private static final int SHORT_BAR_WIDTH = 60;
     private static final int BAR_HEIGHT = 6;
-    private static final int YIN_YANG_BAR_HEIGHT = 3;
-
-    private static final List<ElementType> WUXING_BAR_ELEMENTS = List.of(
-            ElementType.METAL, ElementType.WOOD, ElementType.WATER, ElementType.FIRE, ElementType.EARTH, ElementType.NEUTRAL);
-    private static final List<ElementType> YIN_YANG_BAR_ELEMENTS = List.of(ElementType.YIN, ElementType.YANG);
+    private static final int BAR_GAP = 3;
+    private static final int LABEL_GAP = 8;
 
     private QiHudRenderer() {
     }
@@ -36,43 +34,49 @@ public final class QiHudRenderer {
             return;
         }
         PlayerQiData qi = PlayerQi.of(minecraft.player);
-        double max = PlayerQiData.MAX_QI;
-
         GuiGraphicsExtractor graphics = event.getGuiGraphics();
-        drawBar(graphics, qi, max, WUXING_BAR_ELEMENTS, BAR_Y, BAR_HEIGHT,
-                Component.literal(Math.round(qi.getTotal()) + "/" + Math.round(max)));
-        drawBar(graphics, qi, max, YIN_YANG_BAR_ELEMENTS, BAR_Y + BAR_HEIGHT + 10, YIN_YANG_BAR_HEIGHT,
-                Component.literal(Math.round(qi.get(ElementType.YIN)) + "/" + Math.round(qi.get(ElementType.YANG))));
+
+        // 初始为最大的无属性灵气条
+        int y = BAR_Y;
+        drawAttributeBar(graphics, qi, ElementType.NEUTRAL, y, BAR_WIDTH, BAR_HEIGHT);
+        y += BAR_HEIGHT + LABEL_GAP;
+
+        // 已解锁的五行/衍生属性条（缩短，排列在无属性条下方）
+        for (ElementAttribute element : ElementRegistry.all()) {
+            if (element == ElementType.NEUTRAL
+                    || element == ElementType.YIN || element == ElementType.YANG) {
+                continue;
+            }
+            if (qi.cap(element) <= 0) {
+                continue;
+            }
+            drawAttributeBar(graphics, qi, element, y, SHORT_BAR_WIDTH, BAR_HEIGHT);
+            y += BAR_HEIGHT + LABEL_GAP;
+        }
+
+        // 已解锁的阴阳条
+        if (qi.cap(ElementType.YIN) > 0) {
+            drawAttributeBar(graphics, qi, ElementType.YIN, y, SHORT_BAR_WIDTH, BAR_HEIGHT);
+            y += BAR_HEIGHT + LABEL_GAP;
+        }
+        if (qi.cap(ElementType.YANG) > 0) {
+            drawAttributeBar(graphics, qi, ElementType.YANG, y, SHORT_BAR_WIDTH, BAR_HEIGHT);
+        }
     }
 
-    private static void drawBar(GuiGraphicsExtractor graphics, PlayerQiData qi, double max,
-                                List<ElementType> elements, int y, int height, Component label) {
-        graphics.fill(BAR_X - 1, y - 1, BAR_X + BAR_WIDTH + 1, y + height + 1, 0xFF000000);
-        int x = BAR_X;
-        for (ElementType element : elements) {
-            int segmentWidth = (int) Math.round(qi.get(element) / max * BAR_WIDTH);
-            segmentWidth = Math.min(segmentWidth, BAR_X + BAR_WIDTH - x);
-            if (segmentWidth > 0) {
-                graphics.fill(x, y, x + segmentWidth, y + height, colorOf(element));
-                x += segmentWidth;
-            }
-            if (x >= BAR_X + BAR_WIDTH) {
-                break;
+    private static void drawAttributeBar(GuiGraphicsExtractor graphics, PlayerQiData qi,
+                                         ElementAttribute element, int y, int width, int height) {
+        graphics.fill(BAR_X - 1, y - 1, BAR_X + width + 1, y + height + 1, 0xFF000000);
+        graphics.fill(BAR_X, y, BAR_X + width, y + height, 0x66CCCCCC);
+        double cap = qi.cap(element);
+        if (cap > 0) {
+            int fill = (int) Math.round(qi.get(element) / cap * width);
+            fill = Math.min(fill, width);
+            if (fill > 0) {
+                graphics.fill(BAR_X, y, BAR_X + fill, y + height, element.color());
             }
         }
-        graphics.text(Minecraft.getInstance().font, label, BAR_X, y + height + 1, 0xFFFFFFFF, false);
-    }
-
-    private static int colorOf(ElementType element) {
-        return switch (element) {
-            case METAL -> 0xFFE5C07B;
-            case WOOD -> 0xFF5FD35F;
-            case WATER -> 0xFF4FC1FF;
-            case FIRE -> 0xFFE05A4E;
-            case EARTH -> 0xFFB98A4F;
-            case YIN -> 0xFF7B5FD3;
-            case YANG -> 0xFFFFD75F;
-            case NEUTRAL -> 0xFF9AA5B1;
-        };
+        String label = element.displayName() + " " + Math.round(qi.get(element)) + "/" + Math.round(cap);
+        graphics.text(Minecraft.getInstance().font, Component.literal(label), BAR_X, y + height + 1, 0xFFFFFFFF, false);
     }
 }

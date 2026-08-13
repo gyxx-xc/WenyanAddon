@@ -1,6 +1,6 @@
 package org.wenyan.wenyan_addon.qi.consume;
 
-import org.wenyan.wenyan_addon.qi.element.ElementType;
+import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
 
 /**
  * 灵气消耗接口：符咒设备实现此接口，声明符咒属性、基础消耗与阴阳倾向。
@@ -8,9 +8,9 @@ import org.wenyan.wenyan_addon.qi.element.ElementType;
  */
 public interface QiConsumable {
     /**
-     * 符咒属性（五行元素，施法时按此元素参与相生/相克判定）。
+     * 符咒属性（五行或衍生属性，施法时按此元素参与相生/相克判定）。
      */
-    ElementType spellElement();
+    ElementAttribute spellElement();
 
     /**
      * 基础消耗量（原消耗量 N）。
