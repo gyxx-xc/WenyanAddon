@@ -76,11 +76,10 @@ public record ElementCoefficients(
                     "environmentRatioWeight", 1.0,
                     "environmentMainRatio", 0.8,
                     "environmentSubRatio", 0.2,
-                    "yinYangRestoreRate", 1.0
+                    "yinYangRestoreRate", 1.0,
+                    "veinStageGain", 0.1
             )
     );
-
-    public static final ElementCoefficients NEUTRAL_DEFAULT = DEFAULT.withRestoreAmount(2.0);
 
     // ===== 扩展字段 getter =====
 
@@ -132,6 +131,13 @@ public record ElementCoefficients(
      */
     public double yinYangRestoreRate() {
         return extras.getOrDefault("yinYangRestoreRate", 1.0);
+    }
+
+    /**
+     * 灵脉恢复系数增幅：每级灵脉阶段对基础恢复数额的加成（默认 0.1，即 10%）。
+     */
+    public double veinStageGain() {
+        return extras.getOrDefault("veinStageGain", 0.1);
     }
 
     /**

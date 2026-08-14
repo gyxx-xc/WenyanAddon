@@ -243,27 +243,27 @@ public class PlayerQiData {
     // ===== 恢复 =====
 
     /**
-     * 无属性恢复：不挂钩环境，仅受灵脉加成。
-     * 量 = perTick × 恢复数额 × 恢复系数 × 灵脉加成。
+     * 属性灵力恢复统一入口（分步计算，所有参数来自玩家属性系数）：
+     *
+     * 基础值 = 恢复数额 × 恢复系数
+     * 环境值 = 基础值 × 环境增益
+     * 总恢复 = (基础值 + 环境值) × 灵脉加成
+     * 计算主属性恢复值权重
+     * 计算副属性恢复值权重
      */
-    public void restoreNatural(double perTick, double veinBoost) {
-        ElementCoefficients c = coefficients(ElementType.NEUTRAL);
-        add(ElementType.NEUTRAL, perTick * c.restoreAmount() * c.restoreRate() * veinBoost);
-    }
-
-    /**
-     * 环境属性恢复：量 = perTick × 恢复数额 × 恢复系数 × 环境增益 × 灵脉加成。
-     * 主元素 0.8 / 相生元素 0.2 分配（environmentMainRatio / environmentSubRatio）。
-     */
-    public void restoreEnvironment(ElementAttribute element, double perTick, double environmentGain, double veinBoost) {
+    public void restoreAttribute(ElementAttribute element, double perTick,
+                                 double environmentGain, double veinBoost) {
         ElementCoefficients c = coefficients(element);
-        double amount = perTick * c.restoreAmount() * c.restoreRate() * environmentGain * veinBoost;
-        double main = amount * c.environmentMainRatio();
-        double sub = amount * c.environmentSubRatio();
-        add(element, main);
+        double base = c.restoreAmount() * c.restoreRate();
+        double env = base * environmentGain;
+        double total = (base + env) * veinBoost;
         ElementType generated = ElementRelations.generates(element);
         if (generated != null) {
-            add(generated, sub);
+            double sub = total * c.environmentSubRatio();
+            add(element, (total - sub) * perTick);
+            add(generated, sub * perTick);
+        } else {
+            add(element, total * perTick);
         }
     }
 

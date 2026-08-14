@@ -42,17 +42,16 @@ public final class QiRestoreHandler {
             PlayerQiData qi = PlayerQi.of(player);
             long dayTime = level.getOverworldClockTime() % 24000;
             qi.updateYinYang(PlayerQiData.yangRatio(dayTime), perTick);
-            double veinBoost = 1.0 + 0.1 * manager.veinStageAt(ChunkPos.containing(player.blockPosition()));
+            int veinStage = manager.veinStageAt(ChunkPos.containing(player.blockPosition()));
             if (chunkQi.isDepleted()) {
                 qi.leakQi(LEAK_RATE_PER_SECOND);
             } else {
-                // 并行恢复：无属性（5/秒 × 灵脉加成，不挂钩环境）+ 已解锁属性条（cap>0 五行系/衍生）
+                // 并行恢复：已解锁属性条（cap>0 五行系/衍生/无属性）
                 // + 装备 QiRestoreSource（环境增益 1+n×m）
                 Set<ElementAttribute> sources = collectRestoreElements(player);
                 sources.add(ElementType.NEUTRAL);
                 for (ElementAttribute element : ElementRegistry.all()) {
-                    if (element == ElementType.NEUTRAL
-                            || element == ElementType.YIN || element == ElementType.YANG) {
+                    if (element == ElementType.YIN || element == ElementType.YANG) {
                         continue;
                     }
                     if (qi.cap(element) > 0) {
@@ -60,15 +59,12 @@ public final class QiRestoreHandler {
                     }
                 }
                 for (ElementAttribute source : sources) {
-                    if (source == ElementType.NEUTRAL) {
-                        qi.restoreNatural(perTick, veinBoost);
-                    } else {
-                        double n = chunkQi.ratio(source);
-                        double m = chunkQi.remainingRatio();
-                        ElementCoefficients c = qi.coefficients(source);
-                        double gain = c.environmentGainBase() + c.environmentRatioWeight() * n * m;
-                        qi.restoreEnvironment(source, perTick, gain, veinBoost);
-                    }
+                    ElementCoefficients c = qi.coefficients(source);
+                    double veinBoost = 1.0 + c.veinStageGain() * veinStage;
+                    double n = chunkQi.ratio(source);
+                    double m = chunkQi.remainingRatio();
+                    double gain = c.environmentGainBase() * c.environmentRatioWeight() * n * m;
+                    qi.restoreAttribute(source, perTick, gain, veinBoost);
                 }
             }
             PlayerQi.markDirty(player);

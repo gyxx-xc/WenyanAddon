@@ -20,7 +20,8 @@ public enum ElementType implements ElementAttribute {
         @Override
         public ElementCoefficients defaultCoefficients() {
             return ElementCoefficients.DEFAULT
-                    .withExtra("environmentRatioWeight",0.0)
+                    .withExtra("environmentMainRatio",1.0)
+                    .withExtra("environmentSubRatio",0.0)
                     .withExtra("environmentGainBase",0.0);
         }
     };

@@ -322,7 +322,13 @@ public class ChunkQiManager extends SavedData {
         if (biome.is(BiomeTags.IS_MOUNTAIN)) {
             return ElementType.EARTH;
         }
-        return ElementType.NEUTRAL;
+        if (biome.is(Biomes.PLAINS) || biome.is(Biomes.SUNFLOWER_PLAINS) || biome.is(BiomeTags.IS_SAVANNA)) {
+            return ElementType.EARTH;
+        }
+        if (biome.is(Biomes.SNOWY_PLAINS) || biome.is(Biomes.SNOWY_TAIGA) || biome.is(Biomes.ICE_SPIKES) || biome.is(Biomes.SNOWY_BEACH)) {
+            return ElementType.WATER;
+        }
+        return ElementType.EARTH;
     }
 
     public double baseCap(ServerLevel level, ChunkPos pos) {
