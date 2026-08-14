@@ -31,7 +31,16 @@ import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlockEntity;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneMenu;
 import org.wenyan.wenyan_addon.item.DataDiskItem;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
+import org.wenyan.wenyan_addon.qi.element.DerivedElement;
+import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
+import org.wenyan.wenyan_addon.qi.element.ElementType;
+import org.wenyan.wenyan_addon.qi.element.RelationType;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
+import org.wenyan.wenyan_addon.qi.storage.QiStorageBlock;
+import org.wenyan.wenyan_addon.qi.storage.QiStorageBlockEntity;
+import org.wenyan.wenyan_addon.qi.storage.QiVesselItem;
+
+import java.util.List;
 
 @Mod(WenyanAddon.MODID)
 public class WenyanAddon {
@@ -117,6 +126,14 @@ public class WenyanAddon {
     public static final DeferredBlock<Block> QI_BLOCK = BLOCKS.registerSimpleBlock("qi_block", p -> p.mapColor(MapColor.COLOR_CYAN).strength(2.0f).sound(SoundType.AMETHYST));
     public static final DeferredItem<BlockItem> QI_BLOCK_ITEM = registerTooltipBlockItem("qi_block", QI_BLOCK);
 
+    public static final DeferredBlock<QiStorageBlock> QI_STORAGE_BLOCK = BLOCKS.registerBlock("qi_storage_block", QiStorageBlock::new);
+    public static final DeferredItem<BlockItem> QI_STORAGE_BLOCK_ITEM = registerTooltipBlockItem("qi_storage_block", QI_STORAGE_BLOCK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QiStorageBlockEntity>> QI_STORAGE_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "qi_storage_block",
+            () -> new BlockEntityType<>(QiStorageBlockEntity::new, QI_STORAGE_BLOCK.get())
+    );
+    public static final DeferredItem<Item> QI_VESSEL_ITEM = ITEMS.registerItem("qi_vessel", properties -> new QiVesselItem(properties, tooltipKey("qi_vessel")), properties -> properties.stacksTo(1));
+
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WENYAN_ADDON_TAB = CREATIVE_MODE_TABS.register("wenyan_addon", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.wenyan_addon"))
@@ -153,6 +170,7 @@ public class WenyanAddon {
 
     @SuppressWarnings("unused")
     public WenyanAddon(IEventBus modEventBus, ModContainer modContainer) {
+        registerDerivedElements();
         BLOCKS.register(modEventBus);
         ITEMS.register(modEventBus);
         BLOCK_ENTITY_TYPES.register(modEventBus);
@@ -161,6 +179,20 @@ public class WenyanAddon {
         PlayerQi.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
         Pong.register(modEventBus);
+    }
+
+    /**
+     * 注册示例衍生属性：单基底（冰、雷）、复数基底（霜铁）、自定义关系（雷克冰）。
+     */
+    private static void registerDerivedElements() {
+        ElementRegistry.register(new DerivedElement("ice", "冰", ElementType.WATER)
+                .withColor(0xFF9AD5FF));
+        ElementRegistry.register(new DerivedElement("lightning", "雷", ElementType.WOOD)
+                .withRelation("ice", RelationType.COUNTER)
+                .withColor(0xFFFFD700));
+        ElementRegistry.register(new DerivedElement("frost_steel", "霜铁",
+                List.of(ElementType.WATER, ElementType.METAL))
+                .withColor(0xFFC0C0C0));
     }
 
     private static DeferredItem<BlockItem> registerTooltipBlockItem(String name, DeferredBlock<? extends Block> block) {
