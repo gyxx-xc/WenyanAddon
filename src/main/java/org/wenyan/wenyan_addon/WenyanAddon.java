@@ -36,6 +36,9 @@ import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.element.RelationType;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
+import org.wenyan.wenyan_addon.qi.ritual.QiRitualBlock;
+import org.wenyan.wenyan_addon.qi.ritual.QiRitualBlockEntity;
+import org.wenyan.wenyan_addon.qi.ritual.QiRitualRecipes;
 import org.wenyan.wenyan_addon.qi.storage.QiStorageBlock;
 import org.wenyan.wenyan_addon.qi.storage.QiStorageBlockEntity;
 import org.wenyan.wenyan_addon.qi.storage.QiVesselItem;
@@ -134,6 +137,13 @@ public class WenyanAddon {
     );
     public static final DeferredItem<Item> QI_VESSEL_ITEM = ITEMS.registerItem("qi_vessel", properties -> new QiVesselItem(properties, tooltipKey("qi_vessel")), properties -> properties.stacksTo(1));
 
+    public static final DeferredBlock<QiRitualBlock> QI_RITUAL_BLOCK = BLOCKS.registerBlock("qi_ritual_block", QiRitualBlock::new);
+    public static final DeferredItem<BlockItem> QI_RITUAL_BLOCK_ITEM = registerTooltipBlockItem("qi_ritual_block", QI_RITUAL_BLOCK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QiRitualBlockEntity>> QI_RITUAL_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "qi_ritual_block",
+            () -> new BlockEntityType<>(QiRitualBlockEntity::new, QI_RITUAL_BLOCK.get())
+    );
+
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WENYAN_ADDON_TAB = CREATIVE_MODE_TABS.register("wenyan_addon", () -> CreativeModeTab.builder()
             .title(Component.translatable("itemGroup.wenyan_addon"))
@@ -166,6 +176,9 @@ public class WenyanAddon {
                 output.accept(MESSAGE_BLOCK_ITEM.get());
                 output.accept(TIME_BLOCK_ITEM.get());
                 output.accept(QI_BLOCK_ITEM.get());
+                output.accept(QI_STORAGE_BLOCK_ITEM.get());
+                output.accept(QI_VESSEL_ITEM.get());
+                output.accept(QI_RITUAL_BLOCK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")
@@ -178,6 +191,9 @@ public class WenyanAddon {
         CREATIVE_MODE_TABS.register(modEventBus);
         PlayerQi.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
+        net.neoforged.bus.api.IEventBus gameBus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
+        gameBus.addListener((net.neoforged.neoforge.event.AddServerReloadListenersEvent event) ->
+                event.addListener(Identifier.fromNamespaceAndPath(MODID, "qi_ritual_recipes"), new QiRitualRecipes()));
         Pong.register(modEventBus);
     }
 

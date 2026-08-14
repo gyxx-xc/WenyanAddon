@@ -1,0 +1,11 @@
+{
+  "items": [
+    {"item": "minecraft:gold_ingot", "count": 8}
+  ],
+  "attributes": ["metal", "fire"],
+  "coefficients": {
+    "restoreAmount": 3.0
+  },
+  "maxHealthBonus": 4.0,
+  "capBonus": 10.0
+}

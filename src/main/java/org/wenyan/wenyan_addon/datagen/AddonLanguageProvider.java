@@ -32,6 +32,9 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("storage_rune_block", "符咒收纳柜");
         BLOCK_NAMES.put("message_block", "消息石");
         BLOCK_NAMES.put("time_block", "时间石");
+        BLOCK_NAMES.put("qi_block", "灵气石");
+        BLOCK_NAMES.put("qi_storage_block", "灵气池");
+        BLOCK_NAMES.put("qi_ritual_block", "淬体仪座");
 
         ITEM_TOOLTIPS.put("example_block", "範例功能入口");
         ITEM_TOOLTIPS.put("projectile_spawner_block", "发射一些投射物，例如箭，雪球，火球，烟花");
@@ -53,6 +56,10 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("data_disk", "持久化储存数据");
         ITEM_TOOLTIPS.put("message_block", "给玩家发送消息");
         ITEM_TOOLTIPS.put("time_block", "获取时间，以及修改时间表达的方式");
+        ITEM_TOOLTIPS.put("qi_block", "五行灵气的查询与调试");
+        ITEM_TOOLTIPS.put("qi_storage_block", "长时间驻扎时使用的灵气容器");
+        ITEM_TOOLTIPS.put("qi_vessel", "随身携带的灵气容器（灵珠）");
+        ITEM_TOOLTIPS.put("qi_ritual_block", "淬体仪式核心：献祭物品与经验，淬炼自身");
     }
 
     public AddonLanguageProvider(PackOutput output, String locale) {
@@ -80,6 +87,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
             add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
         }
         add("item." + WenyanAddon.MODID + ".data_disk", "數據磁盤");
+        ITEM_NAMES.put("qi_vessel", "灵珠");
         for (Map.Entry<String, String> entry : ITEM_TOOLTIPS.entrySet()) {
             add("item." + WenyanAddon.MODID + "." + entry.getKey() + ".tooltip", entry.getValue());
         }
