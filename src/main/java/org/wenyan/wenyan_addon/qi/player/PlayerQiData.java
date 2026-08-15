@@ -82,6 +82,18 @@ public class PlayerQiData {
     private final HashMap<String, Double> reserves = new HashMap<>();
     private final HashMap<String, Double> caps = new HashMap<>();
     private final Map<String, ElementCoefficients> elementCoefficients = new HashMap<>();
+    /**
+     * 数据版本号：任何修改操作递增，异步计算结果应用前比对（防旧数据覆盖新数据）。
+     */
+    private long version = 0;
+
+    public long version() {
+        return version;
+    }
+
+    private void bumpVersion() {
+        version++;
+    }
 
     public PlayerQiData() {
         caps.put(ElementType.NEUTRAL.id(), INITIAL_NEUTRAL_CAP);
@@ -149,7 +161,21 @@ public class PlayerQiData {
         return caps;
     }
 
+    /**
+     * 上限表只读访问（快照等外部只读场景）。
+     */
+    public Map<String, Double> capMap() {
+        return caps;
+    }
+
     private Map<String, ElementCoefficients> coefficientsMap() {
+        return elementCoefficients;
+    }
+
+    /**
+     * 系数表只读访问（快照等外部只读场景）。
+     */
+    public Map<String, ElementCoefficients> coefficientMap() {
         return elementCoefficients;
     }
 
@@ -172,6 +198,7 @@ public class PlayerQiData {
             return false;
         }
         reserves.put(element.id(), get(element) - amount);
+        bumpVersion();
         return true;
     }
 
@@ -181,6 +208,7 @@ public class PlayerQiData {
         }
         double cap = cap(element);
         reserves.put(element.id(), Math.min(cap, get(element) + amount));
+        bumpVersion();
     }
 
     /**
@@ -188,6 +216,7 @@ public class PlayerQiData {
      */
     public void clearAll() {
         reserves.clear();
+        bumpVersion();
     }
 
     // ===== 上限 =====
@@ -205,11 +234,13 @@ public class PlayerQiData {
     public void increaseCap(ElementAttribute element, double amount) {
         if (amount > 0) {
             caps.merge(element.id(), amount, Double::sum);
+            bumpVersion();
         }
     }
 
     public void setCap(ElementAttribute element, double amount) {
         caps.put(element.id(), amount);
+        bumpVersion();
     }
 
     public double totalCap() {
@@ -238,6 +269,7 @@ public class PlayerQiData {
 
     public void setCoefficients(ElementAttribute element, ElementCoefficients coefficients) {
         elementCoefficients.put(element.id(), coefficients);
+        bumpVersion();
     }
 
     // ===== 恢复 =====
@@ -281,6 +313,22 @@ public class PlayerQiData {
                 reserves.put(attribute.id(), get(attribute) * scale);
             }
         }
+        bumpVersion();
+    }
+
+    /**
+     * 按比例缩放全部五行系储量（异步漏气结果应用）。
+     */
+    public void scaleQi(double scale) {
+        if (scale <= 0) {
+            return;
+        }
+        for (ElementAttribute attribute : ElementRegistry.all()) {
+            if (attribute != ElementType.YIN && attribute != ElementType.YANG) {
+                reserves.put(attribute.id(), get(attribute) * scale);
+            }
+        }
+        bumpVersion();
     }
 
     /**
@@ -296,6 +344,7 @@ public class PlayerQiData {
         double yinRestore = perTick * (1.0 - yangRatio) * coefficients(ElementType.YIN).yinYangRestoreRate();
         reserves.put(ElementType.YANG.id(), Math.min(yangCap, yang + yangRestore));
         reserves.put(ElementType.YIN.id(), Math.min(yinCap, yin + yinRestore));
+        bumpVersion();
     }
 
     /**

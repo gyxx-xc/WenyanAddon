@@ -19,10 +19,11 @@ public enum ElementType implements ElementAttribute {
     NEUTRAL("无属性", 0xFF9AA5B1) {
         @Override
         public ElementCoefficients defaultCoefficients() {
-            return ElementCoefficients.DEFAULT
-                    .withExtra("environmentMainRatio",1.0)
-                    .withExtra("environmentSubRatio",0.0)
-                    .withExtra("environmentGainBase",0.0);
+            return new ElementCoefficients.Builder()
+                    .environmentMainRatio(1.0)
+                    .environmentSubRatio(0.0)
+                    .environmentGainBase(0.0)
+                    .build();
         }
     };
 
@@ -46,6 +47,11 @@ public enum ElementType implements ElementAttribute {
 
     @Override
     public List<ElementType> bases() {
+        return List.of(this);
+    }
+
+    @Override
+    public List<ElementAttribute> flattenedBases() {
         return List.of(this);
     }
 

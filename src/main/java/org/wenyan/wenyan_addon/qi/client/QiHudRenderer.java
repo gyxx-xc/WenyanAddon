@@ -70,13 +70,17 @@ public final class QiHudRenderer {
         graphics.fill(BAR_X, y, BAR_X + width, y + height, 0x66CCCCCC);
         double cap = qi.cap(element);
         if (cap > 0) {
-            int fill = (int) Math.round(qi.get(element) / cap * width);
+            int fill = (int) Math.floor(qi.get(element) / cap * width);
             fill = Math.min(fill, width);
             if (fill > 0) {
                 graphics.fill(BAR_X, y, BAR_X + fill, y + height, element.color());
             }
         }
-        String label = element.displayName() + " " + Math.round(qi.get(element)) + "/" + Math.round(cap);
+        String label = element.displayName() + " " + format(qi.get(element)) + "/" + format(cap);
         graphics.text(Minecraft.getInstance().font, Component.literal(label), BAR_X, y + height + 1, 0xFFFFFFFF, false);
+    }
+
+    private static String format(double value) {
+        return String.format(java.util.Locale.ROOT, "%.2f", value);
     }
 }

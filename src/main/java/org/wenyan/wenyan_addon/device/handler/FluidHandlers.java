@@ -10,6 +10,7 @@ import indi.wenyan.judou.api.utils.ChineseUtils;
 import indi.wenyan.judou.api.values.IWenyanValue;
 import indi.wenyan.judou.api.values.WenyanNull;
 import indi.wenyan.judou.api.values.exception.WenyanException;
+import indi.wenyan.judou.api.values.primitive.WenyanInteger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -18,6 +19,7 @@ import net.minecraft.world.phys.Vec3;
 import org.wenyan.wenyan_addon.device.BlockHandlerHelper;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.spell.MatchGrade;
+import org.wenyan.wenyan_addon.qi.spell.QiArgsMatch;
 import org.wenyan.wenyan_addon.qi.spell.QiBranch;
 import org.wenyan.wenyan_addon.qi.spell.QiFunction;
 import org.wenyan.wenyan_addon.qi.spell.QiSpellContext;
@@ -75,11 +77,9 @@ public class FluidHandlers {
             QiSpellRegistry.blockPackage(FluidHandlers.class);
 
     @QiFunction(name = "水源", description = "在指定位置放置水源方块", primary = {"water"}, baseCost = 10)
+    @QiArgsMatch(name = "水源", value = {WenyanVec3.class})
     public static IWenyanValue summonWater(BlockRequest.BlockContext ctx, BlockRequest request, QiSpellContext context) throws WenyanException {
         var args = request.args();
-        if (args.isEmpty()) {
-            return WenyanNull.NULL;
-        }
         Vec3 vec = args.get(0).as(WenyanVec3.TYPE).value();
         BlockPos pos = BlockPos.containing(vec);
         if (ctx.level().getBlockState(pos).isAir()) {
@@ -93,22 +93,18 @@ public class FluidHandlers {
     }
 
     @QiFunction(name = "熔岩", primary = {"fire","earth"}, baseCost = 15)
+    @QiArgsMatch(name = "熔岩", value = {WenyanVec3.class})
     public static IWenyanValue summonLava(BlockRequest.BlockContext ctx, BlockRequest request, QiSpellContext context) throws WenyanException{
         var args = request.args();
-        if (args.isEmpty()) {
-            return WenyanNull.NULL;
-        }
         Vec3 vec=args.get(0).as(WenyanVec3.TYPE).value();
         ctx.level().setBlock(BlockPos.containing(vec), Blocks.LAVA.defaultBlockState(), 3);
         return WenyanNull.NULL;
     }
 
     @QiFunction(name = "冻水成冰", primary = {"water"}, baseCost = 8)
+    @QiArgsMatch(name = "冻水成冰", value = {WenyanVec3.class})
     public static IWenyanValue freezeWater(BlockRequest.BlockContext ctx, BlockRequest request, QiSpellContext context) throws WenyanException{
         var args = request.args();
-        if (args.isEmpty()) {
-            return WenyanNull.NULL;
-        }
         Vec3 vec=args.get(0).as(WenyanVec3.TYPE).value();
         BlockPos pos=BlockPos.containing(vec);
         if (ctx.level().getBlockState(pos).is(Blocks.WATER)) {
@@ -118,6 +114,7 @@ public class FluidHandlers {
     }
 
     @QiFunction(name = "清除流体", baseCost = 5)
+    @QiArgsMatch(name = "清除流体",value = {WenyanVec3.class})
     public static IWenyanValue clearFluid(BlockRequest.BlockContext ctx, BlockRequest request, QiSpellContext context) throws WenyanException {
         return clearFluidAt(ctx, request, null);
     }

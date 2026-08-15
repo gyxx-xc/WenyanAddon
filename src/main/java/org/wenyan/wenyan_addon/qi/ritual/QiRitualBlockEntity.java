@@ -181,7 +181,7 @@ public class QiRitualBlockEntity extends BlockEntity {
             }
             var coefficients = qi.coefficients(attribute);
             for (var entry : recipe.coefficients().entrySet()) {
-                coefficients = coefficients.withExtra(entry.getKey(), entry.getValue());
+                coefficients = coefficients.with(entry.getKey(), entry.getValue());
             }
             qi.setCoefficients(attribute, coefficients);
         }

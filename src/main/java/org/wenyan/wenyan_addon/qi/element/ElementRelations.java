@@ -7,11 +7,11 @@ import java.util.Map;
  * 五行关系：相生环（金生水，水生木，木生火，火生土，土生金）与
  * 相克环（金克木，木克土，土克水，水克火，火克金）。
  * <p>
- * 关系判定优先级：
- * 1. 显式自定义关系（衍生属性对其它衍生属性指定）；
- * 2. 复数基底归一化：任一基底间存在相克 → 相克；任一基底间存在相生 → 相生（相克优先）；
- * 3. 基底相交 → SAME；
- * 4. 否则 NONE。
+ * 关系判定优先级（支持嵌套衍生与断开祖先链）：
+ * 1. 显式自定义关系（自身 relations，未断开时沿基底链溯源）；
+ * 2. 根节点逐对判定：五行根走五行环（相克优先、相生其次）；
+ *    断开根查其显式 relations（无则 NONE）；
+ * 3. 根重叠 → SAME；否则 NONE。
  */
 public final class ElementRelations {
     public static final List<ElementType> ELEMENTS = List.of(
@@ -40,43 +40,60 @@ public final class ElementRelations {
     }
 
     /**
-     * 某元素所生（相生对象）：取第一基底的相生对象。
+     * 某元素所生（相生对象）：取第一扁平根（五行）的相生对象。
      */
     public static ElementType generates(ElementAttribute element) {
-        return GENERATES.get(element.bases().get(0));
+        return GENERATES.get(firstWuxingRoot(element));
     }
 
     /**
-     * 生某元素的属性（相生来源）：取第一基底的相生来源。
+     * 生某元素的属性（相生来源）：取第一扁平根（五行）的相生来源。
      */
     public static ElementType generatedBy(ElementAttribute element) {
+        ElementType root = firstWuxingRoot(element);
+        if (root == null) {
+            return null;
+        }
         return GENERATES.entrySet().stream()
-                .filter(entry -> entry.getValue() == element.bases().get(0))
+                .filter(entry -> entry.getValue() == root)
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(null);
     }
 
     /**
-     * 某元素所克（相克对象）：取第一基底的相克对象。
+     * 某元素所克（相克对象）：取第一扁平根（五行）的相克对象。
      */
     public static ElementType counters(ElementAttribute element) {
-        return COUNTERS.get(element.bases().get(0));
+        return COUNTERS.get(firstWuxingRoot(element));
     }
 
     /**
-     * 克某元素的属性（相克来源）：取第一基底的相克来源。
+     * 克某元素的属性（相克来源）：取第一扁平根（五行）的相克来源。
      */
     public static ElementType counteredBy(ElementAttribute element) {
+        ElementType root = firstWuxingRoot(element);
+        if (root == null) {
+            return null;
+        }
         return COUNTERS.entrySet().stream()
-                .filter(entry -> entry.getValue() == element.bases().get(0))
+                .filter(entry -> entry.getValue() == root)
                 .map(Map.Entry::getKey)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private static ElementType firstWuxingRoot(ElementAttribute element) {
+        for (ElementAttribute root : element.flattenedBases()) {
+            if (root instanceof ElementType type) {
+                return type;
+            }
+        }
+        return null;
     }
 
     public static RelationType relation(ElementAttribute a, ElementAttribute b) {
-        // 1. 显式自定义关系（方向感知）
+        // 1. 显式自定义关系（方向感知，未断开沿基底链溯源）
         RelationType custom = a.customRelation(b);
         if (custom != null) {
             return custom;
@@ -86,31 +103,58 @@ public final class ElementRelations {
             return reverse(custom);
         }
 
-        // 2. 复数基底归一化：相克优先于相生
-        boolean sameBase = false;
-        for (ElementType baseA : a.bases()) {
-            for (ElementType baseB : b.bases()) {
-                if (baseA == baseB) {
-                    sameBase = true;
+        // 2. 根节点逐对判定
+        List<ElementAttribute> rootsA = a.flattenedBases();
+        List<ElementAttribute> rootsB = b.flattenedBases();
+        boolean sameRoot = false;
+        // 相克优先
+        for (ElementAttribute rootA : rootsA) {
+            for (ElementAttribute rootB : rootsB) {
+                if (rootA == rootB) {
+                    sameRoot = true;
+                    continue;
                 }
-                RelationType ring = ringRelation(baseA, baseB);
-                if (ring == RelationType.COUNTER || ring == RelationType.COUNTERED) {
-                    return ring;
+                RelationType r = rootRelation(rootA, rootB);
+                if (r == RelationType.COUNTER || r == RelationType.COUNTERED) {
+                    return r;
                 }
             }
         }
-        for (ElementType baseA : a.bases()) {
-            for (ElementType baseB : b.bases()) {
-                RelationType ring = ringRelation(baseA, baseB);
-                if (ring == RelationType.GENERATING || ring == RelationType.GENERATED) {
-                    return ring;
+        // 相生其次
+        for (ElementAttribute rootA : rootsA) {
+            for (ElementAttribute rootB : rootsB) {
+                if (rootA == rootB) {
+                    continue;
+                }
+                RelationType r = rootRelation(rootA, rootB);
+                if (r == RelationType.GENERATING || r == RelationType.GENERATED) {
+                    return r;
                 }
             }
         }
 
-        // 3. 基底相交
-        if (sameBase) {
+        // 3. 根重叠
+        if (sameRoot) {
             return RelationType.SAME;
+        }
+        return RelationType.NONE;
+    }
+
+    /**
+     * 根节点对判定：五行根走五行环；断开根查其显式 relations（无则 NONE）。
+     */
+    private static RelationType rootRelation(ElementAttribute a, ElementAttribute b) {
+        if (a instanceof ElementType typeA && b instanceof ElementType typeB) {
+            return ringRelation(typeA, typeB);
+        }
+        // 断开根（或混合）：查显式关系
+        RelationType custom = a.customRelation(b);
+        if (custom != null) {
+            return custom;
+        }
+        custom = b.customRelation(a);
+        if (custom != null) {
+            return reverse(custom);
         }
         return RelationType.NONE;
     }

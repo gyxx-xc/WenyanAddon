@@ -32,6 +32,7 @@ import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneMenu;
 import org.wenyan.wenyan_addon.item.DataDiskItem;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
 import org.wenyan.wenyan_addon.qi.element.DerivedElement;
+import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
 import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.element.RelationType;
@@ -198,17 +199,56 @@ public class WenyanAddon {
     }
 
     /**
-     * 注册示例衍生属性：单基底（冰、雷）、复数基底（霜铁）、自定义关系（雷克冰）。
+     * 注册示例衍生属性：单基底（冰、雷）、复数基底（霜铁）、自定义关系（雷克冰）、嵌套（远古霜铁）。
      */
     private static void registerDerivedElements() {
+        // ========== 阳属性（五行） ==========
+        // 阳·金
+        ElementRegistry.register(new DerivedElement("yang_metal", "阳·金",
+                List.of(ElementType.YANG, ElementType.METAL))
+                .withColor(0xFFFFD75F));  // 阳的金色
+        // 阳·木
+        ElementRegistry.register(new DerivedElement("yang_wood", "阳·木",
+                List.of(ElementType.YANG, ElementType.WOOD))
+                .withColor(0xFF7CFC00));  // 阳的亮绿色
+        // 阳·水
+        ElementRegistry.register(new DerivedElement("yang_water", "阳·水",
+                List.of(ElementType.YANG, ElementType.WATER))
+                .withColor(0xFF00BFFF));  // 阳的亮蓝色
+        // 阳·火
+        ElementRegistry.register(new DerivedElement("yang_fire", "阳·火",
+                List.of(ElementType.YANG, ElementType.FIRE))
+                .withColor(0xFFFF4500));  // 阳的橙红色
+        // 阳·土
+        ElementRegistry.register(new DerivedElement("yang_earth", "阳·土",
+                List.of(ElementType.YANG, ElementType.EARTH))
+                .withColor(0xFFFFD700));  // 阳的金黄色
+        // ========== 阴属性（五行） ==========
+        // 阴·金
+        ElementRegistry.register(new DerivedElement("yin_metal", "阴·金",
+                List.of(ElementType.YIN, ElementType.METAL))
+                .withColor(0xFF708090));  // 阴的灰蓝色
+        // 阴·木
+        ElementRegistry.register(new DerivedElement("yin_wood", "阴·木",
+                List.of(ElementType.YIN, ElementType.WOOD))
+                .withColor(0xFF006400));  // 阴的深绿色
+        // 阴·水
+        ElementRegistry.register(new DerivedElement("yin_water", "阴·水",
+                List.of(ElementType.YIN, ElementType.WATER))
+                .withColor(0xFF000080));  // 阴的深蓝色
+        // 阴·火
+        ElementRegistry.register(new DerivedElement("yin_fire", "阴·火",
+                List.of(ElementType.YIN, ElementType.FIRE))
+                .withColor(0xFF8B0000));  // 阴的暗红色
+        // 阴·土
+        ElementRegistry.register(new DerivedElement("yin_earth", "阴·土",
+                List.of(ElementType.YIN, ElementType.EARTH))
+                .withColor(0xFF8B8B00));  // 阴的暗黄色
         ElementRegistry.register(new DerivedElement("ice", "冰", ElementType.WATER)
                 .withColor(0xFF9AD5FF));
         ElementRegistry.register(new DerivedElement("lightning", "雷", ElementType.WOOD)
                 .withRelation("ice", RelationType.COUNTER)
                 .withColor(0xFFFFD700));
-        ElementRegistry.register(new DerivedElement("frost_steel", "霜铁",
-                List.of(ElementType.WATER, ElementType.METAL))
-                .withColor(0xFFC0C0C0));
     }
 
     private static DeferredItem<BlockItem> registerTooltipBlockItem(String name, DeferredBlock<? extends Block> block) {

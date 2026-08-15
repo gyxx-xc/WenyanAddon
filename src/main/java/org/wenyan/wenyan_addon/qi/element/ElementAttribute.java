@@ -6,8 +6,8 @@ import java.util.List;
 
 /**
  * 元素属性定义：五行/阴阳/无属性（{@link ElementType} 枚举）与运行时注册的衍生属性。
- * 衍生属性可继承一个或多个五行基底，克制关系随基底参与五行环判定；
- * 也可单独指定对其它衍生属性的相生相克关系（自定义关系优先）。
+ * 衍生属性可嵌套继承（基底可为五行或其它衍生属性），克制关系随基底参与五行环判定；
+ * 可指定 {@link #ancestorBreak()} 断开祖先链（自身成为根节点，仅以显式关系为锚）。
  */
 public interface ElementAttribute {
     /**
@@ -21,9 +21,23 @@ public interface ElementAttribute {
     String displayName();
 
     /**
-     * 五行基底：衍生属性返回其继承的五行（可复数）；五行/阴阳/无属性返回自身。
+     * 直接基底：五行/阴阳/无属性返回自身；衍生属性返回其继承的基底（可嵌套）。
      */
-    List<ElementType> bases();
+    List<? extends ElementAttribute> bases();
+
+    /**
+     * 扁平化根节点集：递归展开嵌套基底（去重）。
+     * 结果只含五行（{@link ElementType}）与断开祖先链的衍生属性（自身作根）。
+     */
+    List<ElementAttribute> flattenedBases();
+
+    /**
+     * 是否断开祖先链：断开后不向上溯源（不继承祖先显式关系、不展开祖先基底），
+     * 自身作为根节点参与关系判定，仅以显式关系为锚。
+     */
+    default boolean ancestorBreak() {
+        return false;
+    }
 
     /**
      * 默认系数：未显式设置时玩家使用的系数；衍生属性未覆盖时继承第一基底。
@@ -34,6 +48,7 @@ public interface ElementAttribute {
 
     /**
      * 对其它属性（通常为衍生属性）自定义的相生相克关系，null 表示未指定（按基底判定）。
+     * 未断开时沿基底链向上溯源（祖先显式关系继承）。
      */
     default RelationType customRelation(ElementAttribute other) {
         return null;
