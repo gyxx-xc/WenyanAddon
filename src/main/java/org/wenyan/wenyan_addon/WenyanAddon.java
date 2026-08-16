@@ -56,6 +56,8 @@ public class WenyanAddon {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
     public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(BuiltInRegistries.MENU, MODID);
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
+    public static final DeferredRegister<net.minecraft.world.effect.MobEffect> MOB_EFFECTS =
+            DeferredRegister.create(Registries.MOB_EFFECT, MODID);
     public static final ResourceKey<CreativeModeTab> WENYAN_PROGRAMMING_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath("wenyan_programming", "wenyan_programming")
@@ -190,8 +192,11 @@ public class WenyanAddon {
         BLOCK_ENTITY_TYPES.register(modEventBus);
         MENUS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
+        MOB_EFFECTS.register(modEventBus);
         PlayerQi.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
+        modEventBus.addListener(org.wenyan.wenyan_addon.qi.damage.QiDamageTypes::register);
+        modEventBus.addListener(org.wenyan.wenyan_addon.qi.mark.QiMarkEffects::register);
         net.neoforged.bus.api.IEventBus gameBus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
         gameBus.addListener((net.neoforged.neoforge.event.AddServerReloadListenersEvent event) ->
                 event.addListener(Identifier.fromNamespaceAndPath(MODID, "qi_ritual_recipes"), new QiRitualRecipes()));

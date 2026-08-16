@@ -45,6 +45,7 @@ public record ElementCoefficients(Map<String, Double> values) {
     public static final String RESISTANCE_PENETRATION = "resistancePenetration";
     public static final String RESISTANCE_PENETRATION_PERCENT = "resistancePenetrationPercent";
     public static final String ARMOR_PENETRATION_PERCENT = "armorPenetrationPercent";
+    public static final String KNOCKBACK = "knockback";
 
     /**
      * 默认参数集（全属性标准值）。
@@ -78,6 +79,7 @@ public record ElementCoefficients(Map<String, Double> values) {
             .resistancePenetration(0)
             .resistancePenetrationPercent(0.0)
             .armorPenetrationPercent(0.0)
+            .knockback(0.5)
             .buildRaw();
 
     public ElementCoefficients() {
@@ -247,6 +249,10 @@ public record ElementCoefficients(Map<String, Double> values) {
             return addAttribute(ARMOR_PENETRATION_PERCENT, value);
         }
 
+        public Builder knockback(double value) {
+            return addAttribute(KNOCKBACK, value);
+        }
+
         /**
          * 以默认参数为基础构建（未显式设置的值取 DEFAULT）。
          */
@@ -380,6 +386,13 @@ public record ElementCoefficients(Map<String, Double> values) {
 
     public double armorPenetrationPercent() {
         return get(ARMOR_PENETRATION_PERCENT);
+    }
+
+    /**
+     * 击退值：该属性伤害造成的击退强度（默认 1.0，一般伤害击退效果）。
+     */
+    public double knockback() {
+        return get(KNOCKBACK);
     }
 
     // ===== 序列化 =====

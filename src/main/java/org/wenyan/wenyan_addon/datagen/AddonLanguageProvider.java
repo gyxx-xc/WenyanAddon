@@ -91,5 +91,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         for (Map.Entry<String, String> entry : ITEM_TOOLTIPS.entrySet()) {
             add("item." + WenyanAddon.MODID + "." + entry.getKey() + ".tooltip", entry.getValue());
         }
+        // 灵气属性标记效果：占位符模板（%s = 属性名，运行时自动填充）
+        add("effect." + WenyanAddon.MODID + ".qi_element_mark", "灵气侵蚀(%s)");
     }
 }

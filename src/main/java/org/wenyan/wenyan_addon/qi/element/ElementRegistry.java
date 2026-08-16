@@ -14,7 +14,8 @@ import java.util.Set;
 
 /**
  * 元素属性注册表：五行/阴阳/无属性（枚举）在类加载时注册；
- * 衍生属性可运行时注册（支持嵌套继承），注册时做循环依赖检测。
+ * 衍生属性仅允许在模组加载阶段注册（不再支持运行时动态注册），
+ * 以保证依赖属性遍历的注册（如灵气标记效果、伤害类型）在加载期与属性同步完成。
  */
 public final class ElementRegistry {
     private static final Logger log = LoggerFactory.getLogger(ElementRegistry.class);
