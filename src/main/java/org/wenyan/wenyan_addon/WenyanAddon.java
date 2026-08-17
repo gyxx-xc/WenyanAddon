@@ -140,6 +140,35 @@ public class WenyanAddon {
     );
     public static final DeferredItem<Item> QI_VESSEL_ITEM = ITEMS.registerItem("qi_vessel", properties -> new QiVesselItem(properties, tooltipKey("qi_vessel")), properties -> properties.stacksTo(1));
 
+    public static final DeferredItem<Item> YIN_CRYSTAL_ITEM = ITEMS.registerItem("yin_crystal", properties -> new org.wenyan.wenyan_addon.qi.land.YinCrystalItem(properties, tooltipKey("yin_crystal")));
+    public static final DeferredItem<Item> YANG_CRYSTAL_ITEM = ITEMS.registerItem("yang_crystal", properties -> new org.wenyan.wenyan_addon.qi.land.YangCrystalItem(properties, tooltipKey("yang_crystal")));
+    public static final DeferredItem<Item> SPIRIT_STONE_ITEM = ITEMS.registerItem("spirit_stone", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone")));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_SMALL = ITEMS.registerItem("qi_restore_potion_small", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_MEDIUM = ITEMS.registerItem("qi_restore_potion_medium", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_LARGE = ITEMS.registerItem("qi_restore_potion_large", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_SUSTAINED = ITEMS.registerItem("qi_restore_potion_sustained", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_LIQUID_BOTTLE_ITEM = ITEMS.registerItem("qi_liquid_bottle", properties -> new org.wenyan.wenyan_addon.qi.liquid.QiLiquidBottleItem(properties, tooltipKey("qi_liquid_bottle")));
+
+    public static final DeferredBlock<Block> QI_LIQUID_COLLECTOR_BLOCK = BLOCKS.registerSimpleBlock("qi_liquid_collector_block", p -> p.mapColor(MapColor.COLOR_CYAN).strength(2.0f).sound(SoundType.GLASS));
+    public static final DeferredItem<BlockItem> QI_LIQUID_COLLECTOR_BLOCK_ITEM = registerTooltipBlockItem("qi_liquid_collector_block", QI_LIQUID_COLLECTOR_BLOCK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<org.wenyan.wenyan_addon.qi.liquid.QiLiquidCollectorBlockEntity>> QI_LIQUID_COLLECTOR_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "qi_liquid_collector_block",
+            () -> new BlockEntityType<>(org.wenyan.wenyan_addon.qi.liquid.QiLiquidCollectorBlockEntity::new, QI_LIQUID_COLLECTOR_BLOCK.get())
+    );
+    public static final DeferredBlock<Block> QI_LIQUID_PURIFIER_BLOCK = BLOCKS.registerSimpleBlock("qi_liquid_purifier_block", p -> p.mapColor(MapColor.COLOR_PURPLE).strength(2.0f).sound(SoundType.GLASS));
+    public static final DeferredItem<BlockItem> QI_LIQUID_PURIFIER_BLOCK_ITEM = registerTooltipBlockItem("qi_liquid_purifier_block", QI_LIQUID_PURIFIER_BLOCK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<org.wenyan.wenyan_addon.qi.liquid.QiLiquidPurifierBlockEntity>> QI_LIQUID_PURIFIER_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "qi_liquid_purifier_block",
+            () -> new BlockEntityType<>(org.wenyan.wenyan_addon.qi.liquid.QiLiquidPurifierBlockEntity::new, QI_LIQUID_PURIFIER_BLOCK.get())
+    );
+
+    public static final DeferredBlock<Block> QI_GATHERING_ARRAY_BLOCK = BLOCKS.registerSimpleBlock("qi_gathering_array_block", p -> p.mapColor(MapColor.COLOR_YELLOW).strength(3.0f).sound(SoundType.METAL));
+    public static final DeferredItem<BlockItem> QI_GATHERING_ARRAY_BLOCK_ITEM = registerTooltipBlockItem("qi_gathering_array_block", QI_GATHERING_ARRAY_BLOCK);
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<org.wenyan.wenyan_addon.qi.gathering.QiGatheringArrayBlockEntity>> QI_GATHERING_ARRAY_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
+            "qi_gathering_array_block",
+            () -> new BlockEntityType<>(org.wenyan.wenyan_addon.qi.gathering.QiGatheringArrayBlockEntity::new, QI_GATHERING_ARRAY_BLOCK.get())
+    );
+
     public static final DeferredBlock<QiRitualBlock> QI_RITUAL_BLOCK = BLOCKS.registerBlock("qi_ritual_block", QiRitualBlock::new);
     public static final DeferredItem<BlockItem> QI_RITUAL_BLOCK_ITEM = registerTooltipBlockItem("qi_ritual_block", QI_RITUAL_BLOCK);
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<QiRitualBlockEntity>> QI_RITUAL_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register(
@@ -181,7 +210,18 @@ public class WenyanAddon {
                 output.accept(QI_BLOCK_ITEM.get());
                 output.accept(QI_STORAGE_BLOCK_ITEM.get());
                 output.accept(QI_VESSEL_ITEM.get());
+                output.accept(YIN_CRYSTAL_ITEM.get());
+                output.accept(YANG_CRYSTAL_ITEM.get());
+                output.accept(SPIRIT_STONE_ITEM.get());
                 output.accept(QI_RITUAL_BLOCK_ITEM.get());
+                output.accept(QI_LIQUID_COLLECTOR_BLOCK_ITEM.get());
+                output.accept(QI_LIQUID_PURIFIER_BLOCK_ITEM.get());
+                output.accept(QI_LIQUID_BOTTLE_ITEM.get());
+                output.accept(QI_RESTORE_POTION_SMALL.get());
+                output.accept(QI_RESTORE_POTION_MEDIUM.get());
+                output.accept(QI_RESTORE_POTION_LARGE.get());
+                output.accept(QI_RESTORE_POTION_SUSTAINED.get());
+                output.accept(QI_GATHERING_ARRAY_BLOCK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")
@@ -197,6 +237,7 @@ public class WenyanAddon {
         modEventBus.addListener(Capabilities::registerCapabilities);
         modEventBus.addListener(org.wenyan.wenyan_addon.qi.damage.QiDamageTypes::register);
         modEventBus.addListener(org.wenyan.wenyan_addon.qi.mark.QiMarkEffects::register);
+        modEventBus.addListener(org.wenyan.wenyan_addon.qi.potion.QiRestorePotionEffects::register);
         net.neoforged.bus.api.IEventBus gameBus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
         gameBus.addListener((net.neoforged.neoforge.event.AddServerReloadListenersEvent event) ->
                 event.addListener(Identifier.fromNamespaceAndPath(MODID, "qi_ritual_recipes"), new QiRitualRecipes()));

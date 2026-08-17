@@ -150,6 +150,7 @@ public final class QiSpellExecution {
 
     /**
      * 收集支付链：背包/装备栏中的容器物品 + 附近（8 格）方块容器。
+     * 按优先级排序：优先级大（灵石等一次性容器）最后支付。
      */
     private static List<QiContainer> collectContainers(ServerPlayer player) {
         List<QiContainer> containers = new ArrayList<>();
@@ -162,6 +163,7 @@ public final class QiSpellExecution {
                 containers.add(container);
             }
         }
+        containers.sort(java.util.Comparator.comparingInt(QiContainer::priority));
         return containers;
     }
 

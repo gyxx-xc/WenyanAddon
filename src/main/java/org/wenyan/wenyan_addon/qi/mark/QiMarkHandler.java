@@ -124,4 +124,29 @@ public final class QiMarkHandler {
         }
         return null;
     }
+
+    @SubscribeEvent
+    public static void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
+        // 强化生物（带标记）死亡 → 掉灵石（纯度随机：杂质 5-30% / 纯质 50-70% / 精纯 90-100%）
+        if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
+            return;
+        }
+        ElementMarkInstance mark = markOf(event.getEntity());
+        if (mark == null) {
+            return;
+        }
+        net.minecraft.world.item.ItemStack stone = org.wenyan.wenyan_addon.WenyanAddon.SPIRIT_STONE_ITEM.get()
+                .getDefaultInstance();
+        double roll = serverLevel.getRandom().nextDouble();
+        double purity;
+        if (roll < 0.5) {
+            purity = 0.05 + serverLevel.getRandom().nextDouble() * 0.25;      // 杂质 5-30%
+        } else if (roll < 0.9) {
+            purity = 0.50 + serverLevel.getRandom().nextDouble() * 0.20;      // 纯质 50-70%
+        } else {
+            purity = 0.90 + serverLevel.getRandom().nextDouble() * 0.10;      // 精纯 90-100%
+        }
+        org.wenyan.wenyan_addon.qi.storage.SpiritStoneContainer.setPurity(stone, purity);
+        event.getEntity().spawnAtLocation(serverLevel, stone);
+    }
 }

@@ -80,6 +80,14 @@ public class ChunkQiData {
         return yang;
     }
 
+    /**
+     * 设置阴阳值（阴阳之地生成时初始化）。
+     */
+    public void setYinYang(double yin, double yang) {
+        this.yin = yin;
+        this.yang = yang;
+    }
+
     public double qiCap() {
         return qiCap;
     }

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wenyan.wenyan_addon.WenyanAddon;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
+import org.wenyan.wenyan_addon.qi.land.YinYangLandType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,10 +43,15 @@ public class ChunkQiManager extends SavedData {
     public static final int CHUNKS_PER_TICK = 200;
     public static final int ACTIVE_CACHE_TTL = 40;
     public static final long VEIN_TICK_INTERVAL = 40;
+    public static final double YIN_YANG_LAND_CHANCE = 0.01;
+    public static final int YIN_YANG_MIN_COVERAGE = 4;
+    public static final int YIN_YANG_MAX_COVERAGE = 16;
 
     public static final Codec<ChunkQiManager> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.unboundedMap(Codec.STRING, ChunkQiData.CODEC).fieldOf("chunks").forGetter(ChunkQiManager::chunks),
-            Codec.unboundedMap(Codec.STRING, QiVein.CODEC).fieldOf("veins").forGetter(ChunkQiManager::veins)
+            Codec.unboundedMap(Codec.STRING, QiVein.CODEC).fieldOf("veins").forGetter(ChunkQiManager::veins),
+            Codec.unboundedMap(Codec.STRING, Codec.STRING).optionalFieldOf("yinYangLands", Map.of())
+                    .forGetter(ChunkQiManager::yinYangLands)
     ).apply(instance, ChunkQiManager::new));
 
     public static final SavedDataType<ChunkQiManager> TYPE = new SavedDataType<>(ID, ChunkQiManager::new, CODEC);
@@ -53,6 +59,7 @@ public class ChunkQiManager extends SavedData {
 
     private final Map<String, ChunkQiData> chunks = new ConcurrentHashMap<>();
     private final Map<String, QiVein> veins = new ConcurrentHashMap<>();
+    private final Map<String, YinYangLandType> yinYangLands = new ConcurrentHashMap<>();
     private final Map<String, Long> lastProcessedTicks = new HashMap<>();
     private Set<String> activeChunks = Set.of();
     private Set<String> coreChunks = Set.of();
@@ -62,9 +69,17 @@ public class ChunkQiManager extends SavedData {
     public ChunkQiManager() {
     }
 
-    private ChunkQiManager(Map<String, ChunkQiData> chunks, Map<String, QiVein> veins) {
+    private ChunkQiManager(Map<String, ChunkQiData> chunks, Map<String, QiVein> veins,
+                           Map<String, String> yinYangLands) {
         this.chunks.putAll(chunks);
         this.veins.putAll(veins);
+        yinYangLands.forEach((key, value) -> this.yinYangLands.put(key, YinYangLandType.valueOf(value)));
+    }
+
+    private Map<String, String> yinYangLands() {
+        Map<String, String> result = new HashMap<>();
+        yinYangLands.forEach((key, value) -> result.put(key, value.name()));
+        return result;
     }
 
     public Map<String, ChunkQiData> chunks() {
@@ -90,7 +105,7 @@ public class ChunkQiManager extends SavedData {
         if (data != null) {
             return data;
         }
-        // 双检锁：创建过程可能触发 spawnVein（写入 chunks/veins），
+        // 双检锁：创建过程可能触发 spawnVein / 阴阳之地生成（写入 chunks/veins/yinYangLands），
         // 必须脱离并发修改期，避免自修改与文言线程并发竞态。
         synchronized (chunks) {
             data = chunks.get(key);
@@ -98,12 +113,73 @@ public class ChunkQiManager extends SavedData {
                 data = createChunkQi(level, pos);
                 chunks.put(key, data);
                 setDirty();
+                if (!yinYangLands.containsKey(key) && level.getRandom().nextDouble() < YIN_YANG_LAND_CHANCE) {
+                    generateYinYangLand(level, pos);
+                }
                 if (level.getRandom().nextDouble() < VEIN_GENERATION_CHANCE) {
                     spawnVein(level, pos);
                 }
+                // 阴阳之地：初始化区块阴阳值（富集对应属性）
+                applyYinYangValues(level, pos, data);
             }
         }
         return data;
+    }
+
+    /**
+     * 阴阳之地阴阳值初始化：阴之地 yin = 上限×0.3、阳之地 yang = 上限×0.3；普通区块为 0。
+     */
+    private void applyYinYangValues(ServerLevel level, ChunkPos pos, ChunkQiData data) {
+        YinYangLandType type = yinYangLands.get(keyOf(pos));
+        if (type == null) {
+            return;
+        }
+        double amount = data.qiCap() * 0.3;
+        if (type == YinYangLandType.YIN) {
+            data.setYinYang(amount, amount * 0.2);
+        } else {
+            data.setYinYang(amount * 0.2, amount);
+        }
+        setDirty();
+    }
+
+    /**
+     * 阴阳之地生成：1% 概率成为核心（随机阴/阳），随机游走扩展 3-15 个连续区块。
+     */
+    private void generateYinYangLand(ServerLevel level, ChunkPos core) {
+        YinYangLandType type = level.getRandom().nextBoolean() ? YinYangLandType.YIN : YinYangLandType.YANG;
+        int coverage = YIN_YANG_MIN_COVERAGE
+                + level.getRandom().nextInt(YIN_YANG_MAX_COVERAGE - YIN_YANG_MIN_COVERAGE + 1);
+        Set<ChunkPos> region = new HashSet<>();
+        region.add(core);
+        ChunkPos current = core;
+        while (region.size() < coverage) {
+            ChunkPos next = new ChunkPos(
+                    current.x() + level.getRandom().nextInt(3) - 1,
+                    current.z() + level.getRandom().nextInt(3) - 1);
+            if (!region.contains(next) && !yinYangLands.containsKey(keyOf(next))) {
+                region.add(next);
+            }
+            current = next;
+        }
+        for (ChunkPos pos : region) {
+            yinYangLands.put(keyOf(pos), type);
+        }
+        log.info("生成阴阳之地: {} ({} 区块, {}地)", core, region.size(), type == YinYangLandType.YIN ? "阴" : "阳");
+    }
+
+    /**
+     * 该区块的阴阳之地类型（非阴阳之地返回 null）。
+     */
+    public YinYangLandType landTypeAt(ChunkPos pos) {
+        return yinYangLands.get(keyOf(pos));
+    }
+
+    /**
+     * 该区块是否阴阳之地。
+     */
+    public boolean isYinYangLand(ChunkPos pos) {
+        return yinYangLands.containsKey(keyOf(pos));
     }
 
     /**

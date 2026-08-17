@@ -31,6 +31,8 @@ import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.element.RelationType;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
 import org.wenyan.wenyan_addon.qi.player.PlayerQiData;
+import org.wenyan.wenyan_addon.qi.storage.QiContainer;
+import org.wenyan.wenyan_addon.qi.storage.QiContainerHandlers;
 import org.wenyan.wenyan_addon.value.WenyanElement;
 import org.wenyan.wenyan_addon.value.WenyanMapValue;
 
@@ -235,6 +237,62 @@ public class QiHandlers {
                 PlayerQi.of(caster).clearAll();
                 PlayerQi.markDirty(caster);
                 return WenyanNull.NULL;
+            }))
+            .description("查询手持灵珠储量：灵珠储量")
+            .handler(ChineseUtils.bracketOf("灵珠储量"), BlockHandlerHelper.wrap((ctx, _) -> {
+                ServerPlayer caster = ((BlockContextCasterAccessor) (Object) ctx).getCaster();
+                if (caster == null) {
+                    return new WenyanMapValue();
+                }
+                return QiContainerHandlers.vesselReserves(caster);
+            }))
+            .description("向手持灵珠注入灵气：灵珠注入以「属性」以数额")
+            .handler(ChineseUtils.bracketOf("灵珠注入"), BlockHandlerHelper.wrap((ctx, request) -> {
+                ServerPlayer caster = ((BlockContextCasterAccessor) (Object) ctx).getCaster();
+                if (caster == null || request.args().size() < 2) {
+                    return WenyanNull.NULL;
+                }
+                QiContainer container = QiContainerHandlers.vesselOf(caster);
+                if (container == null) {
+                    return WenyanNull.NULL;
+                }
+                ElementAttribute element = parseAttribute(request.args().get(0));
+                double amount = request.args().get(1).as(WenyanDouble.TYPE).value();
+                if (element == null || amount <= 0) {
+                    return WenyanNull.NULL;
+                }
+                PlayerQiData qi = PlayerQi.of(caster);
+                double moved = Math.min(amount, qi.get(element));
+                double stored = container.add(element, moved);
+                qi.consume(element, stored);
+                PlayerQi.markDirty(caster);
+                return WenyanValues.of(stored);
+            }))
+            .description("从手持灵珠提取灵气：灵珠提取以「属性」以数额")
+            .handler(ChineseUtils.bracketOf("灵珠提取"), BlockHandlerHelper.wrap((ctx, request) -> {
+                ServerPlayer caster = ((BlockContextCasterAccessor) (Object) ctx).getCaster();
+                if (caster == null || request.args().size() < 2) {
+                    return WenyanNull.NULL;
+                }
+                QiContainer container = QiContainerHandlers.vesselOf(caster);
+                if (container == null) {
+                    return WenyanNull.NULL;
+                }
+                ElementAttribute element = parseAttribute(request.args().get(0));
+                double amount = request.args().get(1).as(WenyanDouble.TYPE).value();
+                if (element == null || amount <= 0) {
+                    return WenyanNull.NULL;
+                }
+                PlayerQiData qi = PlayerQi.of(caster);
+                double removed = container.consume(element, amount);
+                double before = qi.getTotal();
+                qi.add(element, removed);
+                double accepted = qi.getTotal() - before;
+                if (accepted < removed) {
+                    container.add(element, removed - accepted);
+                }
+                PlayerQi.markDirty(caster);
+                return WenyanValues.of(accepted);
             }))
             .build();
 

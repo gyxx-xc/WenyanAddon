@@ -27,4 +27,11 @@ public interface QiContainer {
      * 注入指定数量，返回实际注入量（超出容量时部分注入）。
      */
     double add(ElementAttribute element, double amount);
+
+    /**
+     * 支付优先级：数值越大越后支付（灵石等一次性容器应最后抽取）。
+     */
+    default int priority() {
+        return 0;
+    }
 }

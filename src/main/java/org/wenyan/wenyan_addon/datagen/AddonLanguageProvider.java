@@ -35,6 +35,9 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("qi_block", "灵气石");
         BLOCK_NAMES.put("qi_storage_block", "灵气池");
         BLOCK_NAMES.put("qi_ritual_block", "淬体仪座");
+        BLOCK_NAMES.put("qi_liquid_collector_block", "灵液收集器");
+        BLOCK_NAMES.put("qi_liquid_purifier_block", "灵液纯化器");
+        BLOCK_NAMES.put("qi_gathering_array_block", "聚灵阵");
 
         ITEM_TOOLTIPS.put("example_block", "範例功能入口");
         ITEM_TOOLTIPS.put("projectile_spawner_block", "发射一些投射物，例如箭，雪球，火球，烟花");
@@ -59,6 +62,13 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("qi_block", "五行灵气的查询与调试");
         ITEM_TOOLTIPS.put("qi_storage_block", "长时间驻扎时使用的灵气容器");
         ITEM_TOOLTIPS.put("qi_vessel", "随身携带的灵气容器（灵珠）");
+        ITEM_TOOLTIPS.put("yin_crystal", "阴之地强化怪物的掉落物，用于合成获取阴灵气");
+        ITEM_TOOLTIPS.put("yang_crystal", "阳之地强化生物的掉落物，用于合成获取阳灵气");
+        ITEM_TOOLTIPS.put("spirit_stone", "强化生物掉落的一次性灵气容器，灵气用光后消失");
+        ITEM_TOOLTIPS.put("qi_liquid_bottle", "收集器产出的灵液，经纯化器可变为灵气恢复药水");
+        ITEM_TOOLTIPS.put("qi_liquid_collector_block", "放入五行矿石确定收集属性，从区块提取灵气制灵液");
+        ITEM_TOOLTIPS.put("qi_liquid_purifier_block", "放入灵液水瓶，纯化为对应属性的灵气恢复药水");
+        ITEM_TOOLTIPS.put("qi_gathering_array_block", "抽取区块主属性灵气，填充附近玩家灵气条（5% 上限）");
         ITEM_TOOLTIPS.put("qi_ritual_block", "淬体仪式核心：献祭物品与经验，淬炼自身");
     }
 
@@ -88,6 +98,14 @@ public final class AddonLanguageProvider extends LanguageProvider {
         }
         add("item." + WenyanAddon.MODID + ".data_disk", "數據磁盤");
         ITEM_NAMES.put("qi_vessel", "灵珠");
+        ITEM_NAMES.put("yin_crystal", "阴灵气结晶");
+        ITEM_NAMES.put("yang_crystal", "阳灵气结晶");
+        ITEM_NAMES.put("spirit_stone", "灵石");
+        ITEM_NAMES.put("qi_liquid_bottle", "灵液水瓶");
+        ITEM_NAMES.put("qi_restore_potion_small", "小型灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_medium", "中型灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_large", "大型灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_sustained", "缓释灵气恢复药水");
         for (Map.Entry<String, String> entry : ITEM_TOOLTIPS.entrySet()) {
             add("item." + WenyanAddon.MODID + "." + entry.getKey() + ".tooltip", entry.getValue());
         }
