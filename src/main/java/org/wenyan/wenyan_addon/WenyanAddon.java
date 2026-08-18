@@ -6,6 +6,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -19,6 +21,8 @@ import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -31,12 +35,15 @@ import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlockEntity;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneMenu;
 import org.wenyan.wenyan_addon.item.DataDiskItem;
 import org.wenyan.wenyan_addon.item.TooltipBlockItem;
+import org.wenyan.wenyan_addon.qi.damage.QiDamageTypes;
 import org.wenyan.wenyan_addon.qi.element.DerivedElement;
 import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
 import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 import org.wenyan.wenyan_addon.qi.element.RelationType;
+import org.wenyan.wenyan_addon.qi.mark.QiMarkEffects;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
+import org.wenyan.wenyan_addon.qi.potion.QiRestorePotionEffects;
 import org.wenyan.wenyan_addon.qi.ritual.QiRitualBlock;
 import org.wenyan.wenyan_addon.qi.ritual.QiRitualBlockEntity;
 import org.wenyan.wenyan_addon.qi.ritual.QiRitualRecipes;
@@ -142,7 +149,9 @@ public class WenyanAddon {
 
     public static final DeferredItem<Item> YIN_CRYSTAL_ITEM = ITEMS.registerItem("yin_crystal", properties -> new org.wenyan.wenyan_addon.qi.land.YinCrystalItem(properties, tooltipKey("yin_crystal")));
     public static final DeferredItem<Item> YANG_CRYSTAL_ITEM = ITEMS.registerItem("yang_crystal", properties -> new org.wenyan.wenyan_addon.qi.land.YangCrystalItem(properties, tooltipKey("yang_crystal")));
-    public static final DeferredItem<Item> SPIRIT_STONE_ITEM = ITEMS.registerItem("spirit_stone", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone")));
+    public static final DeferredItem<Item> SPIRIT_STONE_ITEM = ITEMS.registerItem("spirit_stone", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone"), org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.Grade.PURE));
+    public static final DeferredItem<Item> SPIRIT_STONE_IMPURE_ITEM = ITEMS.registerItem("spirit_stone_impure", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone_impure"), org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.Grade.IMPURE));
+    public static final DeferredItem<Item> SPIRIT_STONE_REFINED_ITEM = ITEMS.registerItem("spirit_stone_refined", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone_refined"), org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.Grade.REFINED));
     public static final DeferredItem<Item> QI_RESTORE_POTION_SMALL = ITEMS.registerItem("qi_restore_potion_small", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
     public static final DeferredItem<Item> QI_RESTORE_POTION_MEDIUM = ITEMS.registerItem("qi_restore_potion_medium", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
     public static final DeferredItem<Item> QI_RESTORE_POTION_LARGE = ITEMS.registerItem("qi_restore_potion_large", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
@@ -213,6 +222,8 @@ public class WenyanAddon {
                 output.accept(YIN_CRYSTAL_ITEM.get());
                 output.accept(YANG_CRYSTAL_ITEM.get());
                 output.accept(SPIRIT_STONE_ITEM.get());
+                output.accept(SPIRIT_STONE_IMPURE_ITEM.get());
+                output.accept(SPIRIT_STONE_REFINED_ITEM.get());
                 output.accept(QI_RITUAL_BLOCK_ITEM.get());
                 output.accept(QI_LIQUID_COLLECTOR_BLOCK_ITEM.get());
                 output.accept(QI_LIQUID_PURIFIER_BLOCK_ITEM.get());
@@ -235,61 +246,19 @@ public class WenyanAddon {
         MOB_EFFECTS.register(modEventBus);
         PlayerQi.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
+        modEventBus.addListener(QiMarkEffects::register);
+        modEventBus.addListener(QiRestorePotionEffects::register);
         modEventBus.addListener(org.wenyan.wenyan_addon.qi.damage.QiDamageTypes::register);
-        modEventBus.addListener(org.wenyan.wenyan_addon.qi.mark.QiMarkEffects::register);
-        modEventBus.addListener(org.wenyan.wenyan_addon.qi.potion.QiRestorePotionEffects::register);
-        net.neoforged.bus.api.IEventBus gameBus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
-        gameBus.addListener((net.neoforged.neoforge.event.AddServerReloadListenersEvent event) ->
+        net.neoforged.bus.api.IEventBus gameBus = NeoForge.EVENT_BUS;
+        gameBus.addListener((AddServerReloadListenersEvent event) ->
                 event.addListener(Identifier.fromNamespaceAndPath(MODID, "qi_ritual_recipes"), new QiRitualRecipes()));
         Pong.register(modEventBus);
     }
 
     /**
-     * 注册示例衍生属性：单基底（冰、雷）、复数基底（霜铁）、自定义关系（雷克冰）、嵌套（远古霜铁）。
+     * 注册示例衍生属性
      */
     private static void registerDerivedElements() {
-        // ========== 阳属性（五行） ==========
-        // 阳·金
-        ElementRegistry.register(new DerivedElement("yang_metal", "阳·金",
-                List.of(ElementType.YANG, ElementType.METAL))
-                .withColor(0xFFFFD75F));  // 阳的金色
-        // 阳·木
-        ElementRegistry.register(new DerivedElement("yang_wood", "阳·木",
-                List.of(ElementType.YANG, ElementType.WOOD))
-                .withColor(0xFF7CFC00));  // 阳的亮绿色
-        // 阳·水
-        ElementRegistry.register(new DerivedElement("yang_water", "阳·水",
-                List.of(ElementType.YANG, ElementType.WATER))
-                .withColor(0xFF00BFFF));  // 阳的亮蓝色
-        // 阳·火
-        ElementRegistry.register(new DerivedElement("yang_fire", "阳·火",
-                List.of(ElementType.YANG, ElementType.FIRE))
-                .withColor(0xFFFF4500));  // 阳的橙红色
-        // 阳·土
-        ElementRegistry.register(new DerivedElement("yang_earth", "阳·土",
-                List.of(ElementType.YANG, ElementType.EARTH))
-                .withColor(0xFFFFD700));  // 阳的金黄色
-        // ========== 阴属性（五行） ==========
-        // 阴·金
-        ElementRegistry.register(new DerivedElement("yin_metal", "阴·金",
-                List.of(ElementType.YIN, ElementType.METAL))
-                .withColor(0xFF708090));  // 阴的灰蓝色
-        // 阴·木
-        ElementRegistry.register(new DerivedElement("yin_wood", "阴·木",
-                List.of(ElementType.YIN, ElementType.WOOD))
-                .withColor(0xFF006400));  // 阴的深绿色
-        // 阴·水
-        ElementRegistry.register(new DerivedElement("yin_water", "阴·水",
-                List.of(ElementType.YIN, ElementType.WATER))
-                .withColor(0xFF000080));  // 阴的深蓝色
-        // 阴·火
-        ElementRegistry.register(new DerivedElement("yin_fire", "阴·火",
-                List.of(ElementType.YIN, ElementType.FIRE))
-                .withColor(0xFF8B0000));  // 阴的暗红色
-        // 阴·土
-        ElementRegistry.register(new DerivedElement("yin_earth", "阴·土",
-                List.of(ElementType.YIN, ElementType.EARTH))
-                .withColor(0xFF8B8B00));  // 阴的暗黄色
         ElementRegistry.register(new DerivedElement("ice", "冰", ElementType.WATER)
                 .withColor(0xFF9AD5FF));
         ElementRegistry.register(new DerivedElement("lightning", "雷", ElementType.WOOD)

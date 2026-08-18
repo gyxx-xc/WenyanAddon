@@ -2,8 +2,12 @@ package org.wenyan.wenyan_addon.qi.mark;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -64,6 +68,7 @@ public final class QiMarkHandler {
 
     @SubscribeEvent
     public static void onLivingIncomingDamage(LivingIncomingDamageEvent event) {
+
         // 测试：打印玩家受到的所有伤害（来源类型 + 数值）
         if (event.getEntity() instanceof net.minecraft.server.level.ServerPlayer player) {
             var key = event.getSource().typeHolder().unwrapKey().orElse(null);
@@ -73,33 +78,41 @@ public final class QiMarkHandler {
         }
         DamageSource source = event.getSource();
         Entity attacker = source.getEntity();
-        if (attacker instanceof LivingEntity attackerLiving) {
-            // 攻击者携带标记 → 附加标记属性伤害（原伤害 × 等级比例）
+        // 攻击者携带标记 → 取消原伤害，重建为对应属性的灵气伤害（非灵气伤害才转换，避免递归）
+        if (attacker instanceof LivingEntity attackerLiving && !QiDamageTypes.isQiDamage(source)) {
             ElementMarkInstance mark = markOf(attackerLiving);
             if (mark != null && mark.attribute() != null && mark.attribute() != ElementType.NEUTRAL
                     && attackerLiving.level() instanceof ServerLevel serverLevel) {
-                double bonus = event.getAmount() * mark.bonusRatio();
-                if (bonus > 0 && attackerLiving instanceof net.minecraft.server.level.ServerPlayer caster) {
-                    QiDamageHelper.applyDamage(serverLevel, caster,
-                            event.getEntity(), mark.attribute(), bonus);
-                } else if (bonus > 0) {
-                    // 非玩家攻击者：无视无敌帧直接附加属性伤害（含属性击退）
-                    LivingEntity victim = event.getEntity();
-                    victim.invulnerableTime = 0;
-                    victim.hurt(serverLevel.damageSources().generic(), (float) bonus);
-                    double knockback = mark.attribute().defaultCoefficients().knockback();
-                    if (knockback > 0) {
-                        double dx =attackerLiving.getX() - victim.getX();
-                        double dz =attackerLiving.getZ() - victim.getZ();
-                        victim.knockback((float) knockback, dx, dz);
-                    }
+
+                float amount = event.getAmount();
+                if (amount <= 0 || event.isCanceled()) {
+                    return;
                 }
+
+                // 对应属性伤害类型未加载（datapack JSON 未生效）→ 跳过转换
+                Registry<DamageType> damageRegistry = serverLevel.registryAccess()
+                        .lookupOrThrow(Registries.DAMAGE_TYPE);
+                if (!QiDamageTypes.isRegistered(damageRegistry, mark.attribute())) {
+                    WenyanAddon.LOGGER.warn("属性伤害类型未加载，跳过转换: {}",
+                            QiDamageTypes.keyOf(mark.attribute()).identifier());
+                    return;
+                }
+
+                LivingEntity victim = event.getEntity();
+                if (victim == null || !victim.isAlive() || victim.isRemoved()) {
+                    return;
+                }
+
+                // 取消原伤害，用属性伤害类型重新造成伤害（正常护甲/无敌帧/减伤流程）
+                event.setCanceled(true);
+                victim.hurt(serverLevel.damageSources().source(
+                        QiDamageTypes.keyOf(mark.attribute()), attacker, attacker), amount);
             }
         }
         // 受害者携带标记 → 对该属性伤害获得抗性
         ElementMarkInstance victimMark = markOf(event.getEntity());
         if (victimMark != null && victimMark.attribute() != null) {
-            var key = QiDamageTypes.keyOf(victimMark.attribute());
+            ResourceKey<DamageType> key = QiDamageTypes.keyOf(victimMark.attribute());
             if (key != null && source.is(key)) {
                 float reduction = (float) victimMark.resistanceRatio();
                 event.setAmount(event.getAmount() * (1.0f - reduction));
@@ -127,7 +140,7 @@ public final class QiMarkHandler {
 
     @SubscribeEvent
     public static void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
-        // 强化生物（带标记）死亡 → 掉灵石（纯度随机：杂质 5-30% / 纯质 50-70% / 精纯 90-100%）
+        // 强化生物（带标记）死亡 → 10% 概率掉灵石（纯度随机：杂质 5-30% / 纯质 50-70% / 精纯 90-100%）
         if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -135,8 +148,9 @@ public final class QiMarkHandler {
         if (mark == null) {
             return;
         }
-        net.minecraft.world.item.ItemStack stone = org.wenyan.wenyan_addon.WenyanAddon.SPIRIT_STONE_ITEM.get()
-                .getDefaultInstance();
+        if (serverLevel.getRandom().nextDouble() >= 0.10) {
+            return;
+        }
         double roll = serverLevel.getRandom().nextDouble();
         double purity;
         if (roll < 0.5) {
@@ -146,7 +160,15 @@ public final class QiMarkHandler {
         } else {
             purity = 0.90 + serverLevel.getRandom().nextDouble() * 0.10;      // 精纯 90-100%
         }
-        org.wenyan.wenyan_addon.qi.storage.SpiritStoneContainer.setPurity(stone, purity);
+        var grade = org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.gradeOf(purity);
+        net.minecraft.world.item.ItemStack stone = switch (grade) {
+            case IMPURE -> org.wenyan.wenyan_addon.WenyanAddon.SPIRIT_STONE_IMPURE_ITEM.get().getDefaultInstance();
+            case REFINED -> org.wenyan.wenyan_addon.WenyanAddon.SPIRIT_STONE_REFINED_ITEM.get().getDefaultInstance();
+            case PURE -> org.wenyan.wenyan_addon.WenyanAddon.SPIRIT_STONE_ITEM.get().getDefaultInstance();
+        };
+        ElementAttribute attribute = mark.attribute();
+        org.wenyan.wenyan_addon.qi.storage.SpiritStoneContainer.setPurity(stone, purity, attribute);
+        org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.applyName(stone, attribute, grade);
         event.getEntity().spawnAtLocation(serverLevel, stone);
     }
 }

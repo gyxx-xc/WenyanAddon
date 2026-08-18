@@ -1,6 +1,6 @@
 package org.wenyan.wenyan_addon.qi.damage;
 
-import java.util.random.RandomGenerator;
+import net.minecraft.util.RandomSource;
 
 /**
  * 五行伤害计算器（纯计算，可异步）：
@@ -16,7 +16,7 @@ public final class QiDamageCalculator {
     }
 
     public static QiDamageResult calculate(QiDamageSnapshot attacker, QiDamageSnapshot victim,
-                                           double baseDamage, RandomGenerator random) {
+                                           double baseDamage, RandomSource random) {
         double damage = baseDamage * attacker.damageMultiplier();
         damage *= 1.0 + attacker.damageAmplification();
 

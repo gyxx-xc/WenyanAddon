@@ -5,10 +5,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
+import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 
 /**
  * 灵石 NBT 容器：一次性灵气容器（纯度决定初始灵气量，用光后物品消失）。
- * 纯度：杂质 5-30% / 纯质 50-70% / 精纯 90-100%。
+ * 纯度：杂质 5-30% / 纯质 50-70% / 精纯 90-100%；记录来源属性。
  */
 public final class SpiritStoneContainer implements QiContainer {
     public static final String NBT_KEY = "WenyanSpiritStone";
@@ -28,11 +29,25 @@ public final class SpiritStoneContainer implements QiContainer {
         return tag.contains("purity") ? tag.getDoubleOr("purity", 0.5) : 0.5;
     }
 
-    public static void setPurity(ItemStack stack, double purity) {
+    /**
+     * 来源属性 id（未指定时返回 null）。
+     */
+    public static ElementAttribute attribute(ItemStack stack) {
+        CompoundTag tag = tags(stack);
+        if (tag.contains("attribute")) {
+            return ElementRegistry.byId(tag.getString("attribute").orElse(""));
+        }
+        return null;
+    }
+
+    public static void setPurity(ItemStack stack, double purity, ElementAttribute attribute) {
         CustomData.update(DataComponents.CUSTOM_DATA, stack, outer -> {
             CompoundTag tag = outer.contains(NBT_KEY) ? outer.getCompoundOrEmpty(NBT_KEY) : new CompoundTag();
             tag.putDouble("purity", purity);
             tag.putDouble("amount", TOTAL_QI * purity);
+            if (attribute != null) {
+                tag.putString("attribute", attribute.id());
+            }
             outer.put(NBT_KEY, tag);
         });
     }
@@ -51,6 +66,13 @@ public final class SpiritStoneContainer implements QiContainer {
     private double amount() {
         CompoundTag tag = tags(stack);
         return tag.contains("amount") ? tag.getDoubleOr("amount", 0.0) : TOTAL_QI * purity(stack);
+    }
+
+    /**
+     * 最大储量（= 总量 × 纯度）。
+     */
+    public static double maxAmount(ItemStack stack) {
+        return TOTAL_QI * purity(stack);
     }
 
     @Override

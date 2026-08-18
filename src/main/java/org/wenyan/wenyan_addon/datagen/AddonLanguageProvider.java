@@ -101,6 +101,8 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_NAMES.put("yin_crystal", "阴灵气结晶");
         ITEM_NAMES.put("yang_crystal", "阳灵气结晶");
         ITEM_NAMES.put("spirit_stone", "灵石");
+        ITEM_NAMES.put("spirit_stone_impure", "杂质灵石");
+        ITEM_NAMES.put("spirit_stone_refined", "精纯灵石");
         ITEM_NAMES.put("qi_liquid_bottle", "灵液水瓶");
         ITEM_NAMES.put("qi_restore_potion_small", "小型灵气恢复药水");
         ITEM_NAMES.put("qi_restore_potion_medium", "中型灵气恢复药水");
@@ -111,5 +113,16 @@ public final class AddonLanguageProvider extends LanguageProvider {
         }
         // 灵气属性标记效果：占位符模板（%s = 属性名，运行时自动填充）
         add("effect." + WenyanAddon.MODID + ".qi_element_mark", "灵气侵蚀(%s)");
+        // 属性伤害死亡消息（message_id = qi_<属性id>，key = death.attack.qi_<id>）
+        add("death.attack.qi_metal", "%1$s 被金气穿身，金锐之气贯体而亡");
+        add("death.attack.qi_wood", "%1$s 被木气缠绕，生机尽失而亡");
+        add("death.attack.qi_water", "%1$s 被水气吞没，溺于汪洋之中");
+        add("death.attack.qi_fire", "%1$s 被火气焚身，化为灰烬");
+        add("death.attack.qi_earth", "%1$s 被土气压顶，碾入大地之中");
+        add("death.attack.qi_yin", "%1$s 被阴气蚀骨，魂归九幽");
+        add("death.attack.qi_yang", "%1$s 被阳气灼体，形销神灭");
+        add("death.attack.qi_neutral", "%1$s 被无主灵气吞没");
+        add("death.attack.qi_ice", "%1$s 被冰气冻结，碎为冰晶");
+        add("death.attack.qi_lightning", "%1$s 被雷气轰击，化作焦炭");
     }
 }

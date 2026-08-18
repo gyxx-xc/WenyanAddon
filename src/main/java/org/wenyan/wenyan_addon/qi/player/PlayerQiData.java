@@ -44,7 +44,8 @@ public class PlayerQiData {
                     .forGetter(PlayerQiData::derivedReserves),
             Codec.unboundedMap(Codec.STRING, Codec.DOUBLE).optionalFieldOf("caps", Map.of())
                     .forGetter(PlayerQiData::capsMap),
-            COEFFICIENTS_CODEC.optionalFieldOf("elementCoefficients", Map.of()).forGetter(PlayerQiData::coefficientsMap)
+            COEFFICIENTS_CODEC.optionalFieldOf("elementCoefficients", Map.of()).forGetter(PlayerQiData::coefficientsMap),
+            Codec.STRING.optionalFieldOf("mainElement", "").forGetter(PlayerQiData::mainElement)
     ).apply(instance, PlayerQiData::fromCodecFields));
 
     /**
@@ -82,6 +83,7 @@ public class PlayerQiData {
     private final HashMap<String, Double> reserves = new HashMap<>();
     private final HashMap<String, Double> caps = new HashMap<>();
     private final Map<String, ElementCoefficients> elementCoefficients = new HashMap<>();
+    private String mainElement = "";
     /**
      * 数据版本号：任何修改操作递增，异步计算结果应用前比对（防旧数据覆盖新数据）。
      */
@@ -107,7 +109,8 @@ public class PlayerQiData {
                                                 double yin, double yang, double neutral,
                                                 Map<String, Double> derived,
                                                 Map<String, Double> caps,
-                                                Map<String, ElementCoefficients> coefficients) {
+                                                Map<String, ElementCoefficients> coefficients,
+                                                String mainElement) {
         PlayerQiData data = new PlayerQiData();
         data.reserves.put("metal", metal);
         data.reserves.put("wood", wood);
@@ -123,6 +126,7 @@ public class PlayerQiData {
         data.ensureDefaultCap();
         data.elementCoefficients.clear();
         data.elementCoefficients.putAll(coefficients);
+        data.mainElement = mainElement;
         return data;
     }
 
@@ -166,6 +170,32 @@ public class PlayerQiData {
      */
     public Map<String, Double> capMap() {
         return caps;
+    }
+
+    // ===== 主属性 =====
+
+    /**
+     * 玩家主属性 id（首次开拓的属性，参与攻击与被攻击的五行计算；其余为辅属性）。
+     */
+    public String mainElement() {
+        return mainElement;
+    }
+
+    /**
+     * 设置主属性（首次淬体仪式开拓时记录，不可更改）。
+     */
+    public void setMainElement(String elementId) {
+        if (mainElement.isEmpty() && elementId != null && !elementId.isEmpty()) {
+            this.mainElement = elementId;
+            bumpVersion();
+        }
+    }
+
+    /**
+     * 是否已选择主属性。
+     */
+    public boolean hasMainElement() {
+        return !mainElement.isEmpty();
     }
 
     private Map<String, ElementCoefficients> coefficientsMap() {

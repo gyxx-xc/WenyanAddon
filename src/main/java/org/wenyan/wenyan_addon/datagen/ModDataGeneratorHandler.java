@@ -24,6 +24,7 @@ public enum ModDataGeneratorHandler {
         generator.addProvider(packOutput -> new ItemTagProvider(packOutput, registries));
         event.addProvider(new AddonLanguageProvider(output, "zh_cn"));
         event.addProvider(new AddonLanguageProvider(output, "en_us"));
+        event.addProvider(new QiDamageTypeProvider(output));
 
     }
 

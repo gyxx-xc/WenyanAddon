@@ -47,22 +47,13 @@ public class QiLiquidCollectorBlock extends Block implements EntityBlock {
         if (!(level.getBlockEntity(pos) instanceof QiLiquidCollectorBlockEntity collector)) {
             return InteractionResult.PASS;
         }
-        // 空瓶接取灵液
+        // 空瓶接取灵液（按当前收集属性）
         if (stack.is(Items.GLASS_BOTTLE) && collector.collectElement() != null && collector.hasEnoughLiquid()) {
             collector.takeBottle();
             stack.shrink(1);
             ItemStack bottle = QiLiquidNbt.liquidBottle(collector.collectElement(), QiLiquidCollectorBlockEntity.BOTTLE_AMOUNT);
             if (!player.addItem(bottle)) {
                 Block.popResource(level, pos, bottle);
-            }
-            return InteractionResult.SUCCESS;
-        }
-        // 放入五行矿石确定收集属性
-        ElementType element = QiLiquidElements.elementOf(stack.getItem());
-        if (element != null) {
-            collector.setCollectElement(element);
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.sendSystemMessage(Component.literal("灵液收集属性: " + element.displayName()));
             }
             return InteractionResult.SUCCESS;
         }

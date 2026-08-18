@@ -193,13 +193,20 @@ public class QiRitualBlockEntity extends BlockEntity {
         if (expGain > 0) {
             qi.increaseCap(ElementType.NEUTRAL, expGain);
         }
-        // 配方 capBonus：按配方 attributes 指定属性；空列表 = 全部已解锁均分
+        // 配方 capBonus：按配方 attributes 指定属性；空列表 = 默认无属性
         double capBonus = recipe.capBonus();
         if (capBonus > 0) {
             List<ElementAttribute> targets = resolveCapTargets(recipe, qi);
             if (targets.isEmpty()) {
                 qi.increaseCap(ElementType.NEUTRAL, capBonus);
             } else {
+                // 首次开拓：第一个目标设为主属性（不可更改）
+                if (!qi.hasMainElement()) {
+                    ElementAttribute first = targets.get(0);
+                    if (first != ElementType.NEUTRAL && first != ElementType.YIN && first != ElementType.YANG) {
+                        qi.setMainElement(first.id());
+                    }
+                }
                 double each = capBonus / targets.size();
                 for (ElementAttribute attribute : targets) {
                     qi.increaseCap(attribute, each);
@@ -215,6 +222,7 @@ public class QiRitualBlockEntity extends BlockEntity {
     /**
      * 配方 capBonus 目标：attributes 非空按配方指定（unlockQi 配方可解锁未解锁属性）；
      * attributes 为空 = 默认无属性。
+     * 已有主属性时，仅允许修炼主属性的衍生属性或与其相生的属性。
      */
     private List<ElementAttribute> resolveCapTargets(QiRitualRecipe recipe, PlayerQiData qi) {
         if (recipe.attributes().isEmpty()) {
@@ -227,10 +235,38 @@ public class QiRitualBlockEntity extends BlockEntity {
                 continue;
             }
             if (recipe.unlockQi() || qi.cap(attribute) > 0) {
+                if (!isCultivatable(attribute, qi)) {
+                    continue;
+                }
                 targets.add(attribute);
             }
         }
         return targets;
+    }
+
+    /**
+     * 修炼限制：未选择主属性 → 任意可修炼（首次选择即主属性）；
+     * 已选择主属性 → 仅允许主属性的衍生属性（基底含主属性）或与其相生的属性。
+     */
+    private boolean isCultivatable(ElementAttribute attribute, PlayerQiData qi) {
+        if (!qi.hasMainElement()) {
+            return true;
+        }
+        ElementAttribute main = ElementRegistry.byId(qi.mainElement());
+        if (main == null) {
+            return true;
+        }
+        // 衍生：基底链包含主属性
+        for (ElementAttribute root : attribute.flattenedBases()) {
+            if (root.id().equals(main.id())) {
+                return true;
+            }
+        }
+        // 相生：与主属性构成相生关系
+        org.wenyan.wenyan_addon.qi.element.RelationType relation =
+                org.wenyan.wenyan_addon.qi.element.ElementRelations.relation(attribute, main);
+        return relation == org.wenyan.wenyan_addon.qi.element.RelationType.GENERATING
+                || relation == org.wenyan.wenyan_addon.qi.element.RelationType.GENERATED;
     }
 
     private void abort() {

@@ -7,11 +7,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.wenyan.wenyan_addon.WenyanAddon;
 import org.wenyan.wenyan_addon.qi.chunk.ChunkQiData;
 import org.wenyan.wenyan_addon.qi.chunk.ChunkQiManager;
+import org.wenyan.wenyan_addon.qi.element.ElementRelations;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 
 /**
- * 灵液收集方块实体：按放入的五行矿石确定收集属性，
- * 每 tick 从所在区块提取该属性灵气（10 点/秒）转为灵液储存。
+ * 灵液收集方块实体：自动从所在区块收集灵气（优先收集储量最大的五行属性），
+ * 每 tick 提取 10 点/秒转为灵液储存。
  */
 public class QiLiquidCollectorBlockEntity extends BlockEntity {
     public static final double COLLECT_RATE = 10.0;       // 10 点/秒
@@ -26,13 +27,11 @@ public class QiLiquidCollectorBlockEntity extends BlockEntity {
         super(WenyanAddon.QI_LIQUID_COLLECTOR_BLOCK_ENTITY.get(), pos, blockState);
     }
 
+    /**
+     * 当前正在收集的属性（随区块最大含量属性变化）。
+     */
     public ElementType collectElement() {
         return collectElement;
-    }
-
-    public void setCollectElement(ElementType element) {
-        this.collectElement = element;
-        setChanged();
     }
 
     public double liquid() {
@@ -49,9 +48,6 @@ public class QiLiquidCollectorBlockEntity extends BlockEntity {
     }
 
     public void tick(ServerLevel level) {
-        if (collectElement == null) {
-            return;
-        }
         if (liquid >= MAX_LIQUID) {
             return;
         }
@@ -61,14 +57,33 @@ public class QiLiquidCollectorBlockEntity extends BlockEntity {
         tick = 0;
         ChunkQiManager manager = ChunkQiManager.of(level);
         ChunkQiData chunk = manager.getChunkQi(level, net.minecraft.world.level.ChunkPos.containing(getBlockPos()));
-        double available = chunk.get(collectElement);
+        // 优先收集区块储量最大的五行属性
+        ElementType dominant = dominantElement(chunk);
+        if (dominant == null) {
+            return;
+        }
+        double available = chunk.get(dominant);
         if (available <= 0) {
             return;
         }
         double collect = Math.min(COLLECT_RATE, available);
-        chunk.consume(collectElement, collect);
+        chunk.consume(dominant, collect);
         liquid = Math.min(MAX_LIQUID, liquid + collect);
+        collectElement = dominant;
         manager.setDirty();
         setChanged();
+    }
+
+    private static ElementType dominantElement(ChunkQiData chunk) {
+        ElementType dominant = null;
+        double max = 0;
+        for (ElementType element : ElementRelations.ELEMENTS) {
+            double value = chunk.get(element);
+            if (value > max) {
+                max = value;
+                dominant = element;
+            }
+        }
+        return dominant;
     }
 }
