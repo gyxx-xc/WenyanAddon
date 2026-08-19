@@ -33,6 +33,10 @@ import org.wenyan.wenyan_addon.qi.element.ElementType;
 @EventBusSubscriber(modid = WenyanAddon.MODID)
 public final class QiMarkHandler {
     private static final double MARK_CHANCE = 0.15;
+    /**
+     * 灵石基础掉落概率（1 级标记）；每级 ×等级（5 级 = 5 倍）。
+     */
+    private static final double BASE_DROP_CHANCE = 0.10;
 
     private QiMarkHandler() {
     }
@@ -140,7 +144,8 @@ public final class QiMarkHandler {
 
     @SubscribeEvent
     public static void onLivingDeath(net.neoforged.neoforge.event.entity.living.LivingDeathEvent event) {
-        // 强化生物（带标记）死亡 → 10% 概率掉灵石（纯度随机：杂质 5-30% / 纯质 50-70% / 精纯 90-100%）
+        // 强化生物（带标记）死亡 → 掉落灵石（纯度随机：杂质 5-30% / 纯质 50-70% / 精纯 90-100%）
+        // 掉落概率随标记等级提升：基础 10% × 等级（等级 1 = 10%，等级 5 = 50%）
         if (!(event.getEntity().level() instanceof ServerLevel serverLevel)) {
             return;
         }
@@ -148,7 +153,8 @@ public final class QiMarkHandler {
         if (mark == null) {
             return;
         }
-        if (serverLevel.getRandom().nextDouble() >= 0.10) {
+        double dropChance = BASE_DROP_CHANCE * mark.markLevel();
+        if (serverLevel.getRandom().nextDouble() >= dropChance) {
             return;
         }
         double roll = serverLevel.getRandom().nextDouble();

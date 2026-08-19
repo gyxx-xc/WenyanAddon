@@ -63,7 +63,7 @@ public class ChunkQiManager extends SavedData {
     private final Map<String, Long> lastProcessedTicks = new HashMap<>();
     private Set<String> activeChunks = Set.of();
     private Set<String> coreChunks = Set.of();
-    private long activeChunksRefreshedAt = 0;
+    private long activeChunksRefreshedAt = -ACTIVE_CACHE_TTL;
     private long lastVeinTickTime = 0;
 
     public ChunkQiManager() {
@@ -193,11 +193,12 @@ public class ChunkQiManager extends SavedData {
     }
 
     /**
-     * 旧档兼容：区块缺少结构占比时按群系主属性补齐。
+     * 旧档兼容：区块缺少结构占比，或占比与当前群系结构不符时，按群系主属性补齐/对齐。
      */
     private void ensureProportions(ServerLevel level, ChunkPos pos, ChunkQiData data) {
-        if (data.proportions().isEmpty()) {
-            data.setProportions(QiDistribution.of(preferredElement(level, pos)).ratios());
+        Map<String, Double> expected = QiDistribution.of(preferredElement(level, pos)).ratios();
+        if (!data.proportions().equals(expected)) {
+            data.setProportions(expected);
         }
     }
 
@@ -332,7 +333,8 @@ public class ChunkQiManager extends SavedData {
     }
 
     /**
-     * 灵气扩散：来源 > 目标 且同群系时，按系数把差值的一部分从来源转到目标。
+     * 灵气扩散：来源 > 目标 且同群系时，把差值的一部分从来源转到目标。
+     * 目标剩余空间不足时按剩余空间收敛扩散量（保证灵气守恒，不凭空消失）。
      */
     private void diffuse(ServerLevel level, ChunkPos sourcePos, ChunkQiData source,
                          ChunkPos targetPos, ChunkQiData target, long elapsed) {
@@ -344,9 +346,13 @@ public class ChunkQiManager extends SavedData {
         if (isEnd(level, sourcePos) || isEnd(level, targetPos) || !sameBiome(level, sourcePos, targetPos)) {
             return;
         }
+        double targetSpace = target.effectiveCap() - targetTotal;
+        if (targetSpace <= 0) {
+            return; // 目标已满：不扩散，避免扣除的灵气凭空消失
+        }
         double coefficient = source.veinStage() > 0 ? VEIN_DIFFUSE_COEFFICIENT : DIFFUSE_COEFFICIENT;
         double gap = sourceTotal - targetTotal;
-        double diff = Math.min(gap * coefficient * elapsed, gap);
+        double diff = Math.min(gap * coefficient * elapsed, Math.min(gap, targetSpace));
         if (diff <= 0) {
             return;
         }

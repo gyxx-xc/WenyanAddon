@@ -66,7 +66,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("yang_crystal", "阳之地强化生物的掉落物，用于合成获取阳灵气");
         ITEM_TOOLTIPS.put("spirit_stone", "强化生物掉落的一次性灵气容器，灵气用光后消失");
         ITEM_TOOLTIPS.put("qi_liquid_bottle", "收集器产出的灵液，经纯化器可变为灵气恢复药水");
-        ITEM_TOOLTIPS.put("qi_liquid_collector_block", "放入五行矿石确定收集属性，从区块提取灵气制灵液");
+        ITEM_TOOLTIPS.put("qi_liquid_collector_block", "从区块提取灵气制灵液，空瓶右键接取");
         ITEM_TOOLTIPS.put("qi_liquid_purifier_block", "放入灵液水瓶，纯化为对应属性的灵气恢复药水");
         ITEM_TOOLTIPS.put("qi_gathering_array_block", "抽取区块主属性灵气，填充附近玩家灵气条（5% 上限）");
         ITEM_TOOLTIPS.put("qi_ritual_block", "淬体仪式核心：献祭物品与经验，淬炼自身");

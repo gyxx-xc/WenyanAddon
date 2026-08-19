@@ -143,15 +143,38 @@ public class ChunkQiData {
     }
 
     /**
-     * 按结构占比把 amount 分配到各属性。
+     * 按结构占比缺口分配恢复量：每个属性的恢复目标 = 结构占比 × 区块上限，
+     * 只补足"当前低于目标"的属性，已达标/超标的属性不再分配。
+     * 抽取主属性后缺口集中在主属性，其余属性不会被过度恢复（各属性收敛于结构占比）。
      */
     public void distribute(double amount) {
+        if (amount <= 0) {
+            return;
+        }
+        double cap = effectiveCap();
+        Map<ElementType, Double> shortfall = new EnumMap<>(ElementType.class);
+        double totalShortfall = 0;
         for (Map.Entry<String, Double> entry : proportions.entrySet()) {
             ElementType element = elementById(entry.getKey());
-            if (element != null) {
-                add(element, amount * entry.getValue());
+            if (element == null) {
+                continue;
+            }
+            double target = entry.getValue() * cap;
+            double gap = target - get(element);
+            if (gap > 0) {
+                shortfall.put(element, gap);
+                totalShortfall += gap;
             }
         }
+        if (totalShortfall <= 0) {
+            return;
+        }
+        amount = Math.min(amount, totalShortfall);
+        for (Map.Entry<ElementType, Double> entry : shortfall.entrySet()) {
+            double share = amount * (entry.getValue() / totalShortfall);
+            elements.put(entry.getKey(), get(entry.getKey()) + share);
+        }
+        depleted = qiCap > 0 && total() <= 0;
     }
 
     private static ElementType elementById(String id) {
@@ -191,7 +214,8 @@ public class ChunkQiData {
         if (added > 0) {
             elements.put(element, get(element) + added);
         }
-        depleted = total() <= 0;
+        // 匮乏判定：仅"本有灵气却已抽干"的区块才算 depleted（零上限区块如末地不算）
+        depleted = qiCap > 0 && total() <= 0;
     }
 
     public boolean consume(ElementType element, double amount) {
@@ -199,7 +223,8 @@ public class ChunkQiData {
             return false;
         }
         elements.put(element, get(element) - amount);
-        depleted = total() <= 0;
+        // 匮乏判定：仅"本有灵气却已抽干"的区块才算 depleted（零上限区块如末地不算）
+        depleted = qiCap > 0 && total() <= 0;
         return true;
     }
 }

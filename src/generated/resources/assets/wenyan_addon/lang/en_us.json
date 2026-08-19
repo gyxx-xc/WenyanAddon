@@ -69,7 +69,7 @@
   "item.wenyan_addon.qi_liquid_bottle": "灵液水瓶",
   "item.wenyan_addon.qi_liquid_bottle.tooltip": "收集器产出的灵液，经纯化器可变为灵气恢复药水",
   "item.wenyan_addon.qi_liquid_collector_block": "灵液收集器",
-  "item.wenyan_addon.qi_liquid_collector_block.tooltip": "放入五行矿石确定收集属性，从区块提取灵气制灵液",
+  "item.wenyan_addon.qi_liquid_collector_block.tooltip": "从区块提取灵气制灵液，空瓶右键接取",
   "item.wenyan_addon.qi_liquid_purifier_block": "灵液纯化器",
   "item.wenyan_addon.qi_liquid_purifier_block.tooltip": "放入灵液水瓶，纯化为对应属性的灵气恢复药水",
   "item.wenyan_addon.qi_restore_potion_large": "大型灵气恢复药水",

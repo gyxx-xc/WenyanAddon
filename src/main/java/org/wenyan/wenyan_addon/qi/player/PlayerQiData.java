@@ -242,6 +242,18 @@ public class PlayerQiData {
     }
 
     /**
+     * 外部注入（聚灵阵等装置）：同 {@link #add} 但不递增版本号，
+     * 避免干扰异步恢复的版本快照（否则装置每次注入都会使自然恢复结果被版本检查丢弃）。
+     */
+    public void addExternal(ElementAttribute element, double amount) {
+        if (amount <= 0) {
+            return;
+        }
+        double cap = cap(element);
+        reserves.put(element.id(), Math.min(cap, get(element) + amount));
+    }
+
+    /**
      * 清空所有属性灵气（淬体仪式结束等场景）。
      */
     public void clearAll() {

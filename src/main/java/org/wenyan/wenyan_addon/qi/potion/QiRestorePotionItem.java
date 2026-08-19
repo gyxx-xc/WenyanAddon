@@ -1,8 +1,10 @@
 package org.wenyan.wenyan_addon.qi.potion;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -14,12 +16,17 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUseAnimation;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
 import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
 import org.wenyan.wenyan_addon.qi.player.PlayerQiData;
+
+import java.util.Locale;
+import java.util.function.Consumer;
 
 /**
  * 灵气恢复药水：饮用恢复指定属性的灵气。
@@ -40,6 +47,26 @@ public class QiRestorePotionItem extends Item {
             tag.putBoolean("sustained", sustained);
             outer.put(NBT_KEY, tag);
         });
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
+                                Consumer<Component> tooltip, TooltipFlag flag) {
+        CompoundTag tag = data(stack);
+        ElementAttribute attribute = ElementRegistry.byId(tag.getString("attribute").orElse(""));
+        double amount = tag.getDoubleOr("amount", 0.0);
+        boolean sustained = tag.getBooleanOr("sustained", false);
+        if (attribute != null && amount > 0) {
+            if (sustained) {
+                tooltip.accept(Component.literal(
+                                attribute.displayName() + "灵气缓释：30 秒内持续恢复")
+                        .withStyle(ChatFormatting.AQUA));
+            } else {
+                tooltip.accept(Component.literal(
+                                "恢复" + attribute.displayName() + "灵气：" + String.format(Locale.ROOT, "%.0f", amount))
+                        .withStyle(ChatFormatting.AQUA));
+            }
+        }
     }
 
     @Override

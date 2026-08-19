@@ -19,6 +19,10 @@ local-server_build_project  # 编译整个项目
 local-server_build_project(filesToRebuild=["path/to/ChangedFile.java"])
 ```
 
+## 编译验证
+
+**不要做任何编译验证。** 不需要运行构建、检查编译产物、对比时间戳或反编译 class。编译验证结果由用户提供，以用户的验证结果为准。
+
 ## 代码风格
 
 - **接口命名**：`I` 前缀（`IWenyanValue`、`IWenyanFunction`）
@@ -31,6 +35,14 @@ local-server_build_project(filesToRebuild=["path/to/ChangedFile.java"])
 - **注释**：核心库（judou）对公开 API 写 Javadoc；业务代码（src/main）注释稀疏
 - **命名**：标准英文，标识符中不含拼音/中文
 - **包结构**：按功能领域划分（compiler, runtime, utils），而非技术分层
+
+## 功能实现范围（强制）
+
+**所有新功能只能在 `wenyan_addon` 包内实现，不新增独立的功能包。**
+
+- 新增方块、物品、实体、GUI、Mixin、数据生成等一律位于包 `org.wenyan.wenyan_addon`（及 `src/client/java/org/wenyan/wenyan_addon`）之下，按功能子包划分（如 `device`、`qi`、`item`）。
+- **禁止**创建类似 `org.wenyan.pong` 的独立功能子模块。Pong 模块属于历史遗留实验代码，后续新增功能不得模仿该结构。
+- 若某功能足够稳定而需要上提至 [Wenyan Programming](https://github.com/gyxx-xc/WenyanNature) 本体，也应提交到本体仓库，而非在当前仓库中新建独立包。
 
 ## 所有查 Neoforge/Minecraft 代码
 

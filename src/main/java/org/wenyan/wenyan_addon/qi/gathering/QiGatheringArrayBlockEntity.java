@@ -3,25 +3,28 @@ package org.wenyan.wenyan_addon.qi.gathering;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.wenyan.wenyan_addon.WenyanAddon;
+import org.wenyan.wenyan_addon.qi.async.QiAsyncExecutor;
 import org.wenyan.wenyan_addon.qi.chunk.ChunkQiData;
 import org.wenyan.wenyan_addon.qi.chunk.ChunkQiManager;
-import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
-import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
+import org.wenyan.wenyan_addon.qi.gathering.QiGatheringCalculator.GatherResult;
+import org.wenyan.wenyan_addon.qi.gathering.QiGatheringCalculator.GatherSnapshot;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
 import org.wenyan.wenyan_addon.qi.player.PlayerQiData;
 
+import java.util.Map;
+
 /**
  * 聚灵阵核心方块实体：抽取当前区块主属性灵气，填充范围内玩家的对应属性灵气条。
- * 抽取量 = 玩家灵气条上限的 5%；恢复效率：对应属性 100%、无属性 80%、其它属性 50%。
+ * tick 只负责：主线程读快照 → 提交异步计算 → 回调回主线程应用结果（consume + add）。
  */
 public class QiGatheringArrayBlockEntity extends BlockEntity {
     private static final int INTERVAL = 20;
-    private static final int RANGE = 3;
-    private static final double DRAIN_RATIO = 0.05;
+    private static final int RANGE = 5;
 
     private int tick = 0;
 
@@ -37,44 +40,42 @@ public class QiGatheringArrayBlockEntity extends BlockEntity {
         BlockPos center = getBlockPos();
         for (ServerPlayer player : level.players()) {
             if (player.blockPosition().distToCenterSqr(center.getX(), center.getY(), center.getZ()) <= RANGE * RANGE) {
-                gather(level, player);
+                submitGather(level, player);
             }
         }
     }
 
-    private void gather(ServerLevel level, ServerPlayer player) {
+    /**
+     * 提交异步抽取：主线程只读快照（区块储量、玩家上限）→ 异步线程纯计算 → 主线程应用结果。
+     */
+    private void submitGather(ServerLevel level, ServerPlayer player) {
         ChunkQiManager manager = ChunkQiManager.of(level);
-        net.minecraft.world.level.ChunkPos chunkPos = net.minecraft.world.level.ChunkPos.containing(getBlockPos());
+        ChunkPos chunkPos = ChunkPos.containing(getBlockPos());
         ChunkQiData chunk = manager.getChunkQi(level, chunkPos);
         ElementType dominant = manager.preferredElement(level, chunkPos);
 
         PlayerQiData qi = PlayerQi.of(player);
-        double drain = qi.totalCap() * DRAIN_RATIO;
-        double available = chunk.get(dominant);
-        if (available <= 0 || drain <= 0) {
+        GatherSnapshot snapshot = new GatherSnapshot(dominant, chunk.get(dominant),
+                qi.totalCap(), Map.copyOf(qi.capMap()), Map.copyOf(qi.reserves()));
+
+        QiAsyncExecutor.submit(
+                () -> QiGatheringCalculator.calculate(snapshot),
+                result -> level.getServer().execute(() -> apply(manager, chunk, player, qi, result)),
+                () -> QiGatheringCalculator.calculate(snapshot));
+    }
+
+    /**
+     * 主线程应用结果：区块扣除 → 玩家增加（不递增版本号，避免干扰异步恢复）→ 标记保存。
+     */
+    private void apply(ChunkQiManager manager, ChunkQiData chunk,
+                       ServerPlayer player, PlayerQiData qi, GatherResult result) {
+        if (player.isRemoved() || !player.isAlive() || result.extracted() <= 0) {
             return;
         }
-        double extracted = Math.min(drain, available);
-        chunk.consume(dominant, extracted);
-        manager.setDirty();
-
-        // 恢复目标：对应属性 100% → 无属性 80% → 其它已解锁属性 50%
-        if (qi.cap(dominant) > 0) {
-            qi.add(dominant, extracted);
-        } else if (qi.cap(ElementType.NEUTRAL) > 0) {
-            qi.add(ElementType.NEUTRAL, extracted * 0.8);
-        } else {
-            for (ElementAttribute attribute : ElementRegistry.all()) {
-                if (attribute == ElementType.YIN || attribute == ElementType.YANG
-                        || attribute == ElementType.NEUTRAL) {
-                    continue;
-                }
-                if (qi.cap(attribute) > 0) {
-                    qi.add(attribute, extracted * 0.5);
-                    break;
-                }
-            }
+        if (chunk.consume(result.dominant(), result.extracted())) {
+            manager.setDirty();
+            qi.addExternal(result.target(), result.amount());
+            PlayerQi.markDirty(player);
         }
-        PlayerQi.markDirty(player);
     }
 }

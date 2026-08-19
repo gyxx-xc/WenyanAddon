@@ -20,10 +20,11 @@ import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
+import org.wenyan.wenyan_addon.WenyanAddon;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
 
 /**
- * 灵液收集方块：右键放入五行矿石确定收集属性；空瓶右键接取灵液。
+ * 灵液收集方块：自动从区块收集灵气；空瓶右键接取灵液。
  */
 public class QiLiquidCollectorBlock extends Block implements EntityBlock {
     public QiLiquidCollectorBlock(Properties properties) {
@@ -47,7 +48,7 @@ public class QiLiquidCollectorBlock extends Block implements EntityBlock {
         if (!(level.getBlockEntity(pos) instanceof QiLiquidCollectorBlockEntity collector)) {
             return InteractionResult.PASS;
         }
-        // 空瓶接取灵液（按当前收集属性）
+        // 空瓶且足量：接取灵液（按当前收集属性）
         if (stack.is(Items.GLASS_BOTTLE) && collector.collectElement() != null && collector.hasEnoughLiquid()) {
             collector.takeBottle();
             stack.shrink(1);
@@ -55,9 +56,44 @@ public class QiLiquidCollectorBlock extends Block implements EntityBlock {
             if (!player.addItem(bottle)) {
                 Block.popResource(level, pos, bottle);
             }
+            WenyanAddon.LOGGER.info(String.valueOf(Component.literal(
+                    "已接取" + collector.collectElement().displayName() + "灵液一瓶，剩余液量 "
+                            + String.format(java.util.Locale.ROOT, "%.0f", collector.liquid()) + "/"
+                            + (long) QiLiquidCollectorBlockEntity.MAX_LIQUID)));
+            return InteractionResult.SUCCESS;
+        }
+        // 手持其他物品/空瓶不足：显示采集状态
+        showStatus(player, collector);
+        return InteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos,
+                                               Player player, BlockHitResult hitResult) {
+        if (level.isClientSide()) {
+            return InteractionResult.SUCCESS;
+        }
+        if (level.getBlockEntity(pos) instanceof QiLiquidCollectorBlockEntity collector) {
+            showStatus(player, collector);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
+    }
+
+    /**
+     * 向玩家发送收集器当前采集状态（属性、液量、每瓶需求）。
+     */
+    private static void showStatus(Player player, QiLiquidCollectorBlockEntity collector) {
+        ElementType element = collector.collectElement();
+        if (element == null) {
+            WenyanAddon.LOGGER.info(String.valueOf(Component.literal("灵液收集器尚未采集到灵气")));
+            return;
+        }
+        WenyanAddon.LOGGER.info(String.valueOf(Component.literal(
+                "正在收集" + element.displayName() + "灵气，液量 "
+                        + String.format(java.util.Locale.ROOT, "%.0f", collector.liquid()) + "/"
+                        + (long) QiLiquidCollectorBlockEntity.MAX_LIQUID
+                        + "（每瓶需 " + (long) QiLiquidCollectorBlockEntity.BOTTLE_AMOUNT + "）")));
     }
 
     @Override
