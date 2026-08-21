@@ -13,6 +13,21 @@ public final class AddonLanguageProvider extends LanguageProvider {
     private static final Map<String, String> ITEM_NAMES = new LinkedHashMap<>();
 
     static {
+        ITEM_NAMES.put("qi_vessel", "灵珠");
+        ITEM_NAMES.put("yin_crystal", "阴灵气结晶");
+        ITEM_NAMES.put("yang_crystal", "阳灵气结晶");
+        ITEM_NAMES.put("spirit_stone", "灵石");
+        ITEM_NAMES.put("spirit_stone_impure", "杂质灵石");
+        ITEM_NAMES.put("spirit_stone_refined", "精纯灵石");
+        ITEM_NAMES.put("qi_liquid_bottle", "灵液水瓶");
+        ITEM_NAMES.put("qi_restore_potion_small", "小型灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_medium", "中型灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_large", "大型灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_sustained", "缓释灵气恢复药水");
+        ITEM_NAMES.put("spell_sword", "法术剑");
+        ITEM_NAMES.put("fulu_pouch", "符咒包");
+        ITEM_NAMES.put("fulu_pouch_extension", "符咒拓展包");
+
         BLOCK_NAMES.put("example_block", "範例石");
         BLOCK_NAMES.put("projectile_spawner_block", "投射石");
         BLOCK_NAMES.put("fluid_block", "流体石");
@@ -97,17 +112,8 @@ public final class AddonLanguageProvider extends LanguageProvider {
             add("item." + WenyanAddon.MODID + "." + entry.getKey(), entry.getValue());
         }
         add("item." + WenyanAddon.MODID + ".data_disk", "數據磁盤");
-        ITEM_NAMES.put("qi_vessel", "灵珠");
-        ITEM_NAMES.put("yin_crystal", "阴灵气结晶");
-        ITEM_NAMES.put("yang_crystal", "阳灵气结晶");
-        ITEM_NAMES.put("spirit_stone", "灵石");
-        ITEM_NAMES.put("spirit_stone_impure", "杂质灵石");
-        ITEM_NAMES.put("spirit_stone_refined", "精纯灵石");
-        ITEM_NAMES.put("qi_liquid_bottle", "灵液水瓶");
-        ITEM_NAMES.put("qi_restore_potion_small", "小型灵气恢复药水");
-        ITEM_NAMES.put("qi_restore_potion_medium", "中型灵气恢复药水");
-        ITEM_NAMES.put("qi_restore_potion_large", "大型灵气恢复药水");
-        ITEM_NAMES.put("qi_restore_potion_sustained", "缓释灵气恢复药水");
+
+
         for (Map.Entry<String, String> entry : ITEM_TOOLTIPS.entrySet()) {
             add("item." + WenyanAddon.MODID + "." + entry.getKey() + ".tooltip", entry.getValue());
         }

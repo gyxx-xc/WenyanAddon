@@ -17,6 +17,7 @@ public class ItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.@NonNull Provider provider) {
+        tag(net.minecraft.tags.ItemTags.SWORDS).add(WenyanAddon.SPELL_SWORD_ITEM.get());
         tag(WyRegistration.PAPER_MODULE_ITEM).add(
                 WenyanAddon.EXAMPLE_BLOCK_ITEM.get(),
                 WenyanAddon.PROJECTILE_SPAWNER_BLOCK_ITEM.get(),

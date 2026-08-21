@@ -22,6 +22,7 @@ public enum ModDataGeneratorHandler {
         PackOutput output = event.getGenerator().getPackOutput();
         var generator = event.getGenerator().getVanillaPack(true);
         generator.addProvider(packOutput -> new ItemTagProvider(packOutput, registries));
+        generator.addProvider(packOutput -> new AddonRecipeProvider.Runner(packOutput, registries));
         event.addProvider(new AddonLanguageProvider(output, "zh_cn"));
         event.addProvider(new AddonLanguageProvider(output, "en_us"));
         event.addProvider(new QiDamageTypeProvider(output));

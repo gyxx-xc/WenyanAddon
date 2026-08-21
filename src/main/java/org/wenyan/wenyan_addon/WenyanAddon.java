@@ -31,6 +31,13 @@ import org.slf4j.Logger;
 import org.wenyan.pong.Pong;
 import org.wenyan.pong.setup.PongRegistration;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlock;
+import org.wenyan.wenyan_addon.spell.FuluPouchExtensionItem;
+import org.wenyan.wenyan_addon.spell.FuluPouchItem;
+import org.wenyan.wenyan_addon.spell.FuluPouchMenu;
+import org.wenyan.wenyan_addon.spell.SpellBlacklist;
+import org.wenyan.wenyan_addon.spell.SpellDataComponent;
+import org.wenyan.wenyan_addon.spell.SpellSwordItem;
+import org.wenyan.wenyan_addon.spell.SpellImbueRecipe;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlockEntity;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneMenu;
 import org.wenyan.wenyan_addon.item.DataDiskItem;
@@ -65,6 +72,8 @@ public class WenyanAddon {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<net.minecraft.world.effect.MobEffect> MOB_EFFECTS =
             DeferredRegister.create(Registries.MOB_EFFECT, MODID);
+    public static final DeferredRegister<net.minecraft.world.item.crafting.RecipeSerializer<?>> RECIPE_SERIALIZERS =
+            DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
     public static final ResourceKey<CreativeModeTab> WENYAN_PROGRAMMING_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
             Identifier.fromNamespaceAndPath("wenyan_programming", "wenyan_programming")
@@ -158,6 +167,13 @@ public class WenyanAddon {
     public static final DeferredItem<Item> QI_RESTORE_POTION_SUSTAINED = ITEMS.registerItem("qi_restore_potion_sustained", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
     public static final DeferredItem<Item> QI_LIQUID_BOTTLE_ITEM = ITEMS.registerItem("qi_liquid_bottle", properties -> new org.wenyan.wenyan_addon.qi.liquid.QiLiquidBottleItem(properties, tooltipKey("qi_liquid_bottle")));
 
+    public static final DeferredItem<SpellSwordItem> SPELL_SWORD_ITEM = ITEMS.registerItem("spell_sword",
+            SpellSwordItem::new, properties -> properties.sword(net.minecraft.world.item.ToolMaterial.NETHERITE, 3.0F, -2.4F).durability(1500));
+    public static final DeferredItem<FuluPouchItem> FULU_POUCH_ITEM = ITEMS.registerItem("fulu_pouch",
+            FuluPouchItem::new, properties -> properties.stacksTo(1));
+    public static final DeferredItem<FuluPouchExtensionItem> FULU_POUCH_EXTENSION_ITEM = ITEMS.registerItem("fulu_pouch_extension",
+            FuluPouchExtensionItem::new, properties -> properties.stacksTo(1));
+
     public static final DeferredBlock<org.wenyan.wenyan_addon.qi.liquid.QiLiquidCollectorBlock> QI_LIQUID_COLLECTOR_BLOCK = BLOCKS.registerBlock(
             "qi_liquid_collector_block", org.wenyan.wenyan_addon.qi.liquid.QiLiquidCollectorBlock::new);
     public static final DeferredItem<BlockItem> QI_LIQUID_COLLECTOR_BLOCK_ITEM = registerTooltipBlockItem("qi_liquid_collector_block", QI_LIQUID_COLLECTOR_BLOCK);
@@ -187,6 +203,14 @@ public class WenyanAddon {
             "qi_ritual_block",
             () -> new BlockEntityType<>(QiRitualBlockEntity::new, QI_RITUAL_BLOCK.get())
     );
+
+    public static final DeferredHolder<MenuType<?>, MenuType<FuluPouchMenu>> FULU_POUCH_MENU = MENUS.register(
+            "fulu_pouch_menu",
+            () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(FuluPouchMenu::new)
+    );
+
+    public static final DeferredHolder<net.minecraft.world.item.crafting.RecipeSerializer<?>, net.minecraft.world.item.crafting.RecipeSerializer<SpellImbueRecipe>> SPELL_IMBUE_RECIPE_SERIALIZER =
+            RECIPE_SERIALIZERS.register(SpellImbueRecipe.ID, () -> SpellImbueRecipe.SERIALIZER);
 
     @SuppressWarnings("unused")
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> WENYAN_ADDON_TAB = CREATIVE_MODE_TABS.register("wenyan_addon", () -> CreativeModeTab.builder()
@@ -234,8 +258,11 @@ public class WenyanAddon {
                 output.accept(QI_RESTORE_POTION_SMALL.get());
                 output.accept(QI_RESTORE_POTION_MEDIUM.get());
                 output.accept(QI_RESTORE_POTION_LARGE.get());
-                output.accept(QI_RESTORE_POTION_SUSTAINED.get());
-                output.accept(QI_GATHERING_ARRAY_BLOCK_ITEM.get());
+output.accept(QI_RESTORE_POTION_SUSTAINED.get());
+        output.accept(QI_GATHERING_ARRAY_BLOCK_ITEM.get());
+        output.accept(SPELL_SWORD_ITEM.get());
+        output.accept(FULU_POUCH_ITEM.get());
+        output.accept(FULU_POUCH_EXTENSION_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")
@@ -247,6 +274,8 @@ public class WenyanAddon {
         MENUS.register(modEventBus);
         CREATIVE_MODE_TABS.register(modEventBus);
         MOB_EFFECTS.register(modEventBus);
+        RECIPE_SERIALIZERS.register(modEventBus);
+        SpellDataComponent.register(modEventBus);
         PlayerQi.ATTACHMENT_TYPES.register(modEventBus);
         modEventBus.addListener(Capabilities::registerCapabilities);
         modEventBus.addListener(QiMarkEffects::register);
@@ -255,6 +284,8 @@ public class WenyanAddon {
         net.neoforged.bus.api.IEventBus gameBus = NeoForge.EVENT_BUS;
         gameBus.addListener((AddServerReloadListenersEvent event) ->
                 event.addListener(Identifier.fromNamespaceAndPath(MODID, "qi_ritual_recipes"), new QiRitualRecipes()));
+        gameBus.addListener((AddServerReloadListenersEvent event) ->
+                event.addListener(Identifier.fromNamespaceAndPath(MODID, "spell_blacklist"), new SpellBlacklist()));
         Pong.register(modEventBus);
     }
 
