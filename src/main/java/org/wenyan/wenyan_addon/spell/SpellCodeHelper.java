@@ -8,6 +8,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
+import org.wenyan.wenyan_addon.WenyanAddon;
 
 /**
  * 法术代码读写工具：统一从物品栈读取/写入咒术代码。
@@ -102,12 +103,13 @@ public final class SpellCodeHelper {
         Item item = stack.getItem();
         String id = item.builtInRegistryHolder().key().identifier().getPath();
         int level = switch (id) {
-            case "bamboo_paper" -> 1;
-            case "cloud_paper" -> 2;
-            case "starlight_paper" -> 3;
-            case "frost_paper" -> 4;
-            case "phoenix_paper" -> 5;
-            case "dragon_paper" -> 6;
+            case "hand_runner_0" -> 0;
+            case "hand_runner_1" -> 1;
+            case "hand_runner_2" -> 2;
+            case "hand_runner_3" -> 3;
+            case "hand_runner_4" -> 4;
+            case "hand_runner_5" -> 5;
+            case "hand_runner_6" -> 6;
             default -> -1;
         };
         if (level <= 0) {

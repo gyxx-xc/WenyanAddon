@@ -17,6 +17,8 @@ import org.wenyan.wenyan_addon.device.handler.DataDiskHandlers;
 import org.wenyan.wenyan_addon.device.handler.DyeHandlers;
 import org.wenyan.wenyan_addon.qi.QiHandlers;
 import org.wenyan.wenyan_addon.qi.storage.QiContainerHandlers;
+import org.wenyan.wenyan_addon.spell.PlayerDevicePackages;
+import org.wenyan.wenyan_addon.spell.PlayerDevicePackages;
 
 public final class Capabilities {
     private Capabilities() {}
@@ -81,6 +83,7 @@ public final class Capabilities {
 
         registerer.registerToItem(MessageHandlers.ITEM_NOTE_PACKAGE, ChineseUtils.bracketOf("消息"),WenyanAddon.MESSAGE_BLOCK_ITEM);
         registerer.registerToItem(TimeHandlers.ITEM_TIME_PACKAGE, ChineseUtils.bracketOf("时间"),WenyanAddon.TIME_BLOCK_ITEM);
+        registerer.registerToItem(QuotePlayerHandlers.ITEM_QUOTEPLAYER_PACKAGE,ChineseUtils.bracketOf("魂引"),WenyanAddon.QUOTE_PLAERY_BLOCK_ITEM);
 
         registerer.registerToBlock(MarkerHandler.MARKER_PACKAGE, ChineseUtils.bracketOf("标记"), WenyanAddon.MARKER_BLOCK.get());
         registerer.registerToBlock(ProjectileHandlers.PROJECTILE_SPAWNER_PACKAGE, ChineseUtils.bracketOf("投射"), WenyanAddon.PROJECTILE_SPAWNER_BLOCK.get());
@@ -103,5 +106,13 @@ public final class Capabilities {
         registerer.registerToBlock(TimeHandlers.TIME_PACKAGE, ChineseUtils.bracketOf("时间"), WenyanAddon.TIME_BLOCK.get());
         registerer.registerToBlock(QiHandlers.QI_PACKAGE, ChineseUtils.bracketOf("灵气"), WenyanAddon.QI_BLOCK.get());
         registerer.registerToBlock(QiContainerHandlers.QI_STORAGE_PACKAGE, ChineseUtils.bracketOf("灵气池"), WenyanAddon.QI_STORAGE_BLOCK.get());
+        registerer.registerToBlock(QuotePlayerHandlers.QUOTEPLAYER_PACKAGE, ChineseUtils.bracketOf("魂引"),WenyanAddon.QUOTE_PLAERY_BLOCK.get());
+
+        // 玩家版函数包注册：法术剑（玩家施法）调用背包设备时使用
+        PlayerDevicePackages.register(WenyanAddon.FLUID_BLOCK_ITEM.get(), FluidHandlers.PLAYER_FLUID_PACKAGE);
+        PlayerDevicePackages.register(WenyanAddon.QUOTE_PLAERY_BLOCK_ITEM.get(), QuotePlayerHandlers.PLAYER_QUOTEPLAYER_PACKAGE);
+        PlayerDevicePackages.register(WenyanAddon.ENTITY_MANIPULATION_BLOCK_ITEM.get(), EntityManipulationHandlers.PLAYER_ENTITY_MANIPULATION_PACKAGE);
+
+
     }
 }

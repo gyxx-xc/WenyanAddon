@@ -1,11 +1,15 @@
 package org.wenyan.wenyan_addon.qi.spell;
 
 import indi.wenyan.content.block.runner.BlockRequest;
+import indi.wenyan.content.entity.ThrowEntityContext;
 import indi.wenyan.interpreter_impl.HandlerPackageBuilder;
+import indi.wenyan.judou.api.exec.request.IArgsRequest;
+import indi.wenyan.judou.api.exec.structure.IHandleContext;
 import indi.wenyan.judou.api.values.IWenyanValue;
 import indi.wenyan.judou.api.values.WenyanNull;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.wenyan.wenyan_addon.mixin_util.BlockContextCasterAccessor;
 import org.wenyan.wenyan_addon.qi.consume.ConsumptionResult;
@@ -43,11 +47,10 @@ public final class QiSpellExecution {
                                                                       YinYangTendency tendency,
                                                                       QiSpellMethod method) {
         return (ctx, request) -> {
-            if (!(ctx instanceof BlockRequest.BlockContext context)
-                    || !(request instanceof BlockRequest blockRequest)) {
+            if (!(request instanceof IArgsRequest argsRequest)) {
                 return WenyanNull.NULL;
             }
-            ServerPlayer caster = ((BlockContextCasterAccessor) (Object) ctx).getCaster();
+            ServerPlayer caster = resolveCaster(ctx);
             if (caster == null) {
                 return WenyanNull.NULL;
             }
@@ -57,24 +60,42 @@ public final class QiSpellExecution {
             QiMatch match = QiSpellMatcher.match(primary, compatible, tendency, input, qi.coefficients(spell));
             List<QiContainer> containers = collectContainers(caster);
             if (!hasAnyQi(qi, containers)) {
-                blockRequest.thread().platform().handleError("灵气不足");
+                argsRequest.thread().platform().handleError("灵气不足");
                 return WenyanNull.NULL;
             }
             QiSpellContextImpl spellContext = new QiSpellContextImpl(caster, qi, match, containers);
-            IWenyanValue result = method.invoke(context, blockRequest, spellContext);
+            IWenyanValue result = method.invoke(ctx, argsRequest, spellContext);
             if (spellContext.registered()) {
                 // 自定义消耗：方法体成功后统一扣费
                 if (!hasNeed(qi, containers, spellContext.getNeed())) {
-                    blockRequest.thread().platform().handleError("灵气不足");
+                    argsRequest.thread().platform().handleError("灵气不足");
                     return WenyanNull.NULL;
                 }
                 payNeed(qi, containers, spellContext.getNeed());
                 PlayerQi.markDirty(caster);
-            } else if (!spendDefault(caster, qi, primary, baseCost, tendency, match, containers, blockRequest)) {
+            } else if (!spendDefault(caster, qi, primary, baseCost, tendency, match, containers, argsRequest)) {
                 return WenyanNull.NULL;
             }
             return result;
         };
+    }
+
+    /**
+     * 解析施法者：方块上下文取 Mixin 注入的施法者；投掷上下文取投掷实体所属玩家；
+     * 玩家施法上下文直接取施法玩家。
+     */
+    private static ServerPlayer resolveCaster(IHandleContext ctx) {
+        if (ctx instanceof BlockRequest.BlockContext blockContext) {
+            return ((BlockContextCasterAccessor) (Object) blockContext).getCaster();
+        }
+        if (ctx instanceof ThrowEntityContext throwContext) {
+            Player player = throwContext.entity().getPlayer();
+            return player instanceof ServerPlayer serverPlayer ? serverPlayer : null;
+        }
+        if (ctx instanceof PlayerCastContext playerContext) {
+            return playerContext.player();
+        }
+        return null;
     }
 
     /**
@@ -102,7 +123,7 @@ public final class QiSpellExecution {
      */
     private static boolean spendDefault(ServerPlayer player, PlayerQiData qi, List<ElementAttribute> primary,
                                         double baseCost, YinYangTendency tendency, QiMatch match,
-                                        List<QiContainer> containers, BlockRequest request) {
+                                        List<QiContainer> containers, IArgsRequest request) {
         QiConsumable consumable = consumableOf(primary, baseCost, tendency, match);
         if (match.grade() == MatchGrade.MISSING) {
             ElementAttribute dominant = match.dominant();

@@ -14,6 +14,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -31,6 +32,8 @@ import org.slf4j.Logger;
 import org.wenyan.pong.Pong;
 import org.wenyan.pong.setup.PongRegistration;
 import org.wenyan.wenyan_addon.device.handler.data_disk.StorageRuneBlock;
+import org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem;
+import org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem;
 import org.wenyan.wenyan_addon.spell.FuluPouchExtensionItem;
 import org.wenyan.wenyan_addon.spell.FuluPouchItem;
 import org.wenyan.wenyan_addon.spell.FuluPouchMenu;
@@ -72,7 +75,7 @@ public class WenyanAddon {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
     public static final DeferredRegister<net.minecraft.world.effect.MobEffect> MOB_EFFECTS =
             DeferredRegister.create(Registries.MOB_EFFECT, MODID);
-    public static final DeferredRegister<net.minecraft.world.item.crafting.RecipeSerializer<?>> RECIPE_SERIALIZERS =
+    public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
             DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, MODID);
     public static final ResourceKey<CreativeModeTab> WENYAN_PROGRAMMING_TAB_KEY = ResourceKey.create(
             Registries.CREATIVE_MODE_TAB,
@@ -154,17 +157,21 @@ public class WenyanAddon {
             "qi_storage_block",
             () -> new BlockEntityType<>(QiStorageBlockEntity::new, QI_STORAGE_BLOCK.get())
     );
+    public static final DeferredBlock<Block> QUOTE_PLAERY_BLOCK=BLOCKS.registerSimpleBlock("quote_player_block",p -> p.mapColor(MapColor.WOOD).strength(2.0f).sound(SoundType.WOOD));
+    public static final DeferredItem<BlockItem> QUOTE_PLAERY_BLOCK_ITEM = registerTooltipBlockItem("quote_player_block", QUOTE_PLAERY_BLOCK);
+
+
     public static final DeferredItem<Item> QI_VESSEL_ITEM = ITEMS.registerItem("qi_vessel", properties -> new QiVesselItem(properties, tooltipKey("qi_vessel")), properties -> properties.stacksTo(1));
 
     public static final DeferredItem<Item> YIN_CRYSTAL_ITEM = ITEMS.registerItem("yin_crystal", properties -> new org.wenyan.wenyan_addon.qi.land.YinCrystalItem(properties, tooltipKey("yin_crystal")));
     public static final DeferredItem<Item> YANG_CRYSTAL_ITEM = ITEMS.registerItem("yang_crystal", properties -> new org.wenyan.wenyan_addon.qi.land.YangCrystalItem(properties, tooltipKey("yang_crystal")));
-    public static final DeferredItem<Item> SPIRIT_STONE_ITEM = ITEMS.registerItem("spirit_stone", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone"), org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.Grade.PURE));
-    public static final DeferredItem<Item> SPIRIT_STONE_IMPURE_ITEM = ITEMS.registerItem("spirit_stone_impure", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone_impure"), org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.Grade.IMPURE));
-    public static final DeferredItem<Item> SPIRIT_STONE_REFINED_ITEM = ITEMS.registerItem("spirit_stone_refined", properties -> new org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem(properties, tooltipKey("spirit_stone_refined"), org.wenyan.wenyan_addon.qi.storage.SpiritStoneItem.Grade.REFINED));
-    public static final DeferredItem<Item> QI_RESTORE_POTION_SMALL = ITEMS.registerItem("qi_restore_potion_small", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
-    public static final DeferredItem<Item> QI_RESTORE_POTION_MEDIUM = ITEMS.registerItem("qi_restore_potion_medium", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
-    public static final DeferredItem<Item> QI_RESTORE_POTION_LARGE = ITEMS.registerItem("qi_restore_potion_large", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
-    public static final DeferredItem<Item> QI_RESTORE_POTION_SUSTAINED = ITEMS.registerItem("qi_restore_potion_sustained", properties -> new org.wenyan.wenyan_addon.qi.potion.QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> SPIRIT_STONE_ITEM = ITEMS.registerItem("spirit_stone", properties -> new SpiritStoneItem(properties, tooltipKey("spirit_stone"), SpiritStoneItem.Grade.PURE));
+    public static final DeferredItem<Item> SPIRIT_STONE_IMPURE_ITEM = ITEMS.registerItem("spirit_stone_impure", properties -> new SpiritStoneItem(properties, tooltipKey("spirit_stone_impure"), SpiritStoneItem.Grade.IMPURE));
+    public static final DeferredItem<Item> SPIRIT_STONE_REFINED_ITEM = ITEMS.registerItem("spirit_stone_refined", properties -> new SpiritStoneItem(properties, tooltipKey("spirit_stone_refined"), SpiritStoneItem.Grade.REFINED));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_SMALL = ITEMS.registerItem("qi_restore_potion_small", properties -> new QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_MEDIUM = ITEMS.registerItem("qi_restore_potion_medium", properties -> new QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_LARGE = ITEMS.registerItem("qi_restore_potion_large", properties -> new QiRestorePotionItem(properties.stacksTo(16)));
+    public static final DeferredItem<Item> QI_RESTORE_POTION_SUSTAINED_SMALL = ITEMS.registerItem("qi_restore_potion_sustained_small", properties -> new QiRestorePotionItem(properties.stacksTo(16)));
     public static final DeferredItem<Item> QI_LIQUID_BOTTLE_ITEM = ITEMS.registerItem("qi_liquid_bottle", properties -> new org.wenyan.wenyan_addon.qi.liquid.QiLiquidBottleItem(properties, tooltipKey("qi_liquid_bottle")));
 
     public static final DeferredItem<SpellSwordItem> SPELL_SWORD_ITEM = ITEMS.registerItem("spell_sword",
@@ -209,7 +216,8 @@ public class WenyanAddon {
             () -> net.neoforged.neoforge.common.extensions.IMenuTypeExtension.create(FuluPouchMenu::new)
     );
 
-    public static final DeferredHolder<net.minecraft.world.item.crafting.RecipeSerializer<?>, net.minecraft.world.item.crafting.RecipeSerializer<SpellImbueRecipe>> SPELL_IMBUE_RECIPE_SERIALIZER =
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SpellImbueRecipe>> SPELL_IMBUE_RECIPE_SERIALIZER =
             RECIPE_SERIALIZERS.register(SpellImbueRecipe.ID, () -> SpellImbueRecipe.SERIALIZER);
 
     @SuppressWarnings("unused")
@@ -258,11 +266,12 @@ public class WenyanAddon {
                 output.accept(QI_RESTORE_POTION_SMALL.get());
                 output.accept(QI_RESTORE_POTION_MEDIUM.get());
                 output.accept(QI_RESTORE_POTION_LARGE.get());
-output.accept(QI_RESTORE_POTION_SUSTAINED.get());
-        output.accept(QI_GATHERING_ARRAY_BLOCK_ITEM.get());
-        output.accept(SPELL_SWORD_ITEM.get());
-        output.accept(FULU_POUCH_ITEM.get());
-        output.accept(FULU_POUCH_EXTENSION_ITEM.get());
+                output.accept(QI_RESTORE_POTION_SUSTAINED_SMALL.get());
+                output.accept(QI_GATHERING_ARRAY_BLOCK_ITEM.get());
+                output.accept(SPELL_SWORD_ITEM.get());
+                output.accept(FULU_POUCH_ITEM.get());
+                output.accept(FULU_POUCH_EXTENSION_ITEM.get());
+                output.accept(QUOTE_PLAERY_BLOCK_ITEM.get());
             }).build());
 
     @SuppressWarnings("unused")

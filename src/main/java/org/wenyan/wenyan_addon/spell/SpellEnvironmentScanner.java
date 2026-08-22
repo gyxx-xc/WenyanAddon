@@ -29,7 +29,7 @@ public final class SpellEnvironmentScanner {
      */
     public static ScanResult scan(ServerPlayer player) {
         Map<String, String> scrolls = new HashMap<>();
-        Map<String, IWenyanDevice> devices = new HashMap<>();
+        Map<String, DeviceEntry> devices = new HashMap<>();
         Inventory inventory = player.getInventory();
         for (int i = 0; i < inventory.getContainerSize(); i++) {
             ItemStack stack = inventory.getItem(i);
@@ -46,7 +46,7 @@ public final class SpellEnvironmentScanner {
         return new ScanResult(scrolls, devices);
     }
 
-    private static void collectExtension(ItemStack pouchStack, Map<String, String> scrolls, Map<String, IWenyanDevice> devices) {
+    private static void collectExtension(ItemStack pouchStack, Map<String, String> scrolls, Map<String, DeviceEntry> devices) {
         FuluPouchComponent component = pouchStack.get(SpellDataComponent.POUCH_DATA.get());
         if (component == null) {
             log.debug("Extension pouch without POUCH_DATA component");
@@ -60,7 +60,7 @@ public final class SpellEnvironmentScanner {
             IWenyanDevice device = stack.getCapability(WyRegistration.WENYAN_ITEM_DEVICE_CAPABILITY);
             if (device != null) {
                 String deviceName = device.getPackageName();
-                devices.putIfAbsent(deviceName, device);
+                devices.putIfAbsent(deviceName, new DeviceEntry(device, stack));
                 log.debug("Scanned device '{}'", deviceName);
                 continue;
             }
@@ -79,6 +79,12 @@ public final class SpellEnvironmentScanner {
     /**
      * 扫描结果：拓展包内符咒代码映射与符咒石（文言设备）映射。
      */
-    public record ScanResult(Map<String, String> scrollPackages, Map<String, IWenyanDevice> devicePackages) {
+    public record ScanResult(Map<String, String> scrollPackages, Map<String, DeviceEntry> devicePackages) {
+    }
+
+    /**
+     * 背包设备条目：设备实例 + 所属物品栈（玩家版函数包按物品查询）。
+     */
+    public record DeviceEntry(IWenyanDevice device, ItemStack stack) {
     }
 }

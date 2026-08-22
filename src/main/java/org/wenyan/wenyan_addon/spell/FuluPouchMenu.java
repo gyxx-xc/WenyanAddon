@@ -69,7 +69,7 @@ public class FuluPouchMenu extends AbstractContainerMenu {
     }
 
     /**
-     * 服务端容器：内容变更时立即写回背包物品上的组件。
+     * 服务端容器：内容变更时立即写回背包物品上的组件，并同步选中材质（仅符咒包）。
      */
     private final class SavingContainer extends SimpleContainer {
         private SavingContainer() {
@@ -80,6 +80,10 @@ public class FuluPouchMenu extends AbstractContainerMenu {
         public void setChanged() {
             super.setChanged();
             save();
+            // 取出/更换选中槽物品后，材质随之切换（拓展包不切换材质）
+            if (!pouchStack.isEmpty() && !extension) {
+                FuluPouchItem.applySelectedModel(pouchStack, container.getItem(activeSlot));
+            }
         }
     }
 
@@ -90,7 +94,10 @@ public class FuluPouchMenu extends AbstractContainerMenu {
                 this.addSlot(new Slot(container, index, left + col * 18, top + row * 18) {
                     @Override
                     public boolean mayPlace(ItemStack stack) {
-                        return FuluPouchItem.canStore(extension, stack);
+                        if (extension) {
+                            return FuluPouchExtensionItem.canStore(stack);
+                        }
+                        return FuluPouchItem.canStore(stack);
                     }
                 });
             }
@@ -167,6 +174,10 @@ public class FuluPouchMenu extends AbstractContainerMenu {
     public void setActiveSlot(int activeSlot) {
         this.activeSlot = activeSlot;
         save();
+        // 材质切换仅符咒包（拓展包不切换材质）
+        if (!pouchStack.isEmpty() && !extension) {
+            FuluPouchItem.applySelectedModel(pouchStack, container.getItem(activeSlot));
+        }
     }
 
     public ItemStack getPouchStack() {

@@ -17,10 +17,13 @@ import java.util.Map;
 
 /**
  * 符咒包/拓展包容器组件：存储包内物品（带槽位的 ItemStackTemplate 列表）+ 当前选中槽位。
+ * activeSlot 为 -1 表示未选中（仅符咒包使用；拓展包恒为 0）。
  * 最多 FuluPouchMenu.SLOT_COUNT 个；空槽不占位（序列化时省略）。
  * 保存按槽位索引，还原时恢复原槽位位置。
  */
 public record FuluPouchComponent(List<SlotEntry> items, int activeSlot) {
+
+    public static final int NO_SELECTION = -1;
 
     public record SlotEntry(int slot, ItemStackTemplate template) {
         public static final Codec<SlotEntry> CODEC = RecordCodecBuilder.create(inst -> inst.group(
@@ -34,12 +37,12 @@ public record FuluPouchComponent(List<SlotEntry> items, int activeSlot) {
                 SlotEntry::new);
     }
 
-    public static final FuluPouchComponent EMPTY = new FuluPouchComponent(List.of(), 0);
+    public static final FuluPouchComponent EMPTY = new FuluPouchComponent(List.of(), NO_SELECTION);
 
     public static final Codec<FuluPouchComponent> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             SlotEntry.CODEC.sizeLimitedListOf(FuluPouchMenu.SLOT_COUNT)
                     .fieldOf("items").forGetter(FuluPouchComponent::items),
-            ExtraCodecs.NON_NEGATIVE_INT.optionalFieldOf("active_slot", 0).forGetter(FuluPouchComponent::activeSlot)
+            Codec.INT.optionalFieldOf("active_slot", 0).forGetter(FuluPouchComponent::activeSlot)
     ).apply(inst, FuluPouchComponent::new));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, FuluPouchComponent> STREAM_CODEC = StreamCodec.composite(
@@ -48,6 +51,16 @@ public record FuluPouchComponent(List<SlotEntry> items, int activeSlot) {
             ByteBufCodecs.VAR_INT,
             FuluPouchComponent::activeSlot,
             FuluPouchComponent::new);
+
+    /**
+     * 当前选中槽的物品；未选中或越界返回空栈。
+     */
+    public ItemStack selectedItem() {
+        if (activeSlot < 0 || activeSlot >= FuluPouchMenu.SLOT_COUNT) {
+            return ItemStack.EMPTY;
+        }
+        return createItems().get(activeSlot);
+    }
 
     /**
      * 还原为定长物品栈列表（SLOT_COUNT 个，空槽为 ItemStack.EMPTY）。

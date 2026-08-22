@@ -32,8 +32,14 @@ public final class SpellRunManager {
 
     /**
      * 尝试施放法术：读取剑上的咒术代码，异步编译并扫描环境，随后在主线程启动运行。
+     * 若该玩家已有运行在持续中，则提示「正在运行」而不重新施放。
      */
     public void tryCast(ServerPlayer player, ItemStack stack) {
+        SpellRun existing = runs.get(player.getUUID());
+        if (existing != null && !existing.isFinished()) {
+            player.sendSystemMessage(Component.literal("法术正在运行中").withStyle(net.minecraft.ChatFormatting.GOLD));
+            return;
+        }
         String code = SpellCodeHelper.readCode(stack);
         if (code == null || code.isBlank()) {
             player.sendSystemMessage(Component.literal("此剑尚未写入法术"));
@@ -42,7 +48,6 @@ public final class SpellRunManager {
         int step = SpellCodeHelper.stepOf(stack);
         // 主线程读取背包快照（背包访问非线程安全），异步线程仅编译
         SpellEnvironmentScanner.ScanResult scan = SpellEnvironmentScanner.scan(player);
-        abort(player.getUUID());
         SpellAsyncExecutor.submit(
                 () -> compile(code),
                 bytecode -> {

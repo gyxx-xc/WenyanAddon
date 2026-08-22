@@ -23,7 +23,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_NAMES.put("qi_restore_potion_small", "小型灵气恢复药水");
         ITEM_NAMES.put("qi_restore_potion_medium", "中型灵气恢复药水");
         ITEM_NAMES.put("qi_restore_potion_large", "大型灵气恢复药水");
-        ITEM_NAMES.put("qi_restore_potion_sustained", "缓释灵气恢复药水");
+        ITEM_NAMES.put("qi_restore_potion_sustained_small", "小型缓释灵气恢复药水");
         ITEM_NAMES.put("spell_sword", "法术剑");
         ITEM_NAMES.put("fulu_pouch", "符咒包");
         ITEM_NAMES.put("fulu_pouch_extension", "符咒拓展包");
@@ -47,6 +47,8 @@ public final class AddonLanguageProvider extends LanguageProvider {
         BLOCK_NAMES.put("storage_rune_block", "符咒收纳柜");
         BLOCK_NAMES.put("message_block", "消息石");
         BLOCK_NAMES.put("time_block", "时间石");
+        BLOCK_NAMES.put("quote_player_block", "魂引石");
+
         BLOCK_NAMES.put("qi_block", "灵气石");
         BLOCK_NAMES.put("qi_storage_block", "灵气池");
         BLOCK_NAMES.put("qi_ritual_block", "淬体仪座");
@@ -85,6 +87,7 @@ public final class AddonLanguageProvider extends LanguageProvider {
         ITEM_TOOLTIPS.put("qi_liquid_purifier_block", "放入灵液水瓶，纯化为对应属性的灵气恢复药水");
         ITEM_TOOLTIPS.put("qi_gathering_array_block", "抽取区块主属性灵气，填充附近玩家灵气条（5% 上限）");
         ITEM_TOOLTIPS.put("qi_ritual_block", "淬体仪式核心：献祭物品与经验，淬炼自身");
+        ITEM_TOOLTIPS.put("quote_player_block", "更多获取实体的方式");
     }
 
     public AddonLanguageProvider(PackOutput output, String locale) {

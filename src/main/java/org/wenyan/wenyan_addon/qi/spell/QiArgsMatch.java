@@ -12,7 +12,9 @@ import java.lang.annotation.Target;
  * 可重复标注实现多组合（如 (str,int) 与 (int,bool) 各一个注解）。
  * 传入参数时按 args 实际类型匹配组合，命中则跳转该方法执行；
  * 存在本注解的方法优先于灵气系统路由；全部组合不匹配时抛异常（列出可用组合）。
- * 方法签名：IWenyanValue 方法名(BlockContext ctx, BlockRequest request)
+ * 方法签名：IWenyanValue 方法名(ContextType ctx, IArgsRequest request[, QiSpellContext context])
+ * ContextType 为设备上下文类型（方块：BlockRequest.BlockContext；投掷物品：ThrowEntityContext；
+ * 玩家施法：PlayerCastContext）。
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(java.lang.annotation.ElementType.METHOD)

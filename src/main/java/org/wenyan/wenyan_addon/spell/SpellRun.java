@@ -1,17 +1,15 @@
 package org.wenyan.wenyan_addon.spell;
 
 import indi.wenyan.content.block.LazyProgram;
-import indi.wenyan.content.block.IWenyanDevice;
 import indi.wenyan.content.block.runner.BlockPackageGetter;
 import indi.wenyan.content.block.runner.BlockRequest;
 import indi.wenyan.interpreter_impl.ImportRequest;
 import indi.wenyan.interpreter_impl.SimpleRequest;
 import indi.wenyan.interpreter_impl.WenyanSymbol;
-import indi.wenyan.judou.api.compile.IWenyanBytecode;
-import indi.wenyan.judou.api.compile.WenyanCompiler;
 import indi.wenyan.judou.api.exec.structure.IExecQueue;
 import indi.wenyan.judou.api.exec.structure.IHandleContext;
 import indi.wenyan.judou.api.exec.structure.IWenyanPlatform;
+import indi.wenyan.judou.api.exec.structure.RawHandlerPackage;
 import indi.wenyan.judou.api.language.Symbol;
 import indi.wenyan.judou.api.runtime.IWenyanScheduler;
 import indi.wenyan.judou.api.runtime.RunnerCreator;
@@ -28,10 +26,14 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import org.wenyan.wenyan_addon.mixin_util.BlockContextCasterAccessor;
+import org.wenyan.wenyan_addon.qi.spell.PlayerCastContext;
+import org.wenyan.wenyan_addon.qi.spell.PlayerCastRequest;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.function.Function;
 
 /**
  * 单次法术运行：以玩家为中心的文言程序运行器。
@@ -110,51 +112,20 @@ public class SpellRun implements IWenyanPlatform {
                 + (available.isEmpty() ? "（背包拓展包内无符咒）" : "（已扫描到：" + available + "）"));
     }
 
-    private WenyanPackage processItemDevice(IWenyanDevice device) {
-        var raw = device.getExecPackage();
+    /**
+     * 背包物品设备包装为玩家施法包：优先使用注册的玩家版函数包（PlayerCastContext 签名，
+     * 以玩家为施法主体）；未注册时回落到设备自身包（通用 IHandleContext 签名天然兼容）。
+     * 请求类型为 {@link PlayerCastRequest}，执行时注入 {@link PlayerCastContext}，
+     * 与方块设备请求（BlockRequest + BlockContext）互不干扰。
+     */
+    private WenyanPackage processItemDevice(SpellEnvironmentScanner.DeviceEntry entry) {
+        Function<ItemStack, RawHandlerPackage> playerPackage = PlayerDevicePackages.of(entry.stack().getItem());
+        RawHandlerPackage raw = playerPackage != null ? playerPackage.apply(entry.stack()) : entry.device().getExecPackage();
         var map = new java.util.HashMap<>(raw.variables());
         raw.functions().forEach((functionName, function) ->
                 map.put(functionName, (indi.wenyan.judou.api.exec.IRequestCallHandler) (thread, self, argsList, onReturn) ->
-                        new indi.wenyan.content.block.runner.BlockRequest(
-                                thread, self, argsList, new DeviceBlockDevice(device), function.get(), _ -> {
-                        }, onReturn)));
+                        new PlayerCastRequest(player, thread, self, argsList, function.get(), onReturn)));
         return new WenyanPackage(map);
-    }
-
-    /**
-     * 将背包中的文言设备（符咒石）适配为 IWenyanBlockDevice，以便复用 BlockRequest。
-     */
-    private static final class DeviceBlockDevice implements indi.wenyan.interpreter_impl.IWenyanBlockDevice {
-        private final IWenyanDevice delegate;
-
-        private DeviceBlockDevice(IWenyanDevice delegate) {
-            this.delegate = delegate;
-        }
-
-        @Override
-        public indi.wenyan.judou.api.exec.structure.RawHandlerPackage getExecPackage() {
-            return delegate.getExecPackage();
-        }
-
-        @Override
-        public String getPackageName() {
-            return delegate.getPackageName();
-        }
-
-        @Override
-        public net.minecraft.core.BlockPos blockPos() {
-            return null;
-        }
-
-        @Override
-        public net.minecraft.world.level.block.state.BlockState blockState() {
-            return null;
-        }
-
-        @Override
-        public boolean isRemoved() {
-            return false;
-        }
     }
 
     /**

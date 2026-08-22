@@ -6,7 +6,7 @@ import java.lang.annotation.Target;
 
 /**
  * 无倾向符咒方法的子分支：按输入灵气属性组合自动路由。
- * 分支方法命名约定：主方法 Java 名 + "_" + 任意后缀。
+ * 分支方法命名约定：主方法 Java 名 + "_" + 任意后缀，且第一个参数上下文类型与主方法一致。
  * 属性以注册 id 引用（如 "water" / "ice"）。
  */
 @Retention(RetentionPolicy.RUNTIME)
