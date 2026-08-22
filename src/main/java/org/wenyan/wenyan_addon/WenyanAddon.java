@@ -24,6 +24,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -50,6 +51,7 @@ import org.wenyan.wenyan_addon.qi.element.DerivedElement;
 import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
 import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
 import org.wenyan.wenyan_addon.qi.element.ElementType;
+import org.wenyan.wenyan_addon.qi.element.ItemAttributeRegistry;
 import org.wenyan.wenyan_addon.qi.element.RelationType;
 import org.wenyan.wenyan_addon.qi.mark.QiMarkEffects;
 import org.wenyan.wenyan_addon.qi.player.PlayerQi;
@@ -295,6 +297,8 @@ public class WenyanAddon {
                 event.addListener(Identifier.fromNamespaceAndPath(MODID, "qi_ritual_recipes"), new QiRitualRecipes()));
         gameBus.addListener((AddServerReloadListenersEvent event) ->
                 event.addListener(Identifier.fromNamespaceAndPath(MODID, "spell_blacklist"), new SpellBlacklist()));
+        gameBus.addListener((ServerStartingEvent event) ->
+                ItemAttributeRegistry.reload());
         Pong.register(modEventBus);
     }
 
