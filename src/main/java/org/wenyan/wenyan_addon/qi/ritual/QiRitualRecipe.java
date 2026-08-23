@@ -2,15 +2,23 @@ package org.wenyan.wenyan_addon.qi.ritual;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.wenyan.wenyan_addon.qi.element.ElementAttribute;
+import org.wenyan.wenyan_addon.qi.element.ElementRegistry;
+import org.wenyan.wenyan_addon.qi.element.ItemAttributeRegistry;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * 淬体仪式配方：声明所需物品及数量（8 格盛放方块中满足即触发）与仪式效果。
  * 效果：提升指定属性（空 = 全部）的 ElementCoefficients extras 数值、最大血量、灵气条上限。
  * unlockQi：特殊配方标记（解锁灵气条），true 时配方指定的未解锁属性可获得灵气条上限。
+ * 物品需求支持两种匹配：item（精确物品注册 id）或 attribute（属性标记相符的物品，见 ItemAttributeRegistry）。
  */
 public record QiRitualRecipe(
         List<ItemRequirement> items,
@@ -22,11 +30,13 @@ public record QiRitualRecipe(
 ) {
 
     /**
-     * 单物品需求：item 为物品注册 id，count 为数量。
+     * 单物品需求：item 为物品注册 id（精确匹配），attribute 为元素属性 id（属性标记匹配，二选一）；
+     * count 为数量。item 优先；两者均未指定时视为非法条目（永不满足）。
      */
-    public record ItemRequirement(String item, int count) {
+    public record ItemRequirement(Optional<String> item, Optional<String> attribute, int count) {
         public static final Codec<ItemRequirement> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.STRING.fieldOf("item").forGetter(ItemRequirement::item),
+                Codec.STRING.optionalFieldOf("item").forGetter(ItemRequirement::item),
+                Codec.STRING.optionalFieldOf("attribute").forGetter(ItemRequirement::attribute),
                 Codec.INT.optionalFieldOf("count", 1).forGetter(ItemRequirement::count)
         ).apply(instance, ItemRequirement::new));
     }
@@ -42,19 +52,32 @@ public record QiRitualRecipe(
     ).apply(instance, QiRitualRecipe::new));
 
     /**
-     * 检查物品清单是否满足。
+     * 检查物品清单是否满足：逐条需求独立判定总量（item 精确匹配 / attribute 属性标记匹配）。
      */
     public boolean matches(List<ItemStack> stacks) {
         for (ItemRequirement requirement : items) {
-            net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM
-                    .getValue(net.minecraft.resources.Identifier.parse(requirement.item()));
-            if (item == null) {
-                continue;
+            long count;
+            if (requirement.item().isPresent()) {
+                Item item = BuiltInRegistries.ITEM.getValue(Identifier.parse(requirement.item().get()));
+                if (item == null) {
+                    continue;
+                }
+                count = stacks.stream()
+                        .filter(stack -> stack.getItem() == item)
+                        .mapToLong(ItemStack::getCount)
+                        .sum();
+            } else if (requirement.attribute().isPresent()) {
+                ElementAttribute attribute = ElementRegistry.byId(requirement.attribute().get());
+                if (attribute == null) {
+                    return false;
+                }
+                count = stacks.stream()
+                        .filter(stack -> ItemAttributeRegistry.of(stack).contains(attribute))
+                        .mapToLong(ItemStack::getCount)
+                        .sum();
+            } else {
+                return false;
             }
-            long count = stacks.stream()
-                    .filter(stack -> stack.getItem() == item)
-                    .mapToLong(ItemStack::getCount)
-                    .sum();
             if (count < requirement.count()) {
                 return false;
             }
